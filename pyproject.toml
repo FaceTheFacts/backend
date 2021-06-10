@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.9"
 
 [tool.poetry.dev-dependencies]
+black = "^21.5-beta.2"
 
 [build-system]
 requires = ["poetry-core"]
