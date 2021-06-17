@@ -11,7 +11,7 @@ BASE_URL = "https://abgeordnetenwatch.de/api/v2"
 
 def index(request: HttpRequest) -> HttpResponse:
     data = {"msg": "Hello, world."}
-    return HttpResponse(json.dumps(data), content_type="application/json")
+    return json_response(data)
 
 
 def politicians(request: HttpRequest, id: int) -> HttpResponse:
