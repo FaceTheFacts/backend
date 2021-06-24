@@ -3,14 +3,9 @@ from typing import Optional
 
 # 3rd-party
 from fastapi import FastAPI
-import requests
 
 # local
-from backend import preprocess
-
-
-# cfg variables
-BASE_URL = "https://abgeordnetenwatch.de/api/v2"
+from backend import fetch, preprocess
 
 
 app = FastAPI()
@@ -24,7 +19,7 @@ def read_root(name: Optional[str] = "World"):
 @app.get("/politicians/{id}")
 def politician(id: int):
     # fetch data
-    data = requests.get(f"{BASE_URL}/politicians/{id}").json()["data"]
+    data = fetch.politician(id)
 
     # preprocess attributes
     data["occupation"] = preprocess.occupation(data["occupation"])
