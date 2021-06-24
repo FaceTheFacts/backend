@@ -1,8 +1,11 @@
 # std
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 # 3rd-party
 import requests
+
+# local
+from .types import Mandate
 
 
 def fetch(url: str, params: Dict[str, Any] = {}):
@@ -13,5 +16,30 @@ def fetch(url: str, params: Dict[str, Any] = {}):
 # ---
 
 
+PARLIAMENT_PERIOD_ID = 50  # `parliament_period.id` of "Bundestag Wahl 2017"
+
+
+def mandate(politician_id: int) -> Mandate:
+    mandate_list = fetch(
+        "candidacies-mandates",
+        params={
+            "politician[entity.id]": politician_id,
+            "parliament_period[entity.id]": PARLIAMENT_PERIOD_ID,
+        },
+    )
+    # list will be only one element, since there is only one mandate, per politician per parliamnet_period
+    return mandate_list[0]
+
+
 def politician(id: int) -> Dict[str, Any]:
     return fetch(f"politicians/{id}")
+
+
+def second_vote(electoral_list_id: int, party_id: int) -> List[Mandate]:
+    return fetch(
+        "candidacies-mandates",
+        params={
+            "electoral_data[entity.electoral_list.entity.id]": electoral_list_id,
+            "politician[entity.party.entity.id]": party_id,
+        },
+    )

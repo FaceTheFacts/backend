@@ -5,7 +5,7 @@ from typing import Optional
 from fastapi import FastAPI
 
 # local
-from backend import fetch, preprocess
+from backend import fetch, preprocess, sort
 
 
 app = FastAPI()
@@ -24,6 +24,21 @@ def politician(id: int):
     # preprocess attributes
     data["occupation"] = preprocess.occupation(data["occupation"])
     data["party"]["label"] = preprocess.party(data["party"]["label"])
+
+    # return json
+    return data
+
+
+@app.get("/candidacies-mandates/")
+def candidacies_mandates(politician_id: int):
+    # fetch mandate
+    data = fetch.mandate(politician_id)
+
+    # fetch and sort second_vote
+    second_vote = fetch.second_vote(
+        data["electoral_data"]["electoral_list"]["id"], data["party"]["id"]
+    )
+    data["second_vote"] = sort.second_vote(second_vote)
 
     # return json
     return data
