@@ -19,6 +19,16 @@ def fetch(url: str, params: Dict[str, Any] = {}):
 PARLIAMENT_PERIOD_ID = 50  # `parliament_period.id` of "Bundestag Wahl 2017"
 
 
+def first_vote(constituency_id: int) -> List[Mandate]:
+    return fetch(
+        "candidacies-mandates",
+        params={
+            "electoral_data[entity.constituency.entity.id]": constituency_id,
+            "parliament_period[entity.id]": PARLIAMENT_PERIOD_ID,
+        },
+    )
+
+
 def mandate(politician_id: int) -> Mandate:
     mandate_list = fetch(
         "candidacies-mandates",
