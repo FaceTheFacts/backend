@@ -6,7 +6,7 @@ from fastapi import FastAPI
 import requests
 
 # local
-from backend.preprocessors import preprocess_occupation, preprocess_party
+from backend import preprocess
 
 
 # cfg variables
@@ -27,8 +27,8 @@ def politician(id: int):
     data = requests.get(f"{BASE_URL}/politicians/{id}").json()["data"]
 
     # preprocess attributes
-    data["occupation"] = preprocess_occupation(data["occupation"])
-    data["party"]["label"] = preprocess_party(data["party"]["label"])
+    data["occupation"] = preprocess.occupation(data["occupation"])
+    data["party"]["label"] = preprocess.party(data["party"]["label"])
 
     # return json
     return data

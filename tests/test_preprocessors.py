@@ -1,6 +1,6 @@
 import pytest
 
-from backend.preprocessors import preprocess_occupation, preprocess_party
+from backend import preprocess
 
 
 @pytest.mark.parametrize(
@@ -19,7 +19,7 @@ from backend.preprocessors import preprocess_occupation, preprocess_party
 )
 def test_preprocess_occupation(input: str, expected: list[str]):
     # `.sort` makes sure we don't care for the order of the result
-    assert preprocess_occupation(input).sort() == expected.sort()
+    assert preprocess.occupation(input).sort() == expected.sort()
 
 
 @pytest.mark.parametrize(
@@ -32,4 +32,4 @@ def test_preprocess_occupation(input: str, expected: list[str]):
     ],
 )
 def test_preprocess_party(input: str, expected: str):
-    assert preprocess_party(input) == expected
+    assert preprocess.party(input) == expected
