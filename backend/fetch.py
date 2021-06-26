@@ -5,10 +5,11 @@ from typing import Any, Dict, List
 import requests
 
 # local
-from .types import Mandate
+from .types import Mandate, Politician
 
 
 def fetch(url: str, params: Dict[str, Any] = {}):
+    """Fetch from abgeordnetenwatch-API."""
     BASE_URL = "https://abgeordnetenwatch.de/api/v2"
     return requests.get(f"{BASE_URL}/{url}", params).json()["data"]
 
@@ -41,7 +42,7 @@ def mandate(politician_id: int) -> Mandate:
     return mandate_list[0]
 
 
-def politician(id: int) -> Dict[str, Any]:
+def politician(id: int) -> Politician:
     return fetch(f"politicians/{id}")
 
 
