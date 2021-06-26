@@ -1,4 +1,4 @@
-def preprocess_occupation(occupation: str) -> list[str]:
+def occupation(occupation: str) -> list[str]:
     # this replace needs to happen before splitting, since it contains a ','
     occupation = occupation.replace(
         "Bundesministerin für Umwelt, Naturschutz und nukleare Sicherheit",
@@ -73,7 +73,7 @@ def _shorten_occupation(o: str):
         return o
 
 
-def preprocess_party(party: str) -> str:
+def party(party: str) -> str:
     if party == "Bündnis 90/Die Grünen":
         return "Die Grünen"
     else:
