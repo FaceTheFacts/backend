@@ -38,7 +38,7 @@ def mandate(politician_id: int) -> Mandate:
             "parliament_period[entity.id]": PARLIAMENT_PERIOD_ID,
         },
     )
-    # list will be only one element, since there is only one mandate, per politician per parliamnet_period
+    # list will be only one element, since there is only one mandate, per politician, per parliament_period
     return mandate_list[0]
 
 
