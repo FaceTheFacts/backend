@@ -1,4 +1,17 @@
-def occupation(occupation: str) -> list[str]:
+# local
+from data.occupations import OCCUPATIONS
+
+
+def occupation(occupation: str, politician_id: int) -> list[str]:
+    # if OCCUPATIONS contains an entry, we take it
+    if (custom_occupation := OCCUPATIONS.get(politician_id)) != None:
+        return custom_occupation
+    # else we take the one from AW
+    else:
+        return _split_map_occupation(occupation)
+
+
+def _split_map_occupation(occupation: str) -> list[str]:
     # this replace needs to happen before splitting, since it contains a ','
     occupation = occupation.replace(
         "Bundesministerin für Umwelt, Naturschutz und nukleare Sicherheit",
