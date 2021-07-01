@@ -22,7 +22,7 @@ def politician(id: int):
     data = fetch.politician(id)
 
     # preprocess attributes
-    data["occupation"] = preprocess.occupation(data["occupation"])
+    data["occupation"] = preprocess.occupation(data["occupation"], id)
     data["party"]["label"] = preprocess.party(data["party"]["label"])
 
     # return json

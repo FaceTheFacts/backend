@@ -17,9 +17,9 @@ from backend import preprocess
         ),
     ],
 )
-def test_preprocess_occupation(input: str, expected: list[str]):
+def test_preprocess_split_map_occupation(input: str, expected: list[str]):
     # `.sort` makes sure we don't care for the order of the result
-    assert preprocess.occupation(input).sort() == expected.sort()
+    assert preprocess._split_map_occupation(input).sort() == expected.sort()
 
 
 @pytest.mark.parametrize(
