@@ -21,7 +21,10 @@ WORKDIR /src
 COPY --from=downloader /requirements.txt ./
 RUN pip install -r requirements.txt
 
-# add files and run server (not production ready!)
+# add files
 COPY main.py ./
 COPY backend/ backend/
-CMD [ "uvicorn", "main:app" ]
+
+# run server
+EXPOSE 8000
+CMD [ "uvicorn", "main:app", "--host", "0.0.0.0" ]
