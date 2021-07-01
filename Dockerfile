@@ -24,6 +24,7 @@ RUN pip install -r requirements.txt
 # add files
 COPY main.py ./
 COPY backend/ backend/
+COPY data/ data/
 
 # run server
 EXPOSE 8000
