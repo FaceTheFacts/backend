@@ -1,12 +1,18 @@
+# std
+from typing import Optional
+
 # local
 from data.occupations import OCCUPATIONS
 
 
-def occupation(occupation: str, politician_id: int) -> list[str]:
-    # if OCCUPATIONS contains an entry, we take it
+def occupation(occupation: Optional[str], politician_id: int) -> list[str]:
+    # if we have a custom occupation, we take it
     if (custom_occupation := OCCUPATIONS.get(politician_id)) != None:
         return custom_occupation
-    # else we take the one from AW
+    # if there is no occupation, we return an empty list
+    elif occupation == None:
+        return []
+    # else we process the occupation string from AW
     else:
         return _split_map_occupation(occupation)
 
