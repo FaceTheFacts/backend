@@ -1,5 +1,5 @@
 # std
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 # 3rd-party
 import requests
@@ -49,6 +49,15 @@ def mandate(politician_id: int) -> Mandate:
     )
     # list will be only one element, since there is only one mandate, per politician, per parliament_period
     return mandate_list[0]
+
+
+def image(politician_id: int) -> Optional[str]:
+    IMAGE_BASE_URL = "https://candidate-images.s3.eu-central-1.amazonaws.com"
+    image_url = f"{IMAGE_BASE_URL}/{politician_id}.jpg"
+    if requests.head(image_url).ok:
+        return image_url
+    else:
+        return None
 
 
 def politician(id: int) -> Politician:

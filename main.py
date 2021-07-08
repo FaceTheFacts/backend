@@ -47,17 +47,22 @@ def committee_memberships(politician_name: str):
     response_model=List[Politician],
 )
 def politicians_search(name: str):
-    return fetch.politicians_search(name)
+    # fetch data
+    politicians = fetch.politicians_search(name)
+
+    # preprocess attributes for each politician
+    for p in politicians:
+        p["image"] = fetch.image(p["id"])
+        p["party"]["label"] = preprocess.party(p["party"]["label"])
+
+    return politicians
 
 
-@app.get(
-    "/politicians/{id}",
-    summary="Get politician profile",
-    response_model=Politician,
-)
+@app.get("/politicians/{id}", summary="Politician profile", response_model=Politician)
 def politicians(id: int):
     # fetch data
     data = fetch.politician(id)
+    data["image"] = fetch.image(id)
 
     # preprocess attributes
     data["occupation"] = preprocess.occupation(data["occupation"], id)
@@ -65,6 +70,11 @@ def politicians(id: int):
 
     # return json
     return data
+
+
+@app.get("/politicians/{id}/image", response_model=Optional[str])
+def politician_image(politician_id: int):
+    return fetch.image(politician_id)
 
 
 @app.get("/polls/{id}", response_model=Poll)
