@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 import requests
 
 # local
-from .types import ComitteeMembership, Mandate, Politician, Sidejob
+from .types import ComitteeMembership, Mandate, Politician, Sidejob, Vote
 
 
 def fetch(url: str, params: Dict[str, Any] = {}):
@@ -76,4 +76,10 @@ def sidejobs(politician_name: str) -> List[Sidejob]:
         {
             "mandates[entity.label][cn]": politician_name,
         },
+    )
+
+
+def vote(vote_id: int, politician_name: str) -> Vote:
+    return fetch(
+        "votes", {"poll": vote_id, "mandate[entity.label][cn]": politician_name}
     )
