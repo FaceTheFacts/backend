@@ -56,3 +56,8 @@ def politicians(id: int):
 
     # return json
     return data
+
+
+@app.get("/sidejobs")
+def sidejobs(politician_name: str):
+    return fetch.sidejobs(politician_name)
