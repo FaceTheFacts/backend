@@ -46,6 +46,11 @@ def politician(id: int) -> Politician:
     return fetch(f"politicians/{id}")
 
 
+def politicians_search(name: str) -> List[Politician]:
+    RESULT_LIMIT = 20
+    return fetch("politicians/", {"label[cn]": name, "range_end": RESULT_LIMIT})
+
+
 def second_vote(electoral_list_id: int, party_id: int) -> List[Mandate]:
     return fetch(
         "candidacies-mandates",

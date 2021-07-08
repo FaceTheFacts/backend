@@ -35,8 +35,13 @@ def candidacies_mandates(politician_id: int):
     return data
 
 
-@app.get("/politicians/{id}")
-def politician(id: int):
+@app.get("/politicians", summary="Search politicians by name")
+def politicians_search(name: str):
+    return fetch.politicians_search(name)
+
+
+@app.get("/politicians/{id}", summary="Get politician profile")
+def politicians(id: int):
     # fetch data
     data = fetch.politician(id)
 
