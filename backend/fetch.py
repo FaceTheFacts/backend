@@ -62,7 +62,7 @@ def mandate(politician_id: int) -> Mandate:
     return mandate_list[0]
 
 
-def image(id: int) -> str:
+def image(id: int) -> Any:
     image_url = f"{IMAGE_BASE_URL}/{id}.jpg"
     print(resource_ok(image_url))
     if resource_ok(image_url):

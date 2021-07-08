@@ -40,6 +40,13 @@ def candidacies_mandates(politician_id: int):
 def committee_memberships(politician_name: str):
     return fetch.committee_memberships(politician_name)
 
+@app.get(
+    "/image/{id}",
+    summary="Get politician image by id",
+    response_model=Any,
+)
+def politician_image(id: int):
+    return fetch.image(id)
 
 @app.get(
     "/politicians",
