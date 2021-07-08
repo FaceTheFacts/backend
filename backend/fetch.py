@@ -32,7 +32,7 @@ def committee_memberships(politician_name: str) -> List[ComitteeMembership]:
 def first_vote(constituency_id: int) -> List[Mandate]:
     return fetch(
         "candidacies-mandates",
-        params={
+        {
             "electoral_data[entity.constituency.entity.id]": constituency_id,
             "parliament_period[entity.id]": PARLIAMENT_PERIOD_ID,
         },
@@ -42,7 +42,7 @@ def first_vote(constituency_id: int) -> List[Mandate]:
 def mandate(politician_id: int) -> Mandate:
     mandate_list = fetch(
         "candidacies-mandates",
-        params={
+        {
             "politician[entity.id]": politician_id,
             "parliament_period[entity.id]": PARLIAMENT_PERIOD_ID,
         },
@@ -63,7 +63,7 @@ def politicians_search(name: str) -> List[Politician]:
 def second_vote(electoral_list_id: int, party_id: int) -> List[Mandate]:
     return fetch(
         "candidacies-mandates",
-        params={
+        {
             "electoral_data[entity.electoral_list.entity.id]": electoral_list_id,
             "politician[entity.party.entity.id]": party_id,
         },
