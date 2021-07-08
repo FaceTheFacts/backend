@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 import requests
 
 # local
-from .types import ComitteeMembership, Mandate, Politician, Sidejob, Vote
+from .types import ComitteeMembership, Mandate, Politician, Poll, Sidejob, Vote
 
 
 def fetch(url: str, params: Dict[str, Any] = {}):
@@ -58,6 +58,10 @@ def politician(id: int) -> Politician:
 def politicians_search(name: str) -> List[Politician]:
     RESULT_LIMIT = 20
     return fetch("politicians/", {"label[cn]": name, "range_end": RESULT_LIMIT})
+
+
+def poll(id: int) -> Poll:
+    fetch(f"polls/{id}")
 
 
 def second_vote(electoral_list_id: int, party_id: int) -> List[Mandate]:

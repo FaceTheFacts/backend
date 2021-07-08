@@ -58,6 +58,11 @@ def politicians(id: int):
     return data
 
 
+@app.get("/polls/{id}")
+def polls(id: str):
+    return fetch.poll(id)
+
+
 @app.get("/sidejobs")
 def sidejobs(politician_name: str):
     return fetch.sidejobs(politician_name)
