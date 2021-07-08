@@ -1,5 +1,5 @@
 # std
-from typing import List, Optional
+from typing import List, Optional, Any
 
 # 3rd-party
 from fastapi import FastAPI
@@ -40,6 +40,7 @@ def candidacies_mandates(politician_id: int):
 def committee_memberships(politician_name: str):
     return fetch.committee_memberships(politician_name)
 
+
 @app.get(
     "/image/{id}",
     summary="Get politician image by id",
@@ -47,6 +48,7 @@ def committee_memberships(politician_name: str):
 )
 def politician_image(id: int):
     return fetch.image(id)
+
 
 @app.get(
     "/politicians",
@@ -64,6 +66,7 @@ def politicians_search(name: str):
         politicians[index]["party"]["label"] = preprocess.party(p["party"]["label"])
 
     return politicians
+
 
 @app.get(
     "/politicians/{id}",

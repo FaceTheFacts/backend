@@ -1,12 +1,11 @@
 # std
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Any
 
 # 3rd-party
 import requests
 
 # local
 from .types import ComitteeMembership, Mandate, Politician, Poll, Sidejob, Vote
-from .preprocess import add_image
 
 
 def fetch(url: str, params: Dict[str, Any] = {}):
@@ -17,10 +16,8 @@ def fetch(url: str, params: Dict[str, Any] = {}):
 
 def resource_ok(url: str):
     """Check if resource responds with statuscode 200"""
-    print(url)
     r = requests.head(url)
     status = r.status_code
-    print(status)
     return status == 200
 
 
@@ -64,7 +61,6 @@ def mandate(politician_id: int) -> Mandate:
 
 def image(id: int) -> Any:
     image_url = f"{IMAGE_BASE_URL}/{id}.jpg"
-    print(resource_ok(image_url))
     if resource_ok(image_url):
         return image_url
     else:
