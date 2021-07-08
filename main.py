@@ -47,8 +47,16 @@ def committee_memberships(politician_name: str):
     response_model=List[Politician],
 )
 def politicians_search(name: str):
-    return fetch.politicians_search(name)
+    # fetch data
+    politicians = fetch.politicians_search(name)
 
+    for index, p in enumerate(politicians):
+        politicians[index]["image"] = fetch.image(p["id"])
+
+        # preprocess attributes
+        politicians[index]["party"]["label"] = preprocess.party(p["party"]["label"])
+
+    return politicians
 
 @app.get(
     "/politicians/{id}",
@@ -58,6 +66,7 @@ def politicians_search(name: str):
 def politicians(id: int):
     # fetch data
     data = fetch.politician(id)
+    data["image"] = fetch.image(id)
 
     # preprocess attributes
     data["occupation"] = preprocess.occupation(data["occupation"], id)

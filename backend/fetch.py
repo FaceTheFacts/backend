@@ -6,6 +6,7 @@ import requests
 
 # local
 from .types import ComitteeMembership, Mandate, Politician, Poll, Sidejob, Vote
+from .preprocess import add_image
 
 
 def fetch(url: str, params: Dict[str, Any] = {}):
@@ -16,9 +17,11 @@ def fetch(url: str, params: Dict[str, Any] = {}):
 
 def resource_ok(url: str):
     """Check if resource responds with statuscode 200"""
+    print(url)
     r = requests.head(url)
     status = r.status_code
-    return status == "200"
+    print(status)
+    return status == 200
 
 
 # ---
@@ -58,14 +61,16 @@ def mandate(politician_id: int) -> Mandate:
     # list will be only one element, since there is only one mandate, per politician, per parliament_period
     return mandate_list[0]
 
+def image(id: int) -> str:
+    image_url = f"{IMAGE_BASE_URL}/{id}.jpg"
+    print(resource_ok(image_url))
+    if resource_ok(image_url):
+        return image_url
+    else:
+        return None
 
 def politician(id: int) -> Politician:
-    resp = fetch(f"politicians/{id}")
-    image_url = f"{IMAGE_BASE_URL}/{id}.jpg"
-    if resource_ok(image_url):
-        resp["custom"] = {"image": image_url}
-    return resp
-
+    return fetch(f"politicians/{id}")
 
 def politicians_search(name: str) -> List[Politician]:
     RESULT_LIMIT = 20

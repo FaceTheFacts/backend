@@ -3,6 +3,7 @@ from typing import Optional
 
 # local
 from data.occupations import OCCUPATIONS
+from .types import Politician
 
 
 def occupation(occupation: Optional[str], politician_id: int) -> list[str]:
@@ -97,3 +98,11 @@ def party(party: str) -> str:
         return "Die Grünen"
     else:
         return party
+
+def add_image(politician: Politician) -> Politician:
+    image_url = f"{IMAGE_BASE_URL}/{id}.jpg"
+    if resource_ok(image_url):
+        politician["custom"] = {"image": image_url}
+    else:
+        politician["custom"] = {"image": None}
+    return politician
