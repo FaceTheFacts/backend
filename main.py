@@ -58,11 +58,7 @@ def politicians_search(name: str):
     return politicians
 
 
-@app.get(
-    "/politicians/{id}",
-    summary="Get politician profile",
-    response_model=Politician,
-)
+@app.get("/politicians/{id}", summary="Politician profile", response_model=Politician)
 def politicians(id: int):
     # fetch data
     data = fetch.politician(id)
@@ -77,8 +73,8 @@ def politicians(id: int):
 
 
 @app.get("/politicians/{id}/image", response_model=Optional[str])
-def politician_image(id: int):
-    return fetch.image(id)
+def politician_image(politician_id: int):
+    return fetch.image(politician_id)
 
 
 @app.get("/polls/{id}", response_model=Poll)
