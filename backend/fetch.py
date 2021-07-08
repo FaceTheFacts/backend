@@ -44,10 +44,11 @@ def mandate(politician_id: int) -> Mandate:
         "candidacies-mandates",
         {
             "politician[entity.id]": politician_id,
-            "parliament_period[entity.id]": PARLIAMENT_PERIOD_ID,
+            "parliament_period[entity.label][ne]": "Bundestag Wahl 2021",  # we ignore candidacies for the current election
+            "type": "candidacy",  # we only take candidacies and ignore mandates
         },
     )
-    # list will be only one element, since there is only one mandate, per politician, per parliament_period
+    # we assume that the candidacies are sorted by year, descending
     return mandate_list[0]
 
 
