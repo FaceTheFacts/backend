@@ -1,0 +1,21 @@
+---
+concurrency: 10
+base: "https://backend-aoa59.ondigitalocean.app"
+iterations: 50
+rampup: 2
+
+plan:
+  - name: Fetch some users
+    request:
+      url: /politicians/{{ item }}
+    with_items:
+      - 79475
+      - 130072
+      - 131019
+  - name: Fetch some candidacies-mandates
+    request:
+      url: /candidacies-mandates?politician_id={{ item }}
+    with_items:
+      - 79475
+      - 130072
+      - 131019
