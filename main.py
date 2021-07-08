@@ -1,11 +1,12 @@
 # std
-from typing import Optional
+from typing import List, Optional
 
 # 3rd-party
 from fastapi import FastAPI
 
 # local
 from backend import fetch, preprocess, sort
+from backend.types import ComitteeMembership, Mandate, Politician, Poll, Sidejob, Vote
 
 
 app = FastAPI()
@@ -16,7 +17,7 @@ def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
 
 
-@app.get("/candidacies-mandates/")
+@app.get("/candidacies-mandates/", response_model=Mandate)
 def candidacies_mandates(politician_id: int):
     # fetch mandate
     data = fetch.mandate(politician_id)
@@ -35,17 +36,25 @@ def candidacies_mandates(politician_id: int):
     return data
 
 
-@app.get("/committee-memberships")
+@app.get("/committee-memberships", response_model=ComitteeMembership)
 def committee_memberships(politician_name: str):
     return fetch.committee_memberships(politician_name)
 
 
-@app.get("/politicians", summary="Search politicians by name")
+@app.get(
+    "/politicians",
+    summary="Search politicians by name",
+    response_model=List[Politician],
+)
 def politicians_search(name: str):
     return fetch.politicians_search(name)
 
 
-@app.get("/politicians/{id}", summary="Get politician profile")
+@app.get(
+    "/politicians/{id}",
+    summary="Get politician profile",
+    response_model=Politician,
+)
 def politicians(id: int):
     # fetch data
     data = fetch.politician(id)
@@ -58,16 +67,16 @@ def politicians(id: int):
     return data
 
 
-@app.get("/polls/{id}")
+@app.get("/polls/{id}", response_model=Poll)
 def polls(id: str):
     return fetch.poll(id)
 
 
-@app.get("/sidejobs")
+@app.get("/sidejobs", response_model=List[Sidejob])
 def sidejobs(politician_name: str):
     return fetch.sidejobs(politician_name)
 
 
-@app.get("/votes")
+@app.get("/votes", response_model=Vote)
 def votes(vote_id: str, politician_name: str):
     return fetch.vote(vote_id, politician_name)
