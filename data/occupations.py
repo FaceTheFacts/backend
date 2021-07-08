@@ -16,9 +16,9 @@ OCCUPATIONS = {
     # Robert Habeck
     139064: ["Parteivorsitzender", "Schriftstelller"],
     # Julia Klöckner
-    110066:["Bundesernährungsministerin"],
+    110066: ["Bundesernährungsministerin"],
     # Friedrich Merz
-    118559:[],
+    118559: [],
     # Horst Seehofer
     118761: ["Bundesinnenminister"],
     # Heiko Maas
@@ -44,5 +44,5 @@ OCCUPATIONS = {
     # Gerd Müller
     79121: ["MdB", "Bundesentwicklungsminister"],
     # Helge Braun
-    79432: ["MdB", "Bundeskanzleramtschef"],    
+    79432: ["MdB", "Bundeskanzleramtschef"],
 }
