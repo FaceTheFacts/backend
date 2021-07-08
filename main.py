@@ -75,8 +75,8 @@ def politicians(id: int):
 
 
 @app.get("/politicians/{id}/image", response_model=Optional[str])
-def politician_image(politician_id: int):
-    return fetch.image(politician_id)
+def politician_image(id: int):
+    return fetch.image(id)
 
 
 @app.get("/polls/{id}", response_model=Poll)
