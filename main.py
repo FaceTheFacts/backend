@@ -1,5 +1,5 @@
 # std
-from typing import List, Optional, Any
+from typing import List, Optional
 
 # 3rd-party
 from fastapi import FastAPI
@@ -42,15 +42,6 @@ def committee_memberships(politician_name: str):
 
 
 @app.get(
-    "/image/{id}",
-    summary="Get politician image by id",
-    response_model=Any,
-)
-def politician_image(id: int):
-    return fetch.image(id)
-
-
-@app.get(
     "/politicians",
     summary="Search politicians by name",
     response_model=List[Politician],
@@ -59,11 +50,10 @@ def politicians_search(name: str):
     # fetch data
     politicians = fetch.politicians_search(name)
 
-    for index, p in enumerate(politicians):
-        politicians[index]["image"] = fetch.image(p["id"])
-
-        # preprocess attributes
-        politicians[index]["party"]["label"] = preprocess.party(p["party"]["label"])
+    # preprocess attributes for each politician
+    for p in politicians:
+        p["image"] = fetch.image(p["id"])
+        p["party"]["label"] = preprocess.party(p["party"]["label"])
 
     return politicians
 
@@ -84,6 +74,11 @@ def politicians(id: int):
 
     # return json
     return data
+
+
+@app.get("/politicians/{id}/image", response_model=Optional[str])
+def politician_image(id: int):
+    return fetch.image(id)
 
 
 @app.get("/polls/{id}", response_model=Poll)

@@ -3,7 +3,6 @@ from typing import Optional
 
 # local
 from data.occupations import OCCUPATIONS
-from .types import Politician
 
 
 def occupation(occupation: Optional[str], politician_id: int) -> list[str]:

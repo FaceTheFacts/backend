@@ -1,5 +1,5 @@
 # std
-from typing import Any, Dict, List, Any
+from typing import Any, Dict, List, Optional
 
 # 3rd-party
 import requests
@@ -14,18 +14,10 @@ def fetch(url: str, params: Dict[str, Any] = {}):
     return requests.get(f"{BASE_URL}/{url}", params).json()["data"]
 
 
-def resource_ok(url: str):
-    """Check if resource responds with statuscode 200"""
-    r = requests.head(url)
-    status = r.status_code
-    return status == 200
-
-
 # ---
 
 
 PARLIAMENT_PERIOD_ID = 50  # `parliament_period.id` of "Bundestag Wahl 2017"
-IMAGE_BASE_URL = "https://candidate-images.s3.eu-central-1.amazonaws.com"
 
 
 def committee_memberships(politician_name: str) -> List[ComitteeMembership]:
@@ -59,9 +51,10 @@ def mandate(politician_id: int) -> Mandate:
     return mandate_list[0]
 
 
-def image(id: int) -> Any:
-    image_url = f"{IMAGE_BASE_URL}/{id}.jpg"
-    if resource_ok(image_url):
+def image(politician_id: int) -> Optional[str]:
+    IMAGE_BASE_URL = "https://candidate-images.s3.eu-central-1.amazonaws.com"
+    image_url = f"{IMAGE_BASE_URL}/{politician_id}.jpg"
+    if requests.head(image_url).ok:
         return image_url
     else:
         return None
