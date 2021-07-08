@@ -16,19 +16,6 @@ def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
 
 
-@app.get("/politicians/{id}")
-def politician(id: int):
-    # fetch data
-    data = fetch.politician(id)
-
-    # preprocess attributes
-    data["occupation"] = preprocess.occupation(data["occupation"], id)
-    data["party"]["label"] = preprocess.party(data["party"]["label"])
-
-    # return json
-    return data
-
-
 @app.get("/candidacies-mandates/")
 def candidacies_mandates(politician_id: int):
     # fetch mandate
@@ -43,6 +30,19 @@ def candidacies_mandates(politician_id: int):
         data["electoral_data"]["electoral_list"]["id"], data["party"]["id"]
     )
     data["second_vote"] = sort.second_vote(second_vote)
+
+    # return json
+    return data
+
+
+@app.get("/politicians/{id}")
+def politician(id: int):
+    # fetch data
+    data = fetch.politician(id)
+
+    # preprocess attributes
+    data["occupation"] = preprocess.occupation(data["occupation"], id)
+    data["party"]["label"] = preprocess.party(data["party"]["label"])
 
     # return json
     return data
