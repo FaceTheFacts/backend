@@ -14,10 +14,18 @@ def fetch(url: str, params: Dict[str, Any] = {}):
     return requests.get(f"{BASE_URL}/{url}", params).json()["data"]
 
 
+def resource_ok(url: str):
+    """Check if resource responds with statuscode 200"""
+    r = requests.head(url)
+    status = r.status_code
+    return status == "200"
+
+
 # ---
 
 
 PARLIAMENT_PERIOD_ID = 50  # `parliament_period.id` of "Bundestag Wahl 2017"
+IMAGE_BASE_URL = "https://candidate-images.s3.eu-central-1.amazonaws.com"
 
 
 def committee_memberships(politician_name: str) -> List[ComitteeMembership]:
@@ -52,7 +60,11 @@ def mandate(politician_id: int) -> Mandate:
 
 
 def politician(id: int) -> Politician:
-    return fetch(f"politicians/{id}")
+    resp = fetch(f"politicians/{id}")
+    image_url = f"{IMAGE_BASE_URL}/{id}.jpg"
+    if resource_ok(image_url):
+        resp["custom"] = {"image": image_url}
+    return resp
 
 
 def politicians_search(name: str) -> List[Politician]:
