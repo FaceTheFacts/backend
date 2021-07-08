@@ -61,6 +61,7 @@ def mandate(politician_id: int) -> Mandate:
     # list will be only one element, since there is only one mandate, per politician, per parliament_period
     return mandate_list[0]
 
+
 def image(id: int) -> str:
     image_url = f"{IMAGE_BASE_URL}/{id}.jpg"
     print(resource_ok(image_url))
@@ -69,8 +70,10 @@ def image(id: int) -> str:
     else:
         return None
 
+
 def politician(id: int) -> Politician:
     return fetch(f"politicians/{id}")
+
 
 def politicians_search(name: str) -> List[Politician]:
     RESULT_LIMIT = 20
