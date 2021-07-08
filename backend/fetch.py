@@ -17,9 +17,6 @@ def fetch(url: str, params: Dict[str, Any] = {}):
 # ---
 
 
-PARLIAMENT_PERIOD_ID = 50  # `parliament_period.id` of "Bundestag Wahl 2017"
-
-
 def committee_memberships(politician_name: str) -> List[ComitteeMembership]:
     return fetch(
         "committee-memberships",
@@ -29,12 +26,12 @@ def committee_memberships(politician_name: str) -> List[ComitteeMembership]:
     )
 
 
-def first_vote(constituency_id: int) -> List[Mandate]:
+def first_vote(constituency_id: int, parliament_period_id: int) -> List[Mandate]:
     return fetch(
         "candidacies-mandates",
         {
             "electoral_data[entity.constituency.entity.id]": constituency_id,
-            "parliament_period[entity.id]": PARLIAMENT_PERIOD_ID,
+            "parliament_period[entity.id]": parliament_period_id,
         },
     )
 
@@ -44,10 +41,11 @@ def mandate(politician_id: int) -> Mandate:
         "candidacies-mandates",
         {
             "politician[entity.id]": politician_id,
-            "parliament_period[entity.id]": PARLIAMENT_PERIOD_ID,
+            "parliament_period[entity.label][ne]": "Bundestag Wahl 2021",  # we ignore candidacies for the current election
+            "type": "candidacy",  # we only take candidacies and ignore mandates
         },
     )
-    # list will be only one element, since there is only one mandate, per politician, per parliament_period
+    # we assume that the candidacies are sorted by year, descending
     return mandate_list[0]
 
 

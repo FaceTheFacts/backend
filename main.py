@@ -23,7 +23,9 @@ def candidacies_mandates(politician_id: int):
     data = fetch.mandate(politician_id)
 
     # fetch and sort first vote
-    first_vote = fetch.first_vote(data["electoral_data"]["constituency"]["id"])
+    first_vote = fetch.first_vote(
+        data["electoral_data"]["constituency"]["id"], data["parliament_period"]["id"]
+    )
     data["first_vote"] = sort.first_vote(first_vote)
 
     # fetch and sort second_vote
