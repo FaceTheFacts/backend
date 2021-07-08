@@ -56,8 +56,14 @@ def politician(id: int) -> Politician:
 
 
 def politicians_search(name: str) -> List[Politician]:
-    RESULT_LIMIT = 20
-    return fetch("politicians/", {"label[cn]": name, "range_end": RESULT_LIMIT})
+    return fetch(
+        "candidacies-mandates",
+        {
+            "politician[entity.label][cn]": name,
+            "parliament_period[entity.label]": "Bundestag Wahl 2021",  # only take candidates of current election
+            "range_end": 20,  # limit number of results
+        },
+    )
 
 
 def poll(id: int) -> Poll:
