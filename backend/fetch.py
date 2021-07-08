@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 import requests
 
 # local
-from .types import Mandate, Politician
+from .types import ComitteeMembership, Mandate, Politician
 
 
 def fetch(url: str, params: Dict[str, Any] = {}):
@@ -18,6 +18,15 @@ def fetch(url: str, params: Dict[str, Any] = {}):
 
 
 PARLIAMENT_PERIOD_ID = 50  # `parliament_period.id` of "Bundestag Wahl 2017"
+
+
+def committee_memberships(politician_name: str) -> List[ComitteeMembership]:
+    return fetch(
+        "committee-memberships",
+        {
+            "candidacy_mandate[entity.label][sw]": f"{politician_name} (Bundestag 2017 - 2021)"
+        },
+    )
 
 
 def first_vote(constituency_id: int) -> List[Mandate]:
