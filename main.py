@@ -3,6 +3,7 @@ from typing import List, Optional
 
 # 3rd-party
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # local
 from backend import fetch, preprocess, sort
@@ -10,6 +11,11 @@ from backend.types import ComitteeMembership, Mandate, Politician, Poll, Sidejob
 
 
 app = FastAPI()
+
+# CORS-policy
+# * docs: https://fastapi.tiangolo.com/tutorial/cors/
+# * TODO: Can we restrict this policy? E.g. https-only
+app.add_middleware(CORSMiddleware, allow_origins=["*"])
 
 
 @app.get("/")
