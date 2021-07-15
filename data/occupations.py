@@ -30,10 +30,10 @@ OCCUPATIONS = {
     119742: ["MdB", "Fraktionsvorsitzender", "Parteivorsitzender"],
     # Armin Laschet
     130072: [
-        "MdL",
+        "Kanzlerkandidat",
         "Ministerpräsident NRW",
         "Parteivorsitzender",
-        "Kanzlerkandidat",
+        "MdL"
     ],
     # Svenja Schulze
     131019: ["Bundesumweltministerin"],
