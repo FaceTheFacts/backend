@@ -1,8 +1,10 @@
 # std
-from typing import Optional
+from typing import List, Optional
 
 # local
 from data.occupations import OCCUPATIONS
+from .types import Mandate
+from . import sort
 
 
 def occupation(occupation: Optional[str], politician_id: int) -> list[str]:
@@ -97,3 +99,18 @@ def party(party: str) -> str:
         return "Die Grünen"
     else:
         return party
+
+
+def second_vote(mandates: List[Mandate]) -> List[Mandate]:
+    filtered_mandates = list(
+        filter(lambda x: x["electoral_data"]["list_position"] != None, mandates)
+    )
+    return sort.second_vote(filtered_mandates)
+
+
+def first_vote(mandates: List[Mandate]) -> List[Mandate]:
+    cleaned_first_vote = list()
+    for mandate in mandates:
+        mandate["party"]["label"] = party(mandate["party"]["label"])
+        cleaned_first_vote.append(mandate)
+    return cleaned_first_vote
