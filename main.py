@@ -32,13 +32,15 @@ def candidacies_mandates(politician_id: int):
     first_vote = fetch.first_vote(
         data["electoral_data"]["constituency"]["id"], data["parliament_period"]["id"]
     )
+
+    data["first_vote"] = preprocess.first_vote(first_vote)
     data["first_vote"] = sort.first_vote(first_vote)
 
     # fetch and sort second_vote
     second_vote = fetch.second_vote(
         data["electoral_data"]["electoral_list"]["id"], data["party"]["id"]
     )
-    data["second_vote"] = sort.second_vote(second_vote)
+    data["second_vote"] = preprocess.second_vote(second_vote)
 
     # return json
     return data
