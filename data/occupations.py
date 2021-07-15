@@ -29,12 +29,7 @@ OCCUPATIONS = {
     # Christian Lindner
     119742: ["MdB", "Fraktionsvorsitzender", "Parteivorsitzender"],
     # Armin Laschet
-    130072: [
-        "Kanzlerkandidat",
-        "Ministerpräsident NRW",
-        "Parteivorsitzender",
-        "MdL"
-    ],
+    130072: ["Kanzlerkandidat", "Ministerpräsident NRW", "Parteivorsitzender", "MdL"],
     # Svenja Schulze
     131019: ["Bundesumweltministerin"],
     # Kramp-Karrenbauer
