@@ -2,10 +2,9 @@
 from typing import List, Optional
 
 # local
-from data.occupations import OCCUPATIONS
-from .types import Mandate
 from . import sort
-
+from .types import Mandate
+from data.occupations import OCCUPATIONS
 
 def occupation(occupation: Optional[str], politician_id: int) -> list[str]:
     # if we have a custom occupation, we take it
