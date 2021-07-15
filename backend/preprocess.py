@@ -1,8 +1,16 @@
 # std
-from typing import Optional
+from typing import List, Optional
 
 # local
+from . import sort
+from .types import Mandate
 from data.occupations import OCCUPATIONS
+
+
+def first_vote(mandates: List[Mandate]) -> List[Mandate]:
+    for mandate in mandates:
+        mandate["party"]["label"] = party(mandate["party"]["label"])
+    return sort.first_vote(mandates)
 
 
 def occupation(occupation: Optional[str], politician_id: int) -> list[str]:
@@ -15,6 +23,23 @@ def occupation(occupation: Optional[str], politician_id: int) -> list[str]:
     # else we process the occupation string from AW
     else:
         return _split_map_occupation(occupation)
+
+
+def party(party: str) -> str:
+    if party == "Bündnis 90/Die Grünen":
+        return "Die Grünen"
+    else:
+        return party
+
+
+def second_vote(mandates: List[Mandate]) -> List[Mandate]:
+    filtered_mandates = list(
+        filter(lambda x: x["electoral_data"]["list_position"] != None, mandates)
+    )
+    return sort.second_vote(filtered_mandates)
+
+
+# --- private functions ---
 
 
 def _split_map_occupation(occupation: str) -> list[str]:
@@ -90,10 +115,3 @@ def _shorten_occupation(o: str):
     # ---
     else:
         return o
-
-
-def party(party: str) -> str:
-    if party == "Bündnis 90/Die Grünen":
-        return "Die Grünen"
-    else:
-        return party
