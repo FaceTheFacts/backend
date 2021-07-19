@@ -42,6 +42,8 @@ def candidacies_mandates(politician_id: int):
 
     data["electoral_data"]["electoral_list"]["label"] = preprocess.constituency(data["electoral_data"]["electoral_list"]["label"])
 
+    data["electoral_data"]["constituency"]["label"] = preprocess.constituency(data["electoral_data"]["constituency"]["label"])
+
     data["party"]["label"] = preprocess.party(data["party"]["label"])
 
     data["results"] = preprocess.second_vote_results(data["electoral_data"]["electoral_list"]["label"], data["party"]["label"])
