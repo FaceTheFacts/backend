@@ -38,6 +38,16 @@ def second_vote(mandates: List[Mandate]) -> List[Mandate]:
     )
     return sort.second_vote(filtered_mandates)
 
+def constituency(constituency: str) -> str:
+    if '(' in constituency:
+        index = constituency.find('(')
+        constituency = constituency[0:index]
+        if 'Landesliste' in constituency:
+            index = constituency.find('Landesliste')
+            constituency = constituency[index+12:-1]
+            print(constituency)
+    return (constituency)
+
 
 # --- private functions ---
 
