@@ -40,6 +40,10 @@ def candidacies_mandates(politician_id: int):
     )
     data["second_vote"] = preprocess.second_vote(second_vote)
 
+    data["electoral_data"]["electoral_list"]["label"] = preprocess.constituency(data["electoral_data"]["electoral_list"]["label"])
+
+    data["party"]["label"] = preprocess.party(data["party"]["label"])
+
     # return json
     return data
 
