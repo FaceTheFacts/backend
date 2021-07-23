@@ -50,7 +50,7 @@ def second_vote_results(constituency_name: str, party_name: str) -> int:
 def constituency(constituency_name: str) -> str:
     if "(" in constituency_name:
         index = constituency_name.find("(")
-        constituency_name = constituency_name[:index-1]
+        constituency_name = constituency_name[: index - 1]
         if "Landesliste" in constituency_name:
             index = constituency_name.find("Landesliste")
             constituency_name = constituency_name[index + 12 :]
