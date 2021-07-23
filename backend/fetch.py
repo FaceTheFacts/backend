@@ -68,7 +68,7 @@ def politicians_search(name: str) -> List[Politician]:
 
 
 def poll(id: int) -> Poll:
-    fetch(f"polls/{id}")
+    return fetch(f"polls/{id}")
 
 
 def second_vote(electoral_list_id: int, party_id: int) -> List[Mandate]:

@@ -5,6 +5,7 @@ from typing import List, Optional
 from . import sort
 from .types import Mandate
 from data.occupations import OCCUPATIONS
+from data.second_vote_results import SECOND_VOTE_RESULTS
 
 
 def first_vote(mandates: List[Mandate]) -> List[Mandate]:
@@ -37,6 +38,23 @@ def second_vote(mandates: List[Mandate]) -> List[Mandate]:
         filter(lambda x: x["electoral_data"]["list_position"] != None, mandates)
     )
     return sort.second_vote(filtered_mandates)
+
+
+def second_vote_results(constituency_name: str, party_name: str) -> int:
+    if (second_vote_results := SECOND_VOTE_RESULTS.get(constituency)) != None:
+        return second_vote_results[party]
+    else:
+        return ""
+
+
+def constituency(constituency_name: str) -> str:
+    if "(" in constituency_name:
+        index = constituency_name.find("(")
+        constituency_name = constituency_name[: index - 1]
+        if "Landesliste" in constituency_name:
+            index = constituency_name.find("Landesliste")
+            constituency_name = constituency_name[index + 12 :]
+    return constituency_name
 
 
 # --- private functions ---
