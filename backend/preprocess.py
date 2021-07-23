@@ -40,21 +40,21 @@ def second_vote(mandates: List[Mandate]) -> List[Mandate]:
     return sort.second_vote(filtered_mandates)
 
 
-def second_vote_results(constituency: str, party: str) -> int:
+def second_vote_results(constituency_name: str, party_name: str) -> int:
     if (second_vote_results := SECOND_VOTE_RESULTS.get(constituency)) != None:
         return second_vote_results[party]
     else:
         return ""
 
 
-def constituency(constituency: str) -> str:
-    if "(" in constituency:
-        index = constituency.find("(")
-        constituency = constituency[0:index]
-        if "Landesliste" in constituency:
-            index = constituency.find("Landesliste")
-            constituency = constituency[index + 12 : -1]
-    return constituency
+def constituency(constituency_name: str) -> str:
+    if "(" in constituency_name:
+        index = constituency_name.find("(")
+        constituency_name = constituency_name[:index-1]
+        if "Landesliste" in constituency_name:
+            index = constituency_name.find("Landesliste")
+            constituency_name = constituency_name[index + 12 :]
+    return constituency_name
 
 
 # --- private functions ---
