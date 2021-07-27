@@ -19,4 +19,5 @@ def fetch_party_votes():
 def polls(id: int):
   polls = fetch_polls()
   selected = list(filter(lambda poll:poll["id"] == id, polls))
-  return selected
+  selected_json = json.dumps(selected[0])
+  return selected_json
