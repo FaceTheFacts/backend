@@ -58,9 +58,9 @@ def candidacies_mandates(politician_id: int):
     return data
 
 
-@app.get("/committee-memberships", response_model=ComitteeMembership)
+@app.get("/committee-memberships", response_model=List[ComitteeMembership])
 def committee_memberships(politician_name: str):
-    return fetch.committee_memberships(politician_name)
+    return json_fetch.committee_memberships(politician_name)
 
 
 @app.get(
