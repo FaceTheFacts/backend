@@ -13,5 +13,5 @@ def fetch_polls():
 def fetch_politician():
   return fetch_json("/votes_bundestag_politician")
 
-def fetch_votes():
+def fetch_party_votes():
   return fetch_json("/votes_bundestag")
