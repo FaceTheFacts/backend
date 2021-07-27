@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # local
-from backend import fetch, preprocess
+from backend import fetch, json_fetch, preprocess
 from backend.types import ComitteeMembership, Mandate, Politician, Poll, Sidejob, Vote
 
 
@@ -106,7 +106,7 @@ def polls(id: str):
 
 @app.get("/sidejobs", response_model=List[Sidejob])
 def sidejobs(politician_name: str):
-    return fetch.sidejobs(politician_name)
+    return json_fetch.sidejobs(politician_name)
 
 
 @app.get("/votes", response_model=Vote)

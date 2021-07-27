@@ -1,4 +1,5 @@
-from backend.types import Poll, Vote
+from typing import List
+from backend.types import Poll, Sidejob, Vote
 import json
 
 
@@ -21,6 +22,8 @@ def fetch_politician():
 def fetch_party_votes():
     return fetch_json("/votes_bundestag")
 
+def fetch_sidejobs():
+    return fetch_json("/sidejobs")
 
 def polls(id: int) -> Poll:
     polls = fetch_polls()
@@ -46,3 +49,9 @@ def party_votes(id: str) -> Vote:
     party_votes = fetch_party_votes()
     selected = party_votes[id]
     return selected
+
+def sidejobs(politician_name: str) -> List[Sidejob]:
+    sidejobsData = fetch_sidejobs()
+    selected_by_name = filter(lambda sidejob: politician_name in sidejob["mandates"][0]["label"], sidejobsData)
+    
+    return list(selected_by_name)
