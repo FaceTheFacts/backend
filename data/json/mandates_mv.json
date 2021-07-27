@@ -1,0 +1,1029 @@
+[
+  {
+    "id": 48216,
+    "label": "Thomas Grote (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123517,
+      "label": "Thomas Grote"
+    }
+  },
+  {
+    "id": 46400,
+    "label": "Daniel Peters (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123506,
+      "label": "Daniel Peters"
+    }
+  },
+  {
+    "id": 46167,
+    "label": "Christel Wei\u00dfig (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123534,
+      "label": "Christel Wei\u00dfig"
+    }
+  },
+  {
+    "id": 46160,
+    "label": "Dagmar Kaselitz (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122507,
+      "label": "Dagmar Kaselitz"
+    }
+  },
+  {
+    "id": 46156,
+    "label": "Ralf Borschke (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123556,
+      "label": "Ralf Borschke"
+    }
+  },
+  {
+    "id": 46144,
+    "label": "Mathias Brodkorb (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122581,
+      "label": "Mathias Brodkorb"
+    }
+  },
+  {
+    "id": 46110,
+    "label": "Nikolaus Kramer (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123530,
+      "label": "Nikolaus Kramer"
+    }
+  },
+  {
+    "id": 46109,
+    "label": "Simone Oldenburg (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122609,
+      "label": "Simone Oldenburg"
+    }
+  },
+  {
+    "id": 46108,
+    "label": "Thomas Kr\u00fcger (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122621,
+      "label": "Thomas Kr\u00fcger"
+    }
+  },
+  {
+    "id": 46107,
+    "label": "Vincent Kokert (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122443,
+      "label": "Vincent Kokert"
+    }
+  },
+  {
+    "id": 45880,
+    "label": "Thomas W\u00fcrdisch (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123432,
+      "label": "Thomas W\u00fcrdisch"
+    }
+  },
+  {
+    "id": 45847,
+    "label": "Erwin Sellering (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122297,
+      "label": "Erwin Sellering"
+    }
+  },
+  {
+    "id": 45805,
+    "label": "Bernhard Wildt (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123564,
+      "label": "Bernhard Wildt"
+    }
+  },
+  {
+    "id": 45783,
+    "label": "Matthias Manthei (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123560,
+      "label": "Matthias Manthei"
+    }
+  },
+  {
+    "id": 45487,
+    "label": "Julian Barlen (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 169552,
+      "label": "Julian Barlen"
+    }
+  },
+  {
+    "id": 44463,
+    "label": "Sylvia Bretschneider (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122429,
+      "label": "Sylvia Bretschneider"
+    }
+  },
+  {
+    "id": 44045,
+    "label": "Dirk Lerche (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123537,
+      "label": "Dirk Lerche"
+    }
+  },
+  {
+    "id": 43981,
+    "label": "Jens-Holger Schneider (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 152094,
+      "label": "Jens-Holger Schneider"
+    }
+  },
+  {
+    "id": 43980,
+    "label": "Horst F\u00f6rster (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 152093,
+      "label": "Horst F\u00f6rster"
+    }
+  },
+  {
+    "id": 43959,
+    "label": "Ralph Weber (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 151254,
+      "label": "Ralph Weber"
+    }
+  },
+  {
+    "id": 43958,
+    "label": "Stephan Reuken (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 151252,
+      "label": "Stephan Reuken"
+    }
+  },
+  {
+    "id": 43953,
+    "label": "Gunter Jess (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 150986,
+      "label": "Gunter Jess"
+    }
+  },
+  {
+    "id": 43952,
+    "label": "Bert Obereiner (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 150984,
+      "label": "Bert Obereiner"
+    }
+  },
+  {
+    "id": 41295,
+    "label": "J\u00fcrgen Strohschein (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123566,
+      "label": "J\u00fcrgen Strohschein"
+    }
+  },
+  {
+    "id": 41293,
+    "label": "Leif-Erik Holm (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123559,
+      "label": "Leif-Erik Holm"
+    }
+  },
+  {
+    "id": 41292,
+    "label": "Christoph Grimm (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123558,
+      "label": "Christoph Grimm"
+    }
+  },
+  {
+    "id": 41291,
+    "label": "J\u00f6rg Kr\u00f6ger (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123551,
+      "label": "J\u00f6rg Kr\u00f6ger"
+    }
+  },
+  {
+    "id": 41289,
+    "label": "Sandro Hersel (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123543,
+      "label": "Sandro Hersel"
+    }
+  },
+  {
+    "id": 41288,
+    "label": "Holger Arppe (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123535,
+      "label": "Holger Arppe"
+    }
+  },
+  {
+    "id": 41286,
+    "label": "Enrico Komning (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123532,
+      "label": "Enrico Komning"
+    }
+  },
+  {
+    "id": 41285,
+    "label": "Holger Kliewe (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123519,
+      "label": "Holger Kliewe"
+    }
+  },
+  {
+    "id": 41284,
+    "label": "Ann Christin von Allw\u00f6rden (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123516,
+      "label": "Ann Christin von Allw\u00f6rden"
+    }
+  },
+  {
+    "id": 41283,
+    "label": "Franz-Robert Liskow (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123510,
+      "label": "Franz-Robert Liskow"
+    }
+  },
+  {
+    "id": 41282,
+    "label": "Karen Larisch (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123443,
+      "label": "Karen Larisch"
+    }
+  },
+  {
+    "id": 41281,
+    "label": "Jeannine R\u00f6sler (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123442,
+      "label": "Jeannine R\u00f6sler"
+    }
+  },
+  {
+    "id": 41280,
+    "label": "Eva-Maria Kr\u00f6ger (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123438,
+      "label": "Eva-Maria Kr\u00f6ger"
+    }
+  },
+  {
+    "id": 41279,
+    "label": "Karsten Kolbe (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123437,
+      "label": "Karsten Kolbe"
+    }
+  },
+  {
+    "id": 41278,
+    "label": "Birgit Hesse (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123433,
+      "label": "Birgit Hesse"
+    }
+  },
+  {
+    "id": 41277,
+    "label": "Nadine Julitz (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123430,
+      "label": "Nadine Julitz"
+    }
+  },
+  {
+    "id": 41276,
+    "label": "Dirk Friedriszik (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123429,
+      "label": "Dirk Friedriszik"
+    }
+  },
+  {
+    "id": 41275,
+    "label": "Elisabeth A\u00dfmann (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123428,
+      "label": "Elisabeth A\u00dfmann"
+    }
+  },
+  {
+    "id": 41274,
+    "label": "Philipp da Cunha (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123426,
+      "label": "Philipp da Cunha"
+    }
+  },
+  {
+    "id": 41273,
+    "label": "Dirk Stamer (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123424,
+      "label": "Dirk Stamer"
+    }
+  },
+  {
+    "id": 41272,
+    "label": "Christian Pegel (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 123423,
+      "label": "Christian Pegel"
+    }
+  },
+  {
+    "id": 41260,
+    "label": "Tilo Gundlack (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122622,
+      "label": "Tilo Gundlack"
+    }
+  },
+  {
+    "id": 41259,
+    "label": "Susann Wippermann (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122618,
+      "label": "Susann Wippermann"
+    }
+  },
+  {
+    "id": 41258,
+    "label": "Stefanie Drese (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122612,
+      "label": "Stefanie Drese"
+    }
+  },
+  {
+    "id": 41257,
+    "label": "Sebastian Ehlers (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122605,
+      "label": "Sebastian Ehlers"
+    }
+  },
+  {
+    "id": 41256,
+    "label": "Ralf Mucha (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122598,
+      "label": "Ralf Mucha"
+    }
+  },
+  {
+    "id": 41255,
+    "label": "Rainer Albrecht (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122597,
+      "label": "Rainer Albrecht"
+    }
+  },
+  {
+    "id": 41254,
+    "label": "Patrick Dahlemann (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122595,
+      "label": "Patrick Dahlemann"
+    }
+  },
+  {
+    "id": 41253,
+    "label": "Nils Saemann (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122590,
+      "label": "Nils Saemann"
+    }
+  },
+  {
+    "id": 41252,
+    "label": "Manfred Dachner (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122574,
+      "label": "Manfred Dachner"
+    }
+  },
+  {
+    "id": 41251,
+    "label": "Jacqueline Bernhardt (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122550,
+      "label": "Jacqueline Bernhardt"
+    }
+  },
+  {
+    "id": 41250,
+    "label": "Henning Foerster (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122546,
+      "label": "Henning Foerster"
+    }
+  },
+  {
+    "id": 41249,
+    "label": "Dietmar Eifler (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122511,
+      "label": "Dietmar Eifler"
+    }
+  },
+  {
+    "id": 41248,
+    "label": "Christiane Berg (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122505,
+      "label": "Christiane Berg"
+    }
+  },
+  {
+    "id": 41247,
+    "label": "Christian Brade (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122502,
+      "label": "Christian Brade"
+    }
+  },
+  {
+    "id": 41246,
+    "label": "Andreas Butzki (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122489,
+      "label": "Andreas Butzki"
+    }
+  },
+  {
+    "id": 41243,
+    "label": "Wolfgang Waldm\u00fcller (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122451,
+      "label": "Wolfgang Waldm\u00fcller"
+    }
+  },
+  {
+    "id": 41242,
+    "label": "Torsten Renz (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122437,
+      "label": "Torsten Renz"
+    }
+  },
+  {
+    "id": 41241,
+    "label": "Thomas Schwarz (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122434,
+      "label": "Thomas Schwarz"
+    }
+  },
+  {
+    "id": 41240,
+    "label": "Martina Tegtmeier (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122382,
+      "label": "Martina Tegtmeier"
+    }
+  },
+  {
+    "id": 41239,
+    "label": "Marc Reinhardt (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122373,
+      "label": "Marc Reinhardt"
+    }
+  },
+  {
+    "id": 41238,
+    "label": "Maika Friemann-Jennert (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122369,
+      "label": "Maika Friemann-Jennert"
+    }
+  },
+  {
+    "id": 41237,
+    "label": "Lorenz Caffier (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122367,
+      "label": "Lorenz Caffier"
+    }
+  },
+  {
+    "id": 41236,
+    "label": "J\u00f6rg Heydorn (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122346,
+      "label": "J\u00f6rg Heydorn"
+    }
+  },
+  {
+    "id": 41235,
+    "label": "Jochen Schulte (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122345,
+      "label": "Jochen Schulte"
+    }
+  },
+  {
+    "id": 41234,
+    "label": "Harry Glawe (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122322,
+      "label": "Harry Glawe"
+    }
+  },
+  {
+    "id": 41233,
+    "label": "Egbert Liskow (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122292,
+      "label": "Egbert Liskow"
+    }
+  },
+  {
+    "id": 41232,
+    "label": "Wolfgang Wei\u00df (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122290,
+      "label": "Wolfgang Wei\u00df"
+    }
+  },
+  {
+    "id": 41231,
+    "label": "Till Backhaus (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122284,
+      "label": "Till Backhaus"
+    }
+  },
+  {
+    "id": 41230,
+    "label": "Mignon Schwenke (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122282,
+      "label": "Mignon Schwenke"
+    }
+  },
+  {
+    "id": 41229,
+    "label": "Burkhard Lenz (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122252,
+      "label": "Burkhard Lenz"
+    }
+  },
+  {
+    "id": 41228,
+    "label": "Beate Schlupp (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 122242,
+      "label": "Beate Schlupp"
+    }
+  },
+  {
+    "id": 41008,
+    "label": "Torsten Koplin (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 119412,
+      "label": "Torsten Koplin"
+    }
+  },
+  {
+    "id": 40948,
+    "label": "Peter Ritter (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 119186,
+      "label": "Peter Ritter"
+    }
+  },
+  {
+    "id": 40771,
+    "label": "Helmut Holter (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 118719,
+      "label": "Helmut Holter"
+    }
+  },
+  {
+    "id": 37966,
+    "label": "Thomas De Jesus Fernandes (Mecklenburg-Vorpommern 2017 - 2021)",
+    "type": "mandate",
+    "parliament_period": {
+      "id": 108,
+      "label": "Mecklenburg-Vorpommern 2017 - 2021"
+    },
+    "politician": {
+      "id": 29481,
+      "label": "Thomas De Jesus Fernandes"
+    }
+  }
+]
