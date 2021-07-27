@@ -1,3 +1,4 @@
+from backend.types import Poll, Vote
 import json
 
 def fetch_json(path:str):
@@ -16,14 +17,12 @@ def fetch_politician():
 def fetch_party_votes():
   return fetch_json("/votes_bundestag")
 
-def polls(id: int):
+def polls(id: int)->Poll:
   polls = fetch_polls()
-  selected = list(filter(lambda poll:poll["id"] == id, polls))
-  selected_json = json.dumps(selected[0])
-  return selected_json
+  selected = list(filter(lambda poll:poll["id"] == id, polls))[0]
+  return selected
 
-def party_votes(id: str):
+def party_votes(id: str)->Vote:
   party_votes = fetch_party_votes()
   selected = party_votes[id]
-  selected_json = json.dumps(selected)
-  return selected_json
+  return selected
