@@ -15,3 +15,8 @@ def fetch_politician():
 
 def fetch_party_votes():
   return fetch_json("/votes_bundestag")
+
+def polls(id: int):
+  polls = fetch_polls()
+  selected = list(filter(lambda poll:poll["id"] == id, polls))
+  return selected
