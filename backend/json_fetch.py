@@ -8,11 +8,10 @@ def fetch_json(path:str):
   return data
 
 def fetch_polls():
-  return  fetch_json('/polls_bundestag')
+  return  fetch_json("/polls_bundestag")
 
 def fetch_politician():
-  return fetch_json('/votes_bundestag_politician')
+  return fetch_json("/votes_bundestag_politician")
 
 def fetch_votes():
-  return fetch_json('/votes_bundestag')
-
+  return fetch_json("/votes_bundestag")
