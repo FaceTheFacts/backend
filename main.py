@@ -122,3 +122,8 @@ def polls(id: int):
 @app.get("/politician_poll_json/{id}/{name}",response_model=Poll)
 def politician_poll(id: int, name: str):
     return json_fetch.politician_poll(id, name)
+
+#party_votes
+@app.get("/party_votes/{id}/",response_model=Vote)
+def party_votes(id: str):
+    return json_fetch.party_votes(id)
