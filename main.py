@@ -112,3 +112,13 @@ def sidejobs(politician_name: str):
 @app.get("/votes", response_model=Vote)
 def votes(vote_id: str, politician_name: str):
     return fetch.vote(vote_id, politician_name)
+
+#same as /polls/id
+@app.get("/polls_json/{id}",response_model=Poll)
+def polls(id: int):
+    return json_fetch.polls(id)
+
+#same as /votes
+@app.get("/politician_poll_json/{id}/{name}",response_model=Poll)
+def politician_poll(id: int, name: str):
+    return json_fetch.politician_poll(id, name)
