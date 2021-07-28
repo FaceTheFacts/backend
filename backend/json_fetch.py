@@ -46,3 +46,15 @@ def party_votes(id: str) -> Vote:
     party_votes = fetch_party_votes()
     selected = party_votes[id]
     return selected
+
+
+# Call all of them
+def candidate_polls(id: int, name: str) -> Poll:
+    politician_poll_dict = politician_poll(id, name)
+    polls_dict = polls(id)
+    party_votes_dict = party_votes(str(id))
+    candidate_poll_dict = dict()
+    candidate_poll_dict["politician-poll"] = politician_poll_dict
+    candidate_poll_dict["poll-detail"] = polls_dict
+    candidate_poll_dict["party-votes"] = party_votes_dict
+    return candidate_poll_dict
