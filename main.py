@@ -115,24 +115,24 @@ def votes(vote_id: str, politician_name: str):
 
 
 # same as /polls/id
-@app.get("/polls_json/{id}", response_model=Poll)
+@app.get("/polls-json/{id}", response_model=Poll)
 def polls(id: int):
     return json_fetch.polls(id)
 
 
 # same as /votes
-@app.get("/politician_poll_json/{id}/{name}", response_model=Poll)
+@app.get("/politician-poll-json/{id}/{name}", response_model=Poll)
 def politician_poll(id: int, name: str):
     return json_fetch.politician_poll(id, name)
 
 
 # party_votes
-@app.get("/party_votes/{id}/", response_model=Vote)
+@app.get("/party-votes/{id}/", response_model=Vote)
 def party_votes(id: str):
     return json_fetch.party_votes(id)
 
 
 # Call multiple json
-@app.get("/candidate_polls/{id}/{name}", response_model=Poll)
+@app.get("/candidate-polls/{id}/{name}", response_model=Poll)
 def candidate_polls(id: int, name: str):
     return json_fetch.candidate_polls(id, name)
