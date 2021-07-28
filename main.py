@@ -113,17 +113,26 @@ def sidejobs(politician_name: str):
 def votes(vote_id: str, politician_name: str):
     return fetch.vote(vote_id, politician_name)
 
-#same as /polls/id
-@app.get("/polls_json/{id}",response_model=Poll)
+
+# same as /polls/id
+@app.get("/polls_json/{id}", response_model=Poll)
 def polls(id: int):
     return json_fetch.polls(id)
 
-#same as /votes
-@app.get("/politician_poll_json/{id}/{name}",response_model=Poll)
+
+# same as /votes
+@app.get("/politician_poll_json/{id}/{name}", response_model=Poll)
 def politician_poll(id: int, name: str):
     return json_fetch.politician_poll(id, name)
 
-#party_votes
-@app.get("/party_votes/{id}/",response_model=Vote)
+
+# party_votes
+@app.get("/party_votes/{id}/", response_model=Vote)
 def party_votes(id: str):
     return json_fetch.party_votes(id)
+
+
+# Call multiple json
+@app.get("/candidate_polls/{id}/{name}", response_model=Poll)
+def candidate_polls(id: int, name: str):
+    return json_fetch.candidate_polls(id, name)
