@@ -132,7 +132,7 @@ def party_votes(id: str):
     return json_fetch.party_votes(id)
 
 
-# Call multiple json
-@app.get("/candidate-polls/{id}/{name}", response_model=Poll)
-def candidate_polls(id: int, name: str):
-    return json_fetch.candidate_polls(id, name)
+# For Profile Page
+@app.get("/profile-page-polls/{id}/{name}", response_model=Poll)
+def profile_page_polls(id: int, name: str):
+    return json_fetch.profile_page_polls(id, name)
