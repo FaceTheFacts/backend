@@ -73,13 +73,13 @@ def committee_memberships(politician_name: str) -> List[ComitteeMembership]:
     return list(selected_by_name)
 
 
-# Call all of them
-def candidate_polls(id: int, name: str) -> Poll:
+# For profile screen
+def profile_page_polls(id: int, name: str) -> Poll:
     politician_poll_dict = politician_poll(id, name)
     polls_dict = polls(id)
     party_votes_dict = party_votes(str(id))
-    candidate_poll_dict = dict()
-    candidate_poll_dict["politician-poll"] = politician_poll_dict
-    candidate_poll_dict["poll-detail"] = polls_dict
-    candidate_poll_dict["party-votes"] = party_votes_dict
-    return candidate_poll_dict
+    profile_page_poll_dict = dict()
+    profile_page_poll_dict["politician_poll"] = politician_poll_dict
+    profile_page_poll_dict["poll_detail"] = polls_dict
+    profile_page_poll_dict["party_votes"] = party_votes_dict
+    return profile_page_poll_dict
