@@ -45,9 +45,6 @@ def politician_poll(id: int, name: str) -> Poll:
     selected_by_name = list(
         filter(lambda poll: name in poll["mandate"]["label"], selected_by_id)
     )[0]
-    # Remove no_show
-    if selected_by_name["vote"] == "no_show":
-        return
     return selected_by_name
 
 
