@@ -112,3 +112,27 @@ def sidejobs(politician_name: str):
 @app.get("/votes", response_model=Vote)
 def votes(vote_id: str, politician_name: str):
     return fetch.vote(vote_id, politician_name)
+
+
+# same as /polls/id
+@app.get("/polls-json/{id}", response_model=Poll)
+def polls(id: int):
+    return json_fetch.polls(id)
+
+
+# same as /votes
+@app.get("/politician-poll-json/{id}/{name}", response_model=Poll)
+def politician_poll(id: int, name: str):
+    return json_fetch.politician_poll(id, name)
+
+
+# party_votes
+@app.get("/party-votes/{id}/", response_model=Vote)
+def party_votes(id: str):
+    return json_fetch.party_votes(id)
+
+
+# For Profile Page
+@app.get("/profile-page-polls/{id}/{name}", response_model=Poll)
+def profile_page_polls(id: int, name: str):
+    return json_fetch.profile_page_polls(id, name)

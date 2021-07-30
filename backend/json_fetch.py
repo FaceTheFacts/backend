@@ -45,9 +45,6 @@ def politician_poll(id: int, name: str) -> Poll:
     selected_by_name = list(
         filter(lambda poll: name in poll["mandate"]["label"], selected_by_id)
     )[0]
-    # Remove no_show
-    if selected_by_name["vote"] == "no_show":
-        return
     return selected_by_name
 
 
@@ -74,3 +71,15 @@ def committee_memberships(politician_name: str) -> List[ComitteeMembership]:
     )
     print(type(selected_by_name))
     return list(selected_by_name)
+
+
+# For profile screen
+def profile_page_polls(id: int, name: str) -> Poll:
+    politician_poll_dict = politician_poll(id, name)
+    polls_dict = polls(id)
+    party_votes_dict = party_votes(str(id))
+    profile_page_poll_dict = dict()
+    profile_page_poll_dict["politician_poll"] = politician_poll_dict
+    profile_page_poll_dict["poll_detail"] = polls_dict
+    profile_page_poll_dict["party_votes"] = party_votes_dict
+    return profile_page_poll_dict
