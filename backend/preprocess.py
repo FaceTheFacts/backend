@@ -53,7 +53,7 @@ def constituency(constituency_name: str) -> str:
         constituency_name = constituency_name[: index - 1]
         if "Landesliste" in constituency_name:
             index = constituency_name.find("Landesliste")
-            constituency_name = constituency_name[index + 12 :]
+            constituency_name = constituency_name[index + 11 :]
     return constituency_name
 
 
