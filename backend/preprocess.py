@@ -41,8 +41,9 @@ def second_vote(mandates: List[Mandate]) -> List[Mandate]:
 
 
 def second_vote_results(constituency_name: str, party_name: str) -> int:
-    if (second_vote_results := SECOND_VOTE_RESULTS.get(constituency)) != None:
-        return second_vote_results[party]
+    print(constituency_name[1:])
+    if (second_vote_results := SECOND_VOTE_RESULTS.get(constituency_name[1:])) != None:
+        return second_vote_results[party_name]
     else:
         return ""
 
