@@ -35,24 +35,24 @@ def candidacies_mandates(politician_id: int):
     data["first_vote"] = preprocess.first_vote(first_vote)
 
     # fetch and preprocess second_vote
-    second_vote = fetch.second_vote(
-        data["electoral_data"]["electoral_list"]["id"], data["party"]["id"]
-    )
-    data["second_vote"] = preprocess.second_vote(second_vote)
+    if data["electoral_data"]["electoral_list"] != None:
+        second_vote = fetch.second_vote(
+            data["electoral_data"]["electoral_list"]["id"], data["party"]["id"]
+        )
+        data["second_vote"] = preprocess.second_vote(second_vote)
 
-    data["electoral_data"]["electoral_list"]["label"] = preprocess.constituency(
-        data["electoral_data"]["electoral_list"]["label"]
-    )
+        data["electoral_data"]["electoral_list"]["label"] = preprocess.constituency(
+            data["electoral_data"]["electoral_list"]["label"]
+        )
+        data["results"] = preprocess.second_vote_results(
+            data["electoral_data"]["electoral_list"]["label"], data["party"]["label"]
+        )
 
     data["electoral_data"]["constituency"]["label"] = preprocess.constituency(
         data["electoral_data"]["constituency"]["label"]
     )
 
     data["party"]["label"] = preprocess.party(data["party"]["label"])
-
-    data["results"] = preprocess.second_vote_results(
-        data["electoral_data"]["electoral_list"]["label"], data["party"]["label"]
-    )
 
     # return json
     return data

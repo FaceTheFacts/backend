@@ -41,8 +41,8 @@ def second_vote(mandates: List[Mandate]) -> List[Mandate]:
 
 
 def second_vote_results(constituency_name: str, party_name: str) -> int:
-    if (second_vote_results := SECOND_VOTE_RESULTS.get(constituency)) != None:
-        return second_vote_results[party]
+    if (second_vote_results := SECOND_VOTE_RESULTS.get(constituency_name[1:])) != None:
+        return second_vote_results[party_name]
     else:
         return ""
 
@@ -53,7 +53,7 @@ def constituency(constituency_name: str) -> str:
         constituency_name = constituency_name[: index - 1]
         if "Landesliste" in constituency_name:
             index = constituency_name.find("Landesliste")
-            constituency_name = constituency_name[index + 12 :]
+            constituency_name = constituency_name[index + 11 :]
     return constituency_name
 
 

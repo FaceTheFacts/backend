@@ -11,8 +11,8 @@ ENV PATH=$PATH:/root/.local/bin
 
 # generate requirements.txt
 COPY pyproject.toml poetry.lock ./
+RUN poetry update
 RUN poetry export > requirements.txt
-
 
 FROM python:3.9-slim
 WORKDIR /src
