@@ -14,7 +14,7 @@ def first_vote(mandates: List[Mandate]) -> List[Mandate]:
     return sort.first_vote(mandates)
 
 
-def occupation(occupation: Optional[str], politician_id: int) -> list[str]:
+def occupation(occupation: Optional[str], politician_id: int) -> List[str]:
     # if we have a custom occupation, we take it
     if (custom_occupation := OCCUPATIONS.get(politician_id)) != None:
         return custom_occupation
@@ -60,7 +60,7 @@ def constituency(constituency_name: str) -> str:
 # --- private functions ---
 
 
-def _split_map_occupation(occupation: str) -> list[str]:
+def _split_map_occupation(occupation: str) -> List[str]:
     # this replace needs to happen before splitting, since it contains a ','
     occupation = occupation.replace(
         "Bundesministerin für Umwelt, Naturschutz und nukleare Sicherheit",
