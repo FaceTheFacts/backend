@@ -1,3 +1,5 @@
+from typing import List
+
 import pytest
 
 from backend import preprocess
