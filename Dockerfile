@@ -14,7 +14,7 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry update
 RUN poetry export > requirements.txt
 
-FROM python:3.9-slim
+FROM python:3.8-slim
 WORKDIR /src
 
 # install dependencies
