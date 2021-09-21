@@ -10,16 +10,19 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/inst
 ENV PATH=$PATH:/root/.local/bin
 
 # generate requirements.txt
-COPY pyproject.toml poetry.lock ./
-RUN poetry update
-RUN poetry export > requirements.txt
+# COPY pyproject.toml poetry.lock ./
+# RUN poetry update
+# RUN poetry export > requirements.txt
+
 
 FROM python:3.8-slim
 WORKDIR /src
 
 # install dependencies
-COPY --from=downloader /requirements.txt ./
-RUN pip install -r requirements.txt
+# COPY --from=downloader /requirements.txt ./
+COPY requirements.txt requirements.txt
+RUN pip3 install --upgrade pip
+RUN pip3 install -r requirements.txt
 
 # add files
 COPY main.py ./
