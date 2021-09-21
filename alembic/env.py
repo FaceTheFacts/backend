@@ -19,7 +19,9 @@ config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
 
 fileConfig(config.config_file_name)
 
+from database import models
 
+target_metadata = models.Base.metadata
 
 def run_migrations_offline():
 
