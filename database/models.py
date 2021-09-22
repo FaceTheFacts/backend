@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
+
 class Politician(Base):
     __tablename__ = "politician"
     id = Column(Integer, primary_key=True)

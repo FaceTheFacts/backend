@@ -14,7 +14,10 @@ sys.path.append(BASE_DIR)
 
 config = context.config
 
-config.set_main_option("sqlalchemy.url", "postgresql+psycopg2://postgres:ftf_db_password@db:5432/facethefacts")
+config.set_main_option(
+    "sqlalchemy.url",
+    "postgresql+psycopg2://postgres:ftf_db_password@db:5432/facethefacts",
+)
 
 
 fileConfig(config.config_file_name)
@@ -22,6 +25,7 @@ fileConfig(config.config_file_name)
 from database import models
 
 target_metadata = models.Base.metadata
+
 
 def run_migrations_offline():
 
@@ -45,9 +49,7 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()
