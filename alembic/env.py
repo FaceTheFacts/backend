@@ -14,7 +14,7 @@ sys.path.append(BASE_DIR)
 
 config = context.config
 
-config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
+config.set_main_option("sqlalchemy.url", "postgresql+psycopg2://postgres:ftf_db_password@db:5432/facethefacts")
 
 
 fileConfig(config.config_file_name)
