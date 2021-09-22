@@ -26,6 +26,9 @@ RUN pip3 install -r requirements.txt
 
 # add files
 COPY main.py ./
+COPY alembic.ini ./
+COPY alembic/ alembic/
+COPY database/ database/
 COPY backend/ backend/
 COPY data/ data/
 
