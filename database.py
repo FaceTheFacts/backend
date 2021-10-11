@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
 load_dotenv()
 
@@ -16,3 +17,4 @@ connection_uri = sa.engine.URL.create(
 
 engine = create_engine(connection_uri)
 Session = sessionmaker(bind=engine)
+Base = declarative_base()
