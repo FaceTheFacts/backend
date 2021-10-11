@@ -2,14 +2,23 @@
 from typing import List, Optional
 
 # 3rd-party
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 # local
-from connection import Session
+import schemas, crud
+from database import Session
 
 app = FastAPI()
-db = Session()
+# Dependency
+def get_db():
+    db = Session()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 # CORS-policy
 # * docs: https://fastapi.tiangolo.com/tutorial/cors/
 # * TODO: Can we restrict this policy? E.g. https-only
@@ -20,3 +29,10 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"])
 def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
 
+
+@app.get("/country/{id}", response_model=schemas.Country)
+def read_country(id: int, db: Session = Depends(get_db)):
+    country = crud.get_country_by_id(db, id)
+    if country is None:
+        raise HTTPException(status_code=404, detail="Country not found")
+    return country
