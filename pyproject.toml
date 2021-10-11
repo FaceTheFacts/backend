@@ -10,6 +10,9 @@ click = "^8.0.1"
 fastapi = "^0.68.0"
 requests = "^2.26.0"
 uvicorn = "^0.14.0"
+python-dotenv = "^0.19.1"
+SQLAlchemy = "^1.4.25"
+psycopg2 = "^2.9.1"
 
 [tool.poetry.dev-dependencies]
 black = "^21.7b0"
