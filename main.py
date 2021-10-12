@@ -41,10 +41,10 @@ def read_poll(id: int, db: Session = Depends(get_db)):
 
 @app.get("/politician/{id}", response_model=schemas.Politician)
 def read_politician(id: int, db: Session = Depends(get_db)):
-    policician = crud.get_politician_by_id(db, id)
-    if policician is None:
+    politician = crud.get_politician_by_id(db, id)
+    if politician is None:
         raise HTTPException(status_code=404, detail="Politician not found")
-    return policician
+    return politician
 
 
 if __name__ == "__main__":
