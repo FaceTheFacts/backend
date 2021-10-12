@@ -32,3 +32,26 @@ class Poll(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class Politician(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    first_name: str
+    last_name: str
+    sex: Optional[str]
+    year_of_birth: Optional[str]
+    party_past: Optional[str]
+    deceased: Optional[bool]
+    deceased_date: Optional[date]
+    education: Optional[str]
+    residence: Optional[str]
+    occupation: Optional[str]
+    statistic_questions: Optional[str]
+    statistic_questions_answered: Optional[str]
+    qid_wikidata: Optional[str]
+    field_title: Optional[str]
+
+    class Config:
+        orm_mode = True
