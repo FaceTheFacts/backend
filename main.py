@@ -40,7 +40,6 @@ def read_country(id: int, db: Session = Depends(get_db)):
 @app.get("/poll/{id}", response_model=schemas.Poll)
 def read_poll(id: int, db: Session = Depends(get_db)):
     poll = crud.get_poll_by_id(db, id)
-    # committee_id = poll.field_committees_id
     if poll is None:
         raise HTTPException(status_code=404, detail="poll not found")
     return poll
