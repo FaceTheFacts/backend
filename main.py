@@ -39,5 +39,13 @@ def read_poll(id: int, db: Session = Depends(get_db)):
     return poll
 
 
+@app.get("/politician/{id}", response_model=schemas.Politician)
+def read_politician(id: int, db: Session = Depends(get_db)):
+    policician = crud.get_politician_by_id(db, id)
+    if policician is None:
+        raise HTTPException(status_code=404, detail="Politician not found")
+    return policician
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
