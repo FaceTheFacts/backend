@@ -38,5 +38,6 @@ def read_poll(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Poll not found")
     return poll
 
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
