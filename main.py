@@ -2,6 +2,7 @@
 from typing import List, Optional
 
 # 3rd-party
+import uvicorn
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -36,3 +37,6 @@ def read_poll(id: int, db: Session = Depends(get_db)):
     if poll is None:
         raise HTTPException(status_code=404, detail="Poll not found")
     return poll
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
