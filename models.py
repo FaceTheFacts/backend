@@ -31,5 +31,5 @@ class Committee(Base):
     entity_type = Column(String)
     label = Column(String)
     api_url = Column(String)
-    #One to Many
+    # One to Many
     polls = relationship("Poll", back_populates="committee")
