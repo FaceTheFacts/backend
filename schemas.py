@@ -17,7 +17,6 @@ class Committee(BaseModel):
     id: int
     entity_type: str
     label: str
-    api_url: str
 
     class Config:
         orm_mode = True
@@ -27,7 +26,6 @@ class Poll(BaseModel):
     id: int
     entity_type: str
     label: str
-    api_url: str
     committee: Optional[Committee]
     field_intro: str
     field_poll_date: date
