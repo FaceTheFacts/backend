@@ -72,73 +72,23 @@ def test_read_politician():
         # Testing past_party, statistic_questions and statistic_questions_answered
         response = client.get("/politician/176101")
         assert response.status_code == 200
-        assert response.json() == {
-            "id": 176101,
-            "entity_type": "politician",
-            "label": "Felix Locke",
-            "first_name": "Felix",
-            "last_name": "Locke",
-            "sex": "m",
-            "year_of_birth": "1988",
-            "party_past": "Vorher Mitglied der Freien Wähler",
-            "deceased": None,
-            "deceased_date": None,
-            "education": "B.A.",
-            "residence": "Lauf an der Pegnitz",
-            "occupation": "Konzernprojektleiter",
-            "statistic_questions": "10",
-            "statistic_questions_answered": "9",
-            "qid_wikidata": None,
-            "field_title": None,
-        }
+        assert response.json()["party_past"] == "Vorher Mitglied der Freien Wähler"
+        assert response.json()["statistic_questions"] == "10"
+        assert response.json()["statistic_questions_answered"] == "9"
 
     def specific_elements_test_2():
         # Testing deceased, deceased_date and qid_wikidata
         response = client.get("/politician/79107")
         assert response.status_code == 200
-        assert response.json() == {
-            "id": 79107,
-            "entity_type": "politician",
-            "label": "Thomas Oppermann",
-            "first_name": "Thomas",
-            "last_name": "Oppermann",
-            "sex": "m",
-            "year_of_birth": "1954",
-            "party_past": None,
-            "deceased": True,
-            "deceased_date": "2020-10-25",
-            "education": "Jurist",
-            "residence": None,
-            "occupation": "MdB",
-            "statistic_questions": "266",
-            "statistic_questions_answered": "260",
-            "qid_wikidata": "Q90833",
-            "field_title": None,
-        }
+        assert response.json()["deceased"] is True
+        assert response.json()["deceased_date"] == "2020-10-25"
+        assert response.json()["qid_wikidata"] == "Q90833"
 
     def specific_elements_test_3():
         # Testing field_title
         response = client.get("/politician/79109")
         assert response.status_code == 200
-        assert response.json() == {
-            "id": 79109,
-            "entity_type": "politician",
-            "label": "Alexander S. Neu",
-            "first_name": "Alexander S.",
-            "last_name": "Neu",
-            "sex": "m",
-            "year_of_birth": "1969",
-            "party_past": None,
-            "deceased": None,
-            "deceased_date": None,
-            "education": "Politikwissenschaftler",
-            "residence": None,
-            "occupation": "MdB",
-            "statistic_questions": "32",
-            "statistic_questions_answered": "29",
-            "qid_wikidata": "Q15434455",
-            "field_title": "Dr.",
-        }
+        assert response.json()["field_title"] == "Dr."
 
     def politician_id_not_found():
         response = client.get("/politician/1")
