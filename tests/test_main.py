@@ -156,123 +156,22 @@ def test_read_politician_constituencies():
     def all_elements_have_values():
         response = client.get("/politician/138540/constituencies")
         assert response.status_code == 200
-        assert response.json() == {
-            "id": 138540,
-            "candidacy_mandates": [
-                {
-                    "id": 54370,
-                    "electoral_data": {
-                        "id": 55294,
-                        "constituency": {
-                            "id": 11039,
-                            "entity_type": "constituency",
-                            "label": "299 - Homburg (Bundestag 2021 - 2025)",
-                            "api_url": "https://www.abgeordnetenwatch.de/api/v2/constituencies/11039",
-                            "name": "Homburg",
-                            "number": 299,
-                        },
+        assert response.json()["candidacy_mandates"].__contains__(
+            {
+                "id": 54370,
+                "electoral_data": {
+                    "id": 55294,
+                    "constituency": {
+                        "id": 11039,
+                        "entity_type": "constituency",
+                        "label": "299 - Homburg (Bundestag 2021 - 2025)",
+                        "api_url": "https://www.abgeordnetenwatch.de/api/v2/constituencies/11039",
+                        "name": "Homburg",
+                        "number": 299,
                     },
                 },
-                {
-                    "id": 49967,
-                    "electoral_data": {
-                        "id": 50889,
-                        "constituency": {
-                            "id": 10356,
-                            "entity_type": "constituency",
-                            "label": "299 - Homburg (Bundestag Wahl 2021)",
-                            "api_url": "https://www.abgeordnetenwatch.de/api/v2/constituencies/10356",
-                            "name": "Homburg",
-                            "number": 299,
-                        },
-                    },
-                },
-                {
-                    "id": 43643,
-                    "electoral_data": {
-                        "id": 43643,
-                        "constituency": {
-                            "id": 4423,
-                            "entity_type": "constituency",
-                            "label": "299 - Homburg (Bundestag 2017 - 2021)",
-                            "api_url": "https://www.abgeordnetenwatch.de/api/v2/constituencies/4423",
-                            "name": "Homburg",
-                            "number": 299,
-                        },
-                    },
-                },
-                {
-                    "id": 43642,
-                    "electoral_data": {
-                        "id": 43642,
-                        "constituency": {
-                            "id": 1171,
-                            "entity_type": "constituency",
-                            "label": "299 - Homburg (Bundestag 2013-2017)",
-                            "api_url": "https://www.abgeordnetenwatch.de/api/v2/constituencies/1171",
-                            "name": "Homburg",
-                            "number": 299,
-                        },
-                    },
-                },
-                {
-                    "id": 28413,
-                    "electoral_data": {
-                        "id": 28413,
-                        "constituency": {
-                            "id": 9309,
-                            "entity_type": "constituency",
-                            "label": "299 - Homburg (Bundestag Wahl 2017)",
-                            "api_url": "https://www.abgeordnetenwatch.de/api/v2/constituencies/9309",
-                            "name": "Homburg",
-                            "number": 299,
-                        },
-                    },
-                },
-                {
-                    "id": 28412,
-                    "electoral_data": {
-                        "id": 28412,
-                        "constituency": {
-                            "id": 9309,
-                            "entity_type": "constituency",
-                            "label": "299 - Homburg (Bundestag Wahl 2017)",
-                            "api_url": "https://www.abgeordnetenwatch.de/api/v2/constituencies/9309",
-                            "name": "Homburg",
-                            "number": 299,
-                        },
-                    },
-                },
-                {
-                    "id": 28411,
-                    "electoral_data": {
-                        "id": 28411,
-                        "constituency": {
-                            "id": 9309,
-                            "entity_type": "constituency",
-                            "label": "299 - Homburg (Bundestag Wahl 2017)",
-                            "api_url": "https://www.abgeordnetenwatch.de/api/v2/constituencies/9309",
-                            "name": "Homburg",
-                            "number": 299,
-                        },
-                    },
-                },
-                {
-                    "id": 28410,
-                    "electoral_data": {
-                        "id": 28410,
-                        "constituency": {
-                            "id": 5297,
-                            "entity_type": "constituency",
-                            "label": "2 - Neunkirchen (Saarland Wahl 2009)",
-                            "api_url": "https://www.abgeordnetenwatch.de/api/v2/constituencies/5297",
-                            "name": "Neunkirchen",
-                            "number": 2,
-                        },
-                    },
-                },
-            ],
-        }
+            },
+        )
 
     def null_constituencies_exist():
         response = client.get("/politician/138124/constituencies")
