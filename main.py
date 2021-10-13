@@ -60,8 +60,8 @@ def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
     return politician
 
 
-@app.get("/politician/{id}/position", response_model=schemas.PoliticianToPosition)
-def read_politician_position(id: int, db: Session = Depends(get_db)):
+@app.get("/politician/{id}/positions", response_model=schemas.PoliticianToPosition)
+def read_politician_positions(id: int, db: Session = Depends(get_db)):
     politician = crud.get_politician_by_id(db, id)
     if politician is None:
         raise HTTPException(status_code=404, detail="Politician not found")

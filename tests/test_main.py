@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-
+import json
 from main import app
 
 client = TestClient(app)
@@ -303,3 +303,21 @@ def test_read_politician_constituencies():
 
     all_elements_have_values()
     null_constituencies_exist()
+
+
+def test_read_politician_positions():
+    def selected_values_test():
+        response = client.get("/politician/177592/positions")
+        assert response.status_code == 200
+        assert response.json()["positions"].__contains__(
+            {
+                "id": 1281775921,
+                "position": "neutral",
+                "reason": "Das hohe Verkehrsaufkommen lässt eine höhere Durchschnittsgeschwindigkeit nach meinem Gefühl nicht zu. das ist rein subjketiv. ",
+            }
+        )
+        assert response.json()["positions"].__contains__(
+            {"id": 1281775926, "position": "neutral", "reason": None}
+        )
+
+    selected_values_test()
