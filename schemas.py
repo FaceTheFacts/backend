@@ -1,13 +1,34 @@
 from pydantic import BaseModel
-from pydantic.main import BaseConfig
 from datetime import date
-from typing import Optional, Dict, List
-from typing_extensions import TypedDict
+from typing import Optional, List
 
 
 class Country(BaseModel):
     id: int
+    entity_type: str
     label: str
+    api_url: str
+
+    class Config:
+        orm_mode = True
+
+
+class City(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+
+
+class Topic(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+    abgeordnetenwatch_url: str
+    description: Optional[str]
+    # parent: Optional[Topic]
+    parent_id: Optional[int]
 
     class Config:
         orm_mode = True
@@ -97,3 +118,35 @@ class PoliticianToConstituencies(BaseModel):
 
 
 # -----------------------
+class SidejobOrganization(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+    field_city: Optional[List[City]]
+    field_country: Optional[List[City]]
+    field_topics: Optional[List[Topic]]
+
+    class Config:
+        orm_mode = True
+
+
+class Sidejob(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+    job_title_extra: Optional[str]
+    additional_information: Optional[str]
+    category: str
+    income_level: Optional[str]
+    interval: Optional[str]
+    data_change_date: date
+    created: int
+    sidejob_organization: List[SidejobOrganization]
+    field_city: Optional[List[City]]
+    field_country: List[City]
+    field_topics: Optional[List[Topic]]
+
+    class Config:
+        orm_mode = True
