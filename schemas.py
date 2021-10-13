@@ -7,12 +7,32 @@ from typing_extensions import TypedDict
 
 class Country(BaseModel):
     id: int
+    entity_type: str
     label: str
+    api_url: str
 
     class Config:
         orm_mode = True
 
 
+class City(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+
+class Topic(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+    abgeordnetenwatch_url: str
+    description: Optional(str)
+    # parent: Optional[Topic]
+    parent_id: Optional[int]
+    class Config:
+        orm_mode = True
+ 
 class Committee(BaseModel):
     id: int
     entity_type: str
@@ -56,6 +76,15 @@ class Politician(BaseModel):
     class Config:
         orm_mode = True
 
+class SidejobOrganization(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+    # field_city_id:Integer, ForeignKey("city.id"))
+    # field_country_id:Integer, ForeignKey("country.id"))
+    class Config:
+        orm_mode = True
 
 class Sidejob(BaseModel):
     id: int
@@ -72,3 +101,5 @@ class Sidejob(BaseModel):
     # sidejob_organization_id:int, ForeignKey("sidejob_organization.id"
     # field_city_id:int, ForeignKey("city.id"
     # field_country_id:int, ForeignKey("country.id"
+    class Config:
+        orm_mode = True
