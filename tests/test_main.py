@@ -9,6 +9,7 @@ def test_read_poll():
     def all_elements_have_values():
         response = client.get("/poll/1126")
         assert response.status_code == 200
+        assert type(response.json()) is dict
         assert response.json() == {
             "id": 1126,
             "entity_type": "node",
@@ -25,6 +26,7 @@ def test_read_poll():
     def committee_id_null():
         response = client.get("/poll/643")
         assert response.status_code == 200
+        assert type(response.json()) is dict
         assert response.json() == {
             "id": 643,
             "entity_type": "node",
@@ -37,6 +39,7 @@ def test_read_poll():
     def poll_id_not_found():
         response = client.get("/poll/1")
         assert response.status_code == 404
+        assert type(response.json()) is dict
         assert response.json() == {"detail": "Poll not found"}
 
     all_elements_have_values()
@@ -72,6 +75,7 @@ def test_read_politician():
         # Testing past_party, statistic_questions and statistic_questions_answered
         response = client.get("/politician/176101")
         assert response.status_code == 200
+        assert type(response.json()) is dict
         assert response.json()["party_past"] == "Vorher Mitglied der Freien Wähler"
         assert response.json()["statistic_questions"] == "10"
         assert response.json()["statistic_questions_answered"] == "9"
@@ -80,6 +84,7 @@ def test_read_politician():
         # Testing deceased, deceased_date and qid_wikidata
         response = client.get("/politician/79107")
         assert response.status_code == 200
+        assert type(response.json()) is dict
         assert response.json()["deceased"] is True
         assert response.json()["deceased_date"] == "2020-10-25"
         assert response.json()["qid_wikidata"] == "Q90833"
@@ -88,11 +93,13 @@ def test_read_politician():
         # Testing field_title
         response = client.get("/politician/79109")
         assert response.status_code == 200
+        assert type(response.json()) is dict
         assert response.json()["field_title"] == "Dr."
 
     def politician_id_not_found():
         response = client.get("/politician/1")
         assert response.status_code == 404
+        assert type(response.json()) is dict
         assert response.json() == {"detail": "Politician not found"}
 
     random_test()
@@ -106,6 +113,7 @@ def test_read_politician_constituencies():
     def all_elements_have_values():
         response = client.get("/politician/138540/constituencies")
         assert response.status_code == 200
+        assert type(response.json()) is dict
         assert response.json()["candidacy_mandates"].__contains__(
             {
                 "id": 54370,
@@ -126,6 +134,7 @@ def test_read_politician_constituencies():
     def null_constituencies_exist():
         response = client.get("/politician/138124/constituencies")
         assert response.status_code == 200
+        assert type(response.json()) is dict
         assert response.json() == {
             "id": 138124,
             "candidacy_mandates": [
@@ -158,6 +167,7 @@ def test_read_politician_positions():
     def selected_values_test():
         response = client.get("/politician/177592/positions")
         assert response.status_code == 200
+        assert type(response.json()) is dict
         assert response.json()["positions"].__contains__(
             {
                 "id": 1281775921,
