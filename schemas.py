@@ -94,4 +94,6 @@ class PoliticianToConstituencies(BaseModel):
 
     class Config:
         orm_mode = True
+
+
 # -----------------------
