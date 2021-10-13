@@ -1,8 +1,6 @@
 from pydantic import BaseModel
-from pydantic.main import BaseConfig
 from datetime import date
-from typing import Optional, Dict, List
-from typing_extensions import TypedDict
+from typing import Optional, List
 
 
 class Country(BaseModel):
@@ -21,18 +19,21 @@ class City(BaseModel):
     label: str
     api_url: str
 
+
 class Topic(BaseModel):
     id: int
     entity_type: str
     label: str
     api_url: str
     abgeordnetenwatch_url: str
-    description: Optional(str)
+    description: Optional[str]
     # parent: Optional[Topic]
     parent_id: Optional[int]
+
     class Config:
         orm_mode = True
- 
+
+
 # -----------------------
 class Committee(BaseModel):
     id: int
@@ -78,34 +79,6 @@ class Politician(BaseModel):
     class Config:
         orm_mode = True
 
-class SidejobOrganization(BaseModel):
-    id: int
-    entity_type: str
-    label: str
-    api_url: str
-    # field_city_id:Integer, ForeignKey("city.id"))
-    # field_country_id:Integer, ForeignKey("country.id"))
-    class Config:
-        orm_mode = True
-
-class Sidejob(BaseModel):
-    id: int
-    entity_type: str
-    label: str
-    api_url: str
-    job_title_extra: Optional[str]
-    additional_information: Optional[str]
-    category: str
-    income_level: Optional[str]
-    interval: Optional[str]
-    data_change_date: date
-    created: int
-    # sidejob_organization_id:int, ForeignKey("sidejob_organization.id"
-    # field_city_id:int, ForeignKey("city.id"
-    # field_country_id:int, ForeignKey("country.id"
-    class Config:
-        orm_mode = True
-
 
 # -----------------------
 class Constituency(BaseModel):
@@ -142,4 +115,38 @@ class PoliticianToConstituencies(BaseModel):
 
     class Config:
         orm_mode = True
+
+
 # -----------------------
+class SidejobOrganization(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+    field_city: Optional[List[City]]
+    field_country: Optional[List[City]]
+    field_topics: Optional[List[Topic]]
+
+    class Config:
+        orm_mode = True
+
+
+class Sidejob(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+    job_title_extra: Optional[str]
+    additional_information: Optional[str]
+    category: str
+    income_level: Optional[str]
+    interval: Optional[str]
+    data_change_date: date
+    created: int
+    sidejob_organization: List[SidejobOrganization]
+    field_city: Optional[List[City]]
+    field_country: List[City]
+    field_topics: Optional[List[Topic]]
+
+    class Config:
+        orm_mode = True
