@@ -11,6 +11,8 @@ import schemas, crud
 from database import Session
 
 app = FastAPI()
+
+
 # Dependency
 def get_db():
     db = Session()
@@ -47,10 +49,16 @@ def read_politician(id: int, db: Session = Depends(get_db)):
     return politician
 
 
+@app.get("/politician/{id}/constituencies", response_model=schemas.PoliticianToConstituencies)
+def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
+    politician = crud.get_politician_by_id(db, id)
+    if politician is None:
+        raise HTTPException(status_code=404, detail="Politician not found")
+    return politician
+
 @app.get("/politician/{id}/jobs")
 def read_politician_jobs(id: int, db: Session = Depends(get_db)):
     pass
-
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
