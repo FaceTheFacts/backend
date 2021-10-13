@@ -14,5 +14,6 @@ def get_poll_by_id(db: Session, id: int):
 def get_politician_by_id(db: Session, id: int):
     return db.query(models.Politician).filter(models.Politician.id == id).first()
 
+
 def get_sidejob_by_id(db: Session, id: int):
     return db.query(models.Sidejob).filter(models.Sidejob.id == id).first()

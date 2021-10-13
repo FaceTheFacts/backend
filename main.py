@@ -58,9 +58,11 @@ def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Politician not found")
     return politician
 
+
 @app.get("/politician/{id}/jobs")
 def read_politician_jobs(id: int, db: Session = Depends(get_db)):
     pass
+
 
 @app.get("/jobs/{id}", response_model=schemas.Sidejob)
 def read_politician_jobs(id: int, db: Session = Depends(get_db)):
@@ -68,6 +70,7 @@ def read_politician_jobs(id: int, db: Session = Depends(get_db)):
     if sidejob is None:
         raise HTTPException(status_code=404, detail="Sidejob not found")
     return sidejob
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -19,6 +19,9 @@ class City(BaseModel):
     label: str
     api_url: str
 
+    class Config:
+        orm_mode = True
+
 
 class Topic(BaseModel):
     id: int
@@ -123,9 +126,9 @@ class SidejobOrganization(BaseModel):
     entity_type: str
     label: str
     api_url: str
-    field_city: Optional[List[City]]
-    field_country: Optional[List[City]]
-    field_topics: Optional[List[Topic]]
+    city: Optional[City]
+    country: Optional[City]
+    topics: Optional[List[Topic]]
 
     class Config:
         orm_mode = True
@@ -143,10 +146,10 @@ class Sidejob(BaseModel):
     interval: Optional[str]
     data_change_date: date
     created: int
-    sidejob_organization: List[SidejobOrganization]
-    field_city: Optional[List[City]]
-    field_country: List[City]
-    field_topics: Optional[List[Topic]]
+    sidejob_organization: Optional[SidejobOrganization]
+    city: Optional[City]
+    country: Optional[Country]
+    topics: Optional[List[Topic]]
 
     class Config:
         orm_mode = True

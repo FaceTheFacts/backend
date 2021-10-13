@@ -89,7 +89,7 @@ class Committee(Base):
     entity_type = Column(String)
     label = Column(String)
     api_url = Column(String)
-    #Many to Many
+    # Many to Many
     topics = relationship(
         "Topic", secondary="committee_has_topic", back_populates="committees"
     )
@@ -98,6 +98,7 @@ class Committee(Base):
     #     "Committee_membership", back_populates="committee"
     # )
     polls = relationship("Poll", back_populates="committee")
+
 
 class Committee_has_topic(Base):
     __tablename__ = "committee_has_topic"
@@ -289,4 +290,3 @@ class SidejobOrganizationHasTopic(Base):
         Integer, ForeignKey("sidejob_organization.id"), primary_key=True
     )
     topic_id = Column(Integer, ForeignKey("topic.id"), primary_key=True)
-
