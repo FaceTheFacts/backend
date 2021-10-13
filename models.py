@@ -30,6 +30,34 @@ class City(Base):
     sidejobs = relationship("Sidejob", back_populates="city")
 
 
+class Topic(Base):
+    __tablename__ = "topic"
+    id = Column(Integer, primary_key=True)
+    entity_type = Column(String)
+    label = Column(String)
+    api_url = Column(String)
+    abgeordnetenwatch_url = Column(String)
+    description = Column(String)
+    parent_id = Column(Integer(), ForeignKey("topic.id"))
+    committees = relationship(
+        "Committee", secondary="committee_has_topic", back_populates="topics"
+    )
+    # Many to Many
+    polls = relationship("Poll", secondary="poll_has_topic", back_populates="topics")
+    sidejob_organizations = relationship(
+        "SidejobOrganization",
+        secondary="sidejob_organization_has_topic",
+        back_populates="topics",
+    )
+    # Many to Many
+    sidejobs = relationship(
+        "Sidejob",
+        secondary="sidejob_has_topic",
+        back_populates="topics",
+    )
+    # position_statements = relationship("Position_statement", back_populates="topics")
+
+
 class Poll(Base):
     __tablename__ = "poll"
     id = Column(Integer, primary_key=True)
@@ -41,6 +69,12 @@ class Poll(Base):
     field_poll_date = Column(Date)
     # Many to One
     committee = relationship("Committee", back_populates="polls")
+
+
+class PollHasTopic(Base):
+    __tablename__ = "poll_has_topic"
+    poll_id = Column(Integer, ForeignKey("poll.id"), primary_key=True)
+    topic_id = Column(Integer, ForeignKey("topic.id"), primary_key=True)
 
 
 class Committee(Base):
