@@ -69,6 +69,12 @@ class Poll(Base):
     field_poll_date = Column(Date)
     # Many to One
     committee = relationship("Committee", back_populates="polls")
+    # parliament_period = relationship("Parliament_period", back_populates="polls")
+    # Many to Many
+    topics = relationship("Topic", secondary="poll_has_topic", back_populates="polls")
+    # One to Many
+    # field_related_links = relationship("FieldRelatedLink", back_populates="poll")
+    # votes = relationship("Vote", back_populates="poll")
 
 
 class PollHasTopic(Base):
@@ -83,8 +89,20 @@ class Committee(Base):
     entity_type = Column(String)
     label = Column(String)
     api_url = Column(String)
+    #Many to Many
+    topics = relationship(
+        "Topic", secondary="committee_has_topic", back_populates="committees"
+    )
     # One to Many
+    # committee_memberships = relationship(
+    #     "Committee_membership", back_populates="committee"
+    # )
     polls = relationship("Poll", back_populates="committee")
+
+class Committee_has_topic(Base):
+    __tablename__ = "committee_has_topic"
+    committee_id = Column(Integer(), ForeignKey("committee.id"), primary_key=True)
+    topic_id = Column(Integer(), ForeignKey("topic.id"), primary_key=True)
 
 
 class Politician(Base):
@@ -156,11 +174,11 @@ class Candidacy_mandate(Base):
     # )
     # votes = relationship("Vote", back_populates="candidacy_mandate")
     # # Many to Many
-    # sidejobs = relationship(
-    #     "Sidejob",
-    #     secondary="sidejob_has_mandate",
-    #     back_populates="candidacy_mandates",
-    # )
+    sidejobs = relationship(
+        "Sidejob",
+        secondary="sidejob_has_mandate",
+        back_populates="candidacy_mandates",
+    )
 
 
 class Electoral_data(Base):
