@@ -196,6 +196,20 @@ class Sidejob(Base):
     )
 
 
+class SidejobHasMandate(Base):
+    __tablename__ = "sidejob_has_mandate"
+    sidejob_id = Column(Integer, ForeignKey("sidejob.id"), primary_key=True)
+    candidacy_mandate_id = Column(
+        Integer, ForeignKey("candidacy_mandate.id"), primary_key=True
+    )
+
+
+class SidejobHasTopic(Base):
+    __tablename__ = "sidejob_has_topic"
+    sidejob_id = Column(Integer, ForeignKey("sidejob.id"), primary_key=True)
+    topic_id = Column(Integer, ForeignKey("topic.id"), primary_key=True)
+
+
 class SidejobOrganization(Base):
     __tablename__ = "sidejob_organization"
     id = Column(Integer, primary_key=True)
@@ -215,3 +229,11 @@ class SidejobOrganization(Base):
         secondary="sidejob_organization_has_topic",
         back_populates="sidejob_organizations",
     )
+
+
+class SidejobOrganizationHasTopic(Base):
+    __tablename__ = "sidejob_organization_has_topic"
+    sidejob_organization_id = Column(
+        Integer, ForeignKey("sidejob_organization.id"), primary_key=True
+    )
+    topic_id = Column(Integer, ForeignKey("topic.id"), primary_key=True)
