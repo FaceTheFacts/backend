@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from pydantic.main import BaseConfig
 from datetime import date
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from typing_extensions import TypedDict
 
 
@@ -13,6 +13,7 @@ class Country(BaseModel):
         orm_mode = True
 
 
+# -----------------------
 class Committee(BaseModel):
     id: int
     entity_type: str
@@ -34,6 +35,7 @@ class Poll(BaseModel):
         orm_mode = True
 
 
+# -----------------------
 class Politician(BaseModel):
     id: int
     entity_type: str
@@ -55,3 +57,41 @@ class Politician(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+# -----------------------
+class Constituency(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+    name: str
+    number: Optional[int]
+
+    class Config:
+        orm_mode = True
+
+
+class ElectoralDataToConstituency(BaseModel):
+    id: int
+    constituency: Optional[Constituency]
+
+    class Config:
+        orm_mode = True
+
+
+class CandidacyMandateToConstituencies(BaseModel):
+    id: int
+    electoral_data: ElectoralDataToConstituency
+
+    class Config:
+        orm_mode = True
+
+
+class PoliticianToConstituencies(BaseModel):
+    id: int
+    candidacy_mandates: List[CandidacyMandateToConstituencies]
+
+    class Config:
+        orm_mode = True
+# -----------------------

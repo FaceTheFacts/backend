@@ -11,6 +11,8 @@ import schemas, crud
 from database import Session
 
 app = FastAPI()
+
+
 # Dependency
 def get_db():
     db = Session()
@@ -41,6 +43,14 @@ def read_poll(id: int, db: Session = Depends(get_db)):
 
 @app.get("/politician/{id}", response_model=schemas.Politician)
 def read_politician(id: int, db: Session = Depends(get_db)):
+    politician = crud.get_politician_by_id(db, id)
+    if politician is None:
+        raise HTTPException(status_code=404, detail="Politician not found")
+    return politician
+
+
+@app.get("/politician/{id}/constituencies", response_model=schemas.PoliticianToConstituencies)
+def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
     politician = crud.get_politician_by_id(db, id)
     if politician is None:
         raise HTTPException(status_code=404, detail="Politician not found")
