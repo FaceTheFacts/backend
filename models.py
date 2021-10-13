@@ -289,32 +289,4 @@ class SidejobOrganizationHasTopic(Base):
         Integer, ForeignKey("sidejob_organization.id"), primary_key=True
     )
     topic_id = Column(Integer, ForeignKey("topic.id"), primary_key=True)
-    class Electoral_data(Base):
-        __tablename__ = "electoral_data"
-        id = Column(Integer, primary_key=True)
-        entity_type = Column(String)
-        label = Column(String)
-        # electoral_list_id = Column(Integer, ForeignKey("electoral_list.id"))
-        list_position = Column(Integer)
-        constituency_id = Column(Integer, ForeignKey("constituency.id"))
-        constituency_result = Column(Float)
-        constituency_result_count = Column(Integer)
-        mandate_won = Column(String)
-        # electoral_list = relationship("Electoral_list", back_populates="electoral_data")
-        constituency = relationship("Constituency", back_populates="electoral_data")
-        # One to One
-        candidacy_mandate = relationship(
-            "Candidacy_mandate", back_populates="electoral_data"
-        )
 
-    class Constituency(Base):
-        __tablename__ = "constituency"
-        id = Column(Integer(), primary_key=True)
-        entity_type = Column(String)
-        label = Column(String)
-        api_url = Column(String)
-        name = Column(String)
-        number = Column(Integer)
-        # parliament_period_id = Column(Integer, ForeignKey("parliament_period.id"))
-        # parliament_period = relationship("Parliament_period")
-        electoral_data = relationship("Electoral_data", back_populates="constituency")
