@@ -77,7 +77,7 @@ class Candidacy_mandate(Base):
     id_external_administration_description = Column(String)
     type = Column(String)
     # parliament_period_id = Column(Integer, ForeignKey("parliament_period.id"))
-    # politician_id = Column(Integer, ForeignKey("politician.id"))
+    politician_id = Column(Integer, ForeignKey("politician.id"))
     # party_id = Column(Integer, ForeignKey("party.id"))
     start_date = Column(Date)
     end_date = Column(Date)
@@ -89,7 +89,7 @@ class Candidacy_mandate(Base):
     # parliament_period = relationship(
     #     "Parliament_period", back_populates="candidacy_mandates"
     # )
-    # politician = relationship("Politician", back_populates="candidacy_mandates")
+    politician = relationship("Politician", back_populates="candidacy_mandates")
     # party = relationship("Party", back_populates="candidacy_mandates")
     # # One to One
     electoral_data = relationship(
