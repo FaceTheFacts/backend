@@ -49,7 +49,9 @@ def read_politician(id: int, db: Session = Depends(get_db)):
     return politician
 
 
-@app.get("/politician/{id}/constituencies", response_model=schemas.PoliticianToConstituencies)
+@app.get(
+    "/politician/{id}/constituencies", response_model=schemas.PoliticianToConstituencies
+)
 def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
     politician = crud.get_politician_by_id(db, id)
     if politician is None:
