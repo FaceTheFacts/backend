@@ -46,9 +46,11 @@ def read_politician(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Politician not found")
     return politician
 
+
 @app.get("/politician/{id}/jobs")
 def read_politician_jobs(id: int, db: Session = Depends(get_db)):
     pass
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -10,6 +10,24 @@ class Country(Base):
     entity_type = Column(String)
     label = Column(String)
     api_url = Column(String, unique=True)
+    # One to Many
+    sidejob_organizations = relationship(
+        "SidejobOrganization", back_populates="country"
+    )
+    # One to Many
+    sidejobs = relationship("Sidejob", back_populates="country")
+
+
+class City(Base):
+    __tablename__ = "city"
+    id = Column(Integer(), primary_key=True)
+    entity_type = Column(String)
+    label = Column(String)
+    api_url = Column(String, unique=True)
+    # One to Many
+    sidejob_organizations = relationship("SidejobOrganization", back_populates="city")
+    # One to Many
+    sidejobs = relationship("Sidejob", back_populates="city")
 
 
 class Poll(Base):
@@ -110,32 +128,90 @@ class Candidacy_mandate(Base):
     #     back_populates="candidacy_mandates",
     # )
 
-    class Electoral_data(Base):
-        __tablename__ = "electoral_data"
-        id = Column(Integer, primary_key=True)
-        entity_type = Column(String)
-        label = Column(String)
-        # electoral_list_id = Column(Integer, ForeignKey("electoral_list.id"))
-        list_position = Column(Integer)
-        constituency_id = Column(Integer, ForeignKey("constituency.id"))
-        constituency_result = Column(Float)
-        constituency_result_count = Column(Integer)
-        mandate_won = Column(String)
-        # electoral_list = relationship("Electoral_list", back_populates="electoral_data")
-        constituency = relationship("Constituency", back_populates="electoral_data")
-        # One to One
-        candidacy_mandate = relationship(
-            "Candidacy_mandate", back_populates="electoral_data"
-        )
 
-    class Constituency(Base):
-        __tablename__ = "constituency"
-        id = Column(Integer(), primary_key=True)
-        entity_type = Column(String)
-        label = Column(String)
-        api_url = Column(String)
-        name = Column(String)
-        number = Column(Integer)
-        # parliament_period_id = Column(Integer, ForeignKey("parliament_period.id"))
-        # parliament_period = relationship("Parliament_period")
-        electoral_data = relationship("Electoral_data", back_populates="constituency")
+class Electoral_data(Base):
+    __tablename__ = "electoral_data"
+    id = Column(Integer, primary_key=True)
+    entity_type = Column(String)
+    label = Column(String)
+    # electoral_list_id = Column(Integer, ForeignKey("electoral_list.id"))
+    list_position = Column(Integer)
+    constituency_id = Column(Integer, ForeignKey("constituency.id"))
+    constituency_result = Column(Float)
+    constituency_result_count = Column(Integer)
+    mandate_won = Column(String)
+    # electoral_list = relationship("Electoral_list", back_populates="electoral_data")
+    constituency = relationship("Constituency", back_populates="electoral_data")
+    # One to One
+    candidacy_mandate = relationship(
+        "Candidacy_mandate", back_populates="electoral_data"
+    )
+
+
+class Constituency(Base):
+    __tablename__ = "constituency"
+    id = Column(Integer(), primary_key=True)
+    entity_type = Column(String)
+    label = Column(String)
+    api_url = Column(String)
+    name = Column(String)
+    number = Column(Integer)
+    # parliament_period_id = Column(Integer, ForeignKey("parliament_period.id"))
+    # parliament_period = relationship("Parliament_period")
+    electoral_data = relationship("Electoral_data", back_populates="constituency")
+
+
+class Sidejob(Base):
+    __tablename__ = "sidejob"
+    id = Column(Integer, primary_key=True)
+    entity_type = Column(String)
+    label = Column(String)
+    api_url = Column(String)
+    job_title_extra = Column(String)
+    additional_information = Column(String)
+    category = Column(String)
+    income_level = Column(String)
+    interval = Column(String)
+    data_change_date = Column(Date)
+    created = Column(Integer)
+    sidejob_organization_id = Column(Integer, ForeignKey("sidejob_organization.id"))
+    field_city_id = Column(Integer, ForeignKey("city.id"))
+    field_country_id = Column(Integer, ForeignKey("country.id"))
+    # Many to One
+    sidejob_organization = relationship(
+        "SidejobOrganization", back_populates="sidejobs"
+    )
+    city = relationship("City", back_populates="sidejobs")
+    country = relationship("Country", back_populates="sidejobs")
+    # Many to Many
+    candidacy_mandates = relationship(
+        "Candidacy_mandate",
+        secondary="sidejob_has_mandate",
+        back_populates="sidejobs",
+    )
+    topics = relationship(
+        "Topic",
+        secondary="sidejob_has_topic",
+        back_populates="sidejobs",
+    )
+
+
+class SidejobOrganization(Base):
+    __tablename__ = "sidejob_organization"
+    id = Column(Integer, primary_key=True)
+    entity_type = Column(String)
+    label = Column(String)
+    api_url = Column(String)
+    field_city_id = Column(Integer, ForeignKey("city.id"))
+    field_country_id = Column(Integer, ForeignKey("country.id"))
+    # Many to One
+    city = relationship("City", back_populates="sidejob_organizations")
+    country = relationship("Country", back_populates="sidejob_organizations")
+    # One to Many
+    sidejobs = relationship("Sidejob", back_populates="sidejob_organization")
+    # Many to Many
+    topics = relationship(
+        "Topic",
+        secondary="sidejob_organization_has_topic",
+        back_populates="sidejob_organizations",
+    )
