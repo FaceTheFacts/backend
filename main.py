@@ -68,7 +68,7 @@ def read_politician_positions(id: int, db: Session = Depends(get_db)):
     return politician
 
 
-@app.get("/politician/{id}/jobs")
+@app.get("/politician/{id}/jobs", response_model=schemas.PoliticianToCandidacyMandates )
 def read_politician_jobs(id: int, db: Session = Depends(get_db)):
     politician = crud.get_politician_by_id(db, id)
     if politician is None:
