@@ -134,6 +134,7 @@ class SidejobOrganization(BaseModel):
         orm_mode = True
 
 
+# -----------------------
 class Sidejob(BaseModel):
     id: int
     entity_type: str
@@ -150,6 +151,22 @@ class Sidejob(BaseModel):
     city: Optional[City]
     country: Optional[Country]
     topics: Optional[List[Topic]]
+
+    class Config:
+        orm_mode = True
+
+
+class CandidacyMandateToSidejobs(BaseModel):
+    id: int
+    sidejobs: Optional[List[Sidejob]]
+
+    class Config:
+        orm_mode = True
+
+
+class PoliticianToCandidacyMandates(BaseModel):
+    id: int
+    candidacy_mandates: Optional[List[CandidacyMandateToSidejobs]]
 
     class Config:
         orm_mode = True
