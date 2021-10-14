@@ -121,6 +121,24 @@ class PoliticianToConstituencies(BaseModel):
 
 
 # -----------------------
+class Position(BaseModel):
+    id: int
+    position: str
+    reason: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
+class PoliticianToPosition(BaseModel):
+    id: int
+    positions: List[Position]
+
+    class Config:
+        orm_mode = True
+
+
+# -----------------------
 class SidejobOrganization(BaseModel):
     id: int
     entity_type: str

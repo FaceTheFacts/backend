@@ -1,5 +1,5 @@
 # std
-from typing import List, Optional
+from typing import Optional
 
 # 3rd-party
 import uvicorn
@@ -7,7 +7,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 # local
-import schemas, crud
+import crud
+import schemas
 from database import Session
 
 app = FastAPI()
@@ -59,7 +60,15 @@ def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
     return politician
 
 
-@app.get("/politician/{id}/jobs", response_model=schemas.PoliticianToCandidacyMandates)
+@app.get("/politician/{id}/positions", response_model=schemas.PoliticianToPosition)
+def read_politician_positions(id: int, db: Session = Depends(get_db)):
+    politician = crud.get_politician_by_id(db, id)
+    if politician is None:
+        raise HTTPException(status_code=404, detail="Politician not found")
+    return politician
+
+
+@app.get("/politician/{id}/jobs")
 def read_politician_jobs(id: int, db: Session = Depends(get_db)):
     politician = crud.get_politician_by_id(db, id)
     if politician is None:
