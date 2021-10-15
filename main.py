@@ -72,8 +72,6 @@ def read_politician_positions(id: int, db: Session = Depends(get_db)):
 @app.get("/politician/{id}/sidejobs", response_model=Page[schemas.Sidejob])
 def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)
-    if sidejobs is None:
-        raise HTTPException(status_code=404, detail="Sidejobs not found")
     return paginate(sidejobs)
 
 

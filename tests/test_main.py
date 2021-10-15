@@ -234,7 +234,34 @@ def test_read_politician_sidejobs():
             ],
         }
 
+    def selected_values_test_2():
+        response = client.get("/politician/78808/sidejobs?page=2&size=1")
+        assert response.status_code == 200
+        assert response.json()["items"][0]["city"] == None
+        assert response.json()["items"][0]["country"] == {
+            "id": 61,
+            "entity_type": "taxonomy_term",
+            "label": "Deutschland",
+            "api_url": "https://www.abgeordnetenwatch.de/api/v2/countries/61",
+        }
+        assert response.json()["items"][0]["topics"] == [
+            {
+                "id": 7,
+                "entity_type": "taxonomy_term",
+                "label": "Kultur",
+                "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/7",
+                "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/kultur",
+                "description": None,
+                "parent_id": None,
+            }
+        ]
+
+    def sidejob_not_found_test():
+        response = client.get("/politician/28881/sidejobs?page=2&size=1")
+        assert response.status_code == 200
+        assert response.json() == {"items": [], "total": 0, "page": 2, "size": 1}
+
     selected_values_test()
+    selected_values_test_2()
+    sidejob_not_found_test()
 
-
-test_read_politician_sidejobs()
