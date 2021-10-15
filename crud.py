@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 # local
 import models
+import schemas
 
 
 def get_country_by_id(db: Session, id: int):
@@ -51,4 +52,13 @@ def get_sidejob_ids_by_politician_id(db: Session, id: int) -> List[int]:
             if datum != None:
                 data_list.append(datum["sidejob_id"])
 
+    return data_list
+
+
+def get_sidejobs_by_politician_id(db: Session, id: int) -> List[schemas.Sidejob]:
+    data_list = []
+    sidejob_ids = get_sidejob_ids_by_politician_id(db, id)
+    for sidejob_id in sidejob_ids:
+        sidejob = get_sidejob_by_id(db, sidejob_id)
+        data_list.append(sidejob)
     return data_list
