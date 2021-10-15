@@ -1,5 +1,10 @@
+# std
+from typing import List
+
+# 3rd-party
 from sqlalchemy.orm import Session
 
+# local
 import models
 
 
@@ -14,6 +19,8 @@ def get_poll_by_id(db: Session, id: int):
 def get_politician_by_id(db: Session, id: int):
     return db.query(models.Politician).filter(models.Politician.id == id).first()
 
+def get_sidejob_by_id(db: Session, id: int):
+    return db.query(models.Sidejob).filter(models.Sidejob.id == id).first()
 
 def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int):
     data_list = []
@@ -34,5 +41,3 @@ def get_sidejob_ids_by_candidacy_mandate_ids(db: Session, id: int):
 
     return data_list
 
-def get_sidejob_by_id(db: Session, id: int):
-    return db.query(models.Sidejob).filter(models.Sidejob.id == id).first()
