@@ -180,3 +180,61 @@ def test_read_politician_positions():
         )
 
     selected_values_test()
+
+
+def test_read_politician_sidejobs():
+    def selected_values_test():
+        response = client.get("/politician/119742/sidejobs?page=1&size=1")
+        assert response.status_code == 200
+        assert response.json()["items"][0]["sidejob_organization"] == {
+            "id": 2668,
+            "entity_type": "sidejob_organization",
+            "label": "Lupus Alpha Asset Management GmbH",
+            "api_url": "https://www.abgeordnetenwatch.de/api/v2/sidejob-organizations/2668",
+            "city": {
+                "id": 73,
+                "entity_type": "taxonomy_term",
+                "label": "Frankfurt/Main",
+                "api_url": "https://www.abgeordnetenwatch.de/api/v2/cities/73",
+            },
+            "country": {
+                "id": 61,
+                "entity_type": "taxonomy_term",
+                "label": "Deutschland",
+                "api_url": "https://www.abgeordnetenwatch.de/api/v2/countries/61",
+            },
+            "topics": [
+                {
+                    "id": 19,
+                    "entity_type": "taxonomy_term",
+                    "label": "Wirtschaft",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/19",
+                    "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/wirtschaft",
+                    "description": None,
+                    "parent_id": None,
+                },
+                {
+                    "id": 22,
+                    "entity_type": "taxonomy_term",
+                    "label": "Öffentliche Finanzen, Steuern und Abgaben",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/22",
+                    "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/oeffentliche-finanzen-steuern-und-abgaben",
+                    "description": None,
+                    "parent_id": None,
+                },
+                {
+                    "id": 41,
+                    "entity_type": "taxonomy_term",
+                    "label": "Finanzen",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/41",
+                    "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/finanzen",
+                    "description": None,
+                    "parent_id": 22,
+                },
+            ],
+        }
+
+    selected_values_test()
+
+
+test_read_politician_sidejobs()
