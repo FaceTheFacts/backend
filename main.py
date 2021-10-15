@@ -68,21 +68,20 @@ def read_politician_positions(id: int, db: Session = Depends(get_db)):
     return politician
 
 
-@app.get("/politician/{id}/jobs", response_model=schemas.PoliticianToCandidacyMandates )
+@app.get("/politician/{id}/jobs", response_model=schemas.PoliticianToCandidacyMandates)
 def read_politician_jobs(id: int, db: Session = Depends(get_db)):
     politician = crud.get_politician_by_id(db, id)
     if politician is None:
         raise HTTPException(status_code=404, detail="Politician not found")
     return politician
 
+
 @app.get("/politician/{id}/test/jobs", response_model=List[schemas.Sidejob])
 def read_politician_jobs(id: int, db: Session = Depends(get_db)):
-    # politician = crud.get_candidacy_mandate_ids_by_politician_id(db, id)
-    # politician = crud.get_sidejob_ids_by_candidacy_mandate_ids(db, id)
-    data_list =[]
-    sidejob_ids = crud.get_sidejob_ids_by_candidacy_mandate_ids(db, id)
+    data_list = []
+    sidejob_ids = crud.get_sidejob_ids_by_politician_id(db, id)
     for sidejob_id in sidejob_ids:
-        sidejob = crud.get_sidejob_by_id(db,sidejob_id)
+        sidejob = crud.get_sidejob_by_id(db, sidejob_id)
         data_list.append(sidejob)
     if data_list is None:
         raise HTTPException(status_code=404, detail="Sidejobs not found")
