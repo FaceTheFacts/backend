@@ -264,4 +264,3 @@ def test_read_politician_sidejobs():
     selected_values_test()
     selected_values_test_2()
     sidejob_not_found_test()
-
