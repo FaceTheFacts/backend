@@ -5,6 +5,7 @@ from typing import Optional, List
 import uvicorn
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_pagination import Page, add_pagination, paginate
 
 # local
 import crud
@@ -76,12 +77,12 @@ def read_politician_jobs(id: int, db: Session = Depends(get_db)):
     return politician
 
 
-@app.get("/politician/{id}/sidejobs", response_model=List[schemas.Sidejob])
+@app.get("/politician/{id}/sidejobs", response_model=Page[schemas.Sidejob])
 def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)
     if sidejobs is None:
         raise HTTPException(status_code=404, detail="Sidejobs not found")
-    return sidejobs
+    return paginate(sidejobs)
 
 
 @app.get("/jobs/{id}", response_model=schemas.Sidejob)
@@ -91,6 +92,9 @@ def read_politician_jobs(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Sidejob not found")
     return sidejob
 
+
+# https://uriyyo-fastapi-pagination.netlify.app/
+add_pagination(app)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -41,12 +41,8 @@ def get_sidejob_ids_by_politician_id(db: Session, id: int) -> List[int]:
     data_list = []
     candidacy_mandate_ids = get_candidacy_mandate_ids_by_politician_id(db, id)
     for candidacy_mandate_id in candidacy_mandate_ids:
-        data = (
-            db.query(models.SidejobHasMandate.sidejob_id)
-            .filter(
-                models.SidejobHasMandate.candidacy_mandate_id == candidacy_mandate_id
-            )
-            .slice(0, 10)
+        data = db.query(models.SidejobHasMandate.sidejob_id).filter(
+            models.SidejobHasMandate.candidacy_mandate_id == candidacy_mandate_id
         )
         for datum in data:
             if datum != None:
