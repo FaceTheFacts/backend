@@ -69,28 +69,12 @@ def read_politician_positions(id: int, db: Session = Depends(get_db)):
     return politician
 
 
-@app.get("/politician/{id}/jobs", response_model=schemas.PoliticianToCandidacyMandates)
-def read_politician_jobs(id: int, db: Session = Depends(get_db)):
-    politician = crud.get_politician_by_id(db, id)
-    if politician is None:
-        raise HTTPException(status_code=404, detail="Politician not found")
-    return politician
-
-
 @app.get("/politician/{id}/sidejobs", response_model=Page[schemas.Sidejob])
 def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)
     if sidejobs is None:
         raise HTTPException(status_code=404, detail="Sidejobs not found")
     return paginate(sidejobs)
-
-
-@app.get("/jobs/{id}", response_model=schemas.Sidejob)
-def read_politician_jobs(id: int, db: Session = Depends(get_db)):
-    sidejob = crud.get_sidejob_by_id(db, id)
-    if sidejob is None:
-        raise HTTPException(status_code=404, detail="Sidejob not found")
-    return sidejob
 
 
 # https://uriyyo-fastapi-pagination.netlify.app/

@@ -172,19 +172,3 @@ class Sidejob(BaseModel):
 
     class Config:
         orm_mode = True
-
-
-class CandidacyMandateToSidejobs(BaseModel):
-    id: int
-    sidejobs: Optional[List[Sidejob]]
-
-    class Config:
-        orm_mode = True
-
-
-class PoliticianToCandidacyMandates(BaseModel):
-    id: int
-    candidacy_mandates: Optional[List[CandidacyMandateToSidejobs]]
-
-    class Config:
-        orm_mode = True
