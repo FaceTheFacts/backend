@@ -83,6 +83,14 @@ class Politician(BaseModel):
         orm_mode = True
 
 
+class PoliticianName(BaseModel):
+    id: int
+    label: str
+
+    class Config:
+        orm_mode = True
+
+
 # -----------------------
 class Constituency(BaseModel):
     id: int
