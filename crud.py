@@ -3,7 +3,6 @@ from typing import List
 
 # 3rd-party
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
 # local
 import models
@@ -30,8 +29,8 @@ def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int
     data_list = []
     data = (
         db.query(models.Candidacy_mandate.id)
-            .filter(models.Candidacy_mandate.politician_id == id)
-            .all()
+        .filter(models.Candidacy_mandate.politician_id == id)
+        .all()
     )
     for datum in data:
         data_list.append(datum["id"])
@@ -62,7 +61,12 @@ def get_sidejobs_by_politician_id(db: Session, id: int) -> List[schemas.Sidejob]
 
 
 def get_politicians_by_partial_name(db: Session, partial_name: str):
-    return db.query(models.Politician).where(models.Politician.label.ilike(f'%{partial_name}%')).all()
+    return (
+        db.query(models.Politician)
+        .where(models.Politician.label.ilike(f"%{partial_name}%"))
+        .all()
+    )
+
 
 def get_politicians_by_partial_zipcode(db: Session, zipcode: int):
     pass

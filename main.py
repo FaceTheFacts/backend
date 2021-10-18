@@ -81,6 +81,12 @@ def read_politician_search(text: str, db: Session = Depends(get_db)):
     return paginate(politician)
 
 
+@app.get("/image-scanner", response_model=Page[schemas.PoliticianName])
+def get_politicians_by_partial_name(text: str, db: Session = Depends(get_db)):
+    politician = crud.get_politician_by_search(db, text)
+    return paginate(politician)
+
+
 # https://uriyyo-fastapi-pagination.netlify.app/
 add_pagination(app)
 
