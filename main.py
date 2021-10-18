@@ -75,6 +75,12 @@ def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     return paginate(sidejobs)
 
 
+@app.get("/search", response_model=Page[schemas.PoliticianName])
+def read_politician_search(text: str, db: Session = Depends(get_db)):
+    politician = crud.get_politician_by_search(db, text)
+    return paginate(politician)
+
+
 # https://uriyyo-fastapi-pagination.netlify.app/
 add_pagination(app)
 
