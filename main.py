@@ -82,7 +82,7 @@ def read_politician_search(text: str, db: Session = Depends(get_db)):
 
 
 @app.get("/image-scanner", response_model=Page[schemas.PoliticianName])
-def get_politicians_by_partial_name(text: str, db: Session = Depends(get_db)):
+def read_politicians_image_scanner(text: str, db: Session = Depends(get_db)):
     politician = crud.get_politician_by_search(db, text)
     return paginate(politician)
 
