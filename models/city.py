@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
 
-from ..db.base import Base
+from database import Base
 
 
 class City(Base):

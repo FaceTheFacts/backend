@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer
 
-from ..db.base import Base
+from database import Base
 
 
 class Parliament(Base):
