@@ -29,8 +29,8 @@ def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int
     data_list = []
     data = (
         db.query(models.CandidacyMandate.id)
-            .filter(models.CandidacyMandate.politician_id == id)
-            .all()
+        .filter(models.CandidacyMandate.politician_id == id)
+        .all()
     )
     for datum in data:
         data_list.append(datum["id"])
