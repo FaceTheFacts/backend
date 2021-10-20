@@ -264,3 +264,43 @@ def test_read_politician_sidejobs():
     selected_values_test()
     selected_values_test_2()
     sidejob_not_found_test()
+
+
+def test_read_politicians_image_scanner():
+    def random_test():
+        response = client.get("/image-scanner?text=ronald")
+        assert response.status_code == 200
+        assert type(response.json()) is dict
+        test_responses = [
+            {
+                "id": 137636,
+                "label": "Ronald Kaufmann"
+            },
+            {
+                "id": 124296,
+                "label": "Ronald Maaß"
+            },
+            {
+                "id": 124295,
+                "label": "Ronald Doege"
+            },
+            {
+                "id": 32270,
+                "label": "Ronald Krügel"
+            },
+        ]
+        for item in test_responses:
+            assert item in response.json()["items"]
+
+    def response_pagination():
+        response = client.get("/image-scanner?text=christian&page=4&size=50")
+        assert response.status_code == 200
+        assert type(response.json()) is dict
+
+        assert len(response.json()["items"]) == 50
+        assert len(response.json()["items"]) == response.json()["size"]
+
+        assert response.json()["page"] == 4
+
+    random_test()
+    response_pagination()
