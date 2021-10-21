@@ -12,13 +12,14 @@ requests = "^2.26.0"
 uvicorn = "^0.14.0"
 python-dotenv = "^0.19.1"
 SQLAlchemy = "^1.4.25"
-psycopg2 = "^2.9.1"
 pydantic = "^1.8.2"
 fastapi-pagination = "^0.9.0"
+psycopg2-binary = "^2.9.1"
 
 [tool.poetry.dev-dependencies]
 black = "^21.7b0"
 pytest = "^6.2.4"
+psycopg2 = "^2.9.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
