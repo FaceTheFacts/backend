@@ -27,6 +27,7 @@ jobs:
   cd:
     runs-on: ubuntu-latest
     needs: [ci]
+    if: ${{ github.event.push }}
 
     steps:
       - name: Checkout source code
