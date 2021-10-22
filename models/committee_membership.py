@@ -14,6 +14,7 @@ class CommitteeMembership(Base):
     committee_id = Column(Integer, ForeignKey("committee.id"))
     candidacy_mandate_id = Column(Integer, ForeignKey("candidacy_mandate.id"))
     committee_role = Column(String)
+    
     # Many to One
     committee = relationship("Committee", back_populates="committee_memberships")
     candidacy_mandate = relationship(
