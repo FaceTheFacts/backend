@@ -7,7 +7,7 @@ from database import Base
 class Position(Base):
     __tablename__ = "position"
 
-    # id has the following structure parliament_period + statement_number (130 + 1 -> 1301)
+    # id has the following structure: parliament_period * 10 + statement_number (130 * 10 + 1 = 1301)
     id = Column(BigInteger, primary_key=True)
     position = Column(String)
     reason = Column(String())
