@@ -28,8 +28,8 @@ def get_sidejob_by_id(db: Session, id: int):
 def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int]:
     data_list = []
     data = (
-        db.query(models.Candidacy_mandate.id)
-        .filter(models.Candidacy_mandate.politician_id == id)
+        db.query(models.CandidacyMandate.id)
+        .filter(models.CandidacyMandate.politician_id == id)
         .all()
     )
     for datum in data:
