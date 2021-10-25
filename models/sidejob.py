@@ -20,12 +20,14 @@ class Sidejob(Base):
     sidejob_organization_id = Column(Integer, ForeignKey("sidejob_organization.id"))
     field_city_id = Column(Integer, ForeignKey("city.id"))
     field_country_id = Column(Integer, ForeignKey("country.id"))
+
     # Many to One
     sidejob_organization = relationship(
         "SidejobOrganization", back_populates="sidejobs"
     )
     city = relationship("City", back_populates="sidejobs")
     country = relationship("Country", back_populates="sidejobs")
+
     # Many to Many
     candidacy_mandates = relationship(
         "CandidacyMandate",
