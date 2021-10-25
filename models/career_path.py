@@ -11,6 +11,6 @@ class CareerPath(Base):
     raw_text = Column(String)
     label = Column(String)
     period = Column(String)
-    
+
     # Many to One
     cv = relationship("CV", back_populates="career_paths")
