@@ -10,6 +10,6 @@ class FieldRelatedLink(Base):
     poll_id = Column(Integer, ForeignKey("poll.id"))
     uri = Column(String)
     title = Column(String)
-    
+
     # Many to One
     poll = relationship("Poll", back_populates="field_related_links")
