@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 # local
 import src.db.models as models
-import schemas
+import src.api.schemas as schemas
 
 
 def get_country_by_id(db: Session, id: int):
