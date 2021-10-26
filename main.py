@@ -9,7 +9,7 @@ from fastapi_pagination import Page, add_pagination, paginate
 
 # local
 import src.api.crud as crud
-import schemas
+import src.api.schemas as schemas
 from src.db.connection import Session
 
 app = FastAPI()
