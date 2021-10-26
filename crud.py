@@ -5,7 +5,7 @@ from typing import List
 from sqlalchemy.orm import Session
 
 # local
-import models
+import src.db.models as models
 import schemas
 
 
