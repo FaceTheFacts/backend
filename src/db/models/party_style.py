@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-from database import Base
+from src.db.connection import Base
 
 
 # Maybe partystyle

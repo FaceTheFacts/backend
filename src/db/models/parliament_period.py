@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer, ForeignKey, Date
 from sqlalchemy.orm import relationship
 
 
-from database import Base
+from src.db.connection import Base
 
 
 class ParliamentPeriod(Base):

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, BigInteger
 from sqlalchemy.orm import relationship
 
-from database import Base
+from src.db.connection import Base
 
 
 class Position(Base):

@@ -8,9 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import Page, add_pagination, paginate
 
 # local
-import crud
+import src.api.crud as crud
 import schemas
-from database import Session
+from src.db.connection import Session
 
 app = FastAPI()
 
