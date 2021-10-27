@@ -266,7 +266,7 @@ def test_read_politician_sidejobs():
     sidejob_not_found_test()
 
 
-def test_read_politicians_image_scanner():
+def test_read_politician_image_scanner():
     def random_test():
         response = client.get("/image-scanner?text=ronald")
         assert response.status_code == 200
@@ -292,7 +292,7 @@ def test_read_politicians_image_scanner():
         for item in test_responses:
             assert item in response.json()["items"]
 
-    def response_pagination():
+    def pagination_response():
         response = client.get("/image-scanner?text=christian&page=4&size=50")
         assert response.status_code == 200
         assert type(response.json()) is dict
@@ -303,4 +303,38 @@ def test_read_politicians_image_scanner():
         assert response.json()["page"] == 4
 
     random_test()
-    response_pagination()
+    pagination_response()
+
+
+def test_read_politician_search():
+    def selected_values_test():
+        response = client.get('/search?text=55278')
+        assert response.status_code == 200
+        assert type(response.json()) is dict
+        test_responses = [
+            {
+                "id": 177457,
+                "label": "Chiara Pohl"
+            },
+            {
+                "id": 175546,
+                "label": "Christian Engelke"
+            },
+            {
+                "id": 176888,
+                "label": "David Hess"
+            },
+        ]
+
+        for item in test_responses:
+            assert item in response.json()["items"]
+
+    selected_values_test()
+
+
+# combined test for read_politician_search and read_politicians_image_scanner
+def test_search_and_image_scanner():
+    search_response = client.get('/search?text=Philipp')
+    image_scanner_response = client.get('image-scanner?text=Philipp')
+
+    assert search_response.json() == image_scanner_response.json()
