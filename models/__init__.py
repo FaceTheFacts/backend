@@ -30,3 +30,4 @@ from models.sidejob_organization import *
 from models.sidejob_organization_has_topic import *
 from models.topic import *
 from models.vote import *
+from models.zip_code import *

@@ -17,3 +17,5 @@ class Constituency(Base):
     parliament_period_id = Column(Integer, ForeignKey("parliament_period.id"))
     parliament_period = relationship("ParliamentPeriod")
     electoral_data = relationship("ElectoralData", back_populates="constituency")
+    # One to Many
+    zip_codes = relationship("ZipCode", back_populates="constituency")
