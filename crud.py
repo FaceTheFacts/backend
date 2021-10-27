@@ -29,8 +29,8 @@ def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int
     data_list = []
     data = (
         db.query(models.CandidacyMandate.id)
-            .filter(models.CandidacyMandate.politician_id == id)
-            .all()
+        .filter(models.CandidacyMandate.politician_id == id)
+        .all()
     )
     for datum in data:
         data_list.append(datum["id"])
@@ -63,31 +63,42 @@ def get_sidejobs_by_politician_id(db: Session, id: int) -> List[schemas.Sidejob]
 def get_politicians_by_partial_name(db: Session, partial_name: str):
     return (
         db.query(models.Politician)
-            .where(models.Politician.label.ilike(f"%{partial_name}%"))
-            .all()
+        .where(models.Politician.label.ilike(f"%{partial_name}%"))
+        .all()
     )
 
 
 def get_politicians_by_zipcode(db: Session, zipcode: int):
-
-    constituency_id = db.query(models.ZipCode.constituency_id).filter(models.ZipCode.zip_code == str(zipcode)).first()['constituency_id']
+    constituency_id = (
+        db.query(models.ZipCode.constituency_id)
+        .filter(models.ZipCode.zip_code == str(zipcode))
+        .first()["constituency_id"]
+    )
 
     if constituency_id is None:
         return []
 
-    electoral_data_ids = db.query(models.ElectoralData.id).filter(
-        models.ElectoralData.constituency_id == constituency_id).all()
+    electoral_data_ids = (
+        db.query(models.ElectoralData.id)
+        .filter(models.ElectoralData.constituency_id == constituency_id)
+        .all()
+    )
 
     politician_ids = []
     for electoral_data_id in electoral_data_ids:
-        politician_ids.append(db.query(models.CandidacyMandate.politician_id).filter(
-            models.CandidacyMandate.electoral_data_id == electoral_data_id.id).first())
-
+        politician_ids.append(
+            db.query(models.CandidacyMandate.politician_id)
+            .filter(models.CandidacyMandate.electoral_data_id == electoral_data_id.id)
+            .first()
+        )
 
     politicians = []
     for politician_id in politician_ids:
         politicians.append(
-            db.query(models.Politician).filter(models.Politician.id == politician_id.politician_id).first())
+            db.query(models.Politician)
+            .filter(models.Politician.id == politician_id.politician_id)
+            .first()
+        )
 
     return politicians
 

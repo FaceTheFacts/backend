@@ -272,22 +272,10 @@ def test_read_politician_image_scanner():
         assert response.status_code == 200
         assert type(response.json()) is dict
         test_responses = [
-            {
-                "id": 137636,
-                "label": "Ronald Kaufmann"
-            },
-            {
-                "id": 124296,
-                "label": "Ronald Maaß"
-            },
-            {
-                "id": 124295,
-                "label": "Ronald Doege"
-            },
-            {
-                "id": 32270,
-                "label": "Ronald Krügel"
-            },
+            {"id": 137636, "label": "Ronald Kaufmann"},
+            {"id": 124296, "label": "Ronald Maaß"},
+            {"id": 124295, "label": "Ronald Doege"},
+            {"id": 32270, "label": "Ronald Krügel"},
         ]
         for item in test_responses:
             assert item in response.json()["items"]
@@ -308,22 +296,13 @@ def test_read_politician_image_scanner():
 
 def test_read_politician_search():
     def selected_values_test():
-        response = client.get('/search?text=55278')
+        response = client.get("/search?text=55278")
         assert response.status_code == 200
         assert type(response.json()) is dict
         test_responses = [
-            {
-                "id": 177457,
-                "label": "Chiara Pohl"
-            },
-            {
-                "id": 175546,
-                "label": "Christian Engelke"
-            },
-            {
-                "id": 176888,
-                "label": "David Hess"
-            },
+            {"id": 177457, "label": "Chiara Pohl"},
+            {"id": 175546, "label": "Christian Engelke"},
+            {"id": 176888, "label": "David Hess"},
         ]
 
         for item in test_responses:
@@ -334,7 +313,7 @@ def test_read_politician_search():
 
 # combined test for read_politician_search and read_politicians_image_scanner
 def test_search_and_image_scanner():
-    search_response = client.get('/search?text=Philipp')
-    image_scanner_response = client.get('image-scanner?text=Philipp')
+    search_response = client.get("/search?text=Philipp")
+    image_scanner_response = client.get("image-scanner?text=Philipp")
 
     assert search_response.json() == image_scanner_response.json()
