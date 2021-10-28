@@ -726,19 +726,15 @@ def populate_cvs_and_career_paths() -> None:
 
 
 def populate_weblinks() -> None:
-    cv_data = read_json("src/data_scraper/json_data/weblinks.json")
-    # weblinks = []
-    # for politician_id in cv_data:
-    #     links = cv_data[politician_id].get("Links")
-    #     if links:
-    #         for link in links:
-    #             weblink = {
-    #                 "politician_id": politician_id,
-    #                 "link": link,
-    #             }
-    #             weblinks.append(weblink)
-    # insert_and_update(PoliticianWeblink, weblinks)
-    print(cv_data)
+    weblink_data = read_json("src/data_scraper/json_data/weblinks.json")
+    weblinks = []
+    for item in weblink_data:
+        weblink = {
+            "politician_id": item["politician_id"],
+            "link": item["weblink"],
+        }
+        weblinks.append(weblink)
+    insert_and_update(PoliticianWeblink, weblinks)
 
 
 if __name__ == "__main__":
