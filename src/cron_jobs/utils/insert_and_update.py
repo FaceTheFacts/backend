@@ -1,7 +1,11 @@
+# std 
 from typing import Any
-from sqlalchemy.dialects.postgresql import insert
+
+# local
 from src.db.connection import Session
 
+# third-party
+from sqlalchemy.dialects.postgresql import insert
 
 def insert_and_update(model: Any, data: list[Any]) -> None:
     session = Session()

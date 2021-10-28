@@ -1,10 +1,10 @@
+# std
 import time
-from sqlalchemy.dialects.postgresql import insert
 
+# local
 from src.cron_jobs.utils.file import read_json
 from src.cron_jobs.utils.fetch import load_entity
 from src.db.connection import engine, Session, Base
-
 from src.db.models.country import Country
 from src.db.models.city import City
 from src.db.models.party_style import PartyStyle
@@ -37,7 +37,6 @@ from src.db.models.cv import CV
 from src.db.models.career_path import CareerPath
 from src.db.models.position import Position
 from src.db.models.politician_weblink import PoliticianWeblink
-
 from src.cron_jobs.utils.insert_and_update import insert_and_update
 from src.cron_jobs.utils.parser import (
     gen_statements,
@@ -46,6 +45,8 @@ from src.cron_jobs.utils.parser import (
     PERIOD_POSITION_TABLE,
 )
 
+# third-party
+from sqlalchemy.dialects.postgresql import insert
 
 def populate_countries() -> None:
     api_countries = load_entity("countries")

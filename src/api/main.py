@@ -1,7 +1,7 @@
 # std
 from typing import Optional, List
 
-# 3rd-party
+# third-party
 import uvicorn
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware

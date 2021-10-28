@@ -1,7 +1,7 @@
 # std
 from typing import List
 
-# 3rd-party
+# third-party
 from sqlalchemy.orm import Session
 
 # local
