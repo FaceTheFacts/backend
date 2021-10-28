@@ -38,8 +38,8 @@ from src.db.models.career_path import CareerPath
 from src.db.models.position import Position
 from src.db.models.politician_weblink import PoliticianWeblink
 
-from .utils.insert_and_update import insert_and_update
-from .utils.parser import (
+from src.cron_jobs.utils.insert_and_update import insert_and_update
+from src.cron_jobs.utils.parser import (
     gen_statements,
     gen_positions,
     gen_party_styles_map,
@@ -726,19 +726,21 @@ def populate_cvs_and_career_paths() -> None:
 
 
 def populate_weblinks() -> None:
-    cv_data = read_json("src/static/cvs.json")
-    weblinks = []
-    for politician_id in cv_data:
-        links = cv_data[politician_id].get("Links")
-        if links:
-            for link in links:
-                weblink = {
-                    "politician_id": politician_id,
-                    "link": link,
-                }
-                weblinks.append(weblink)
-    insert_and_update(PoliticianWeblink, weblinks)
+    cv_data = read_json("src/data_scraper/json_data/weblinks.json")
+    # weblinks = []
+    # for politician_id in cv_data:
+    #     links = cv_data[politician_id].get("Links")
+    #     if links:
+    #         for link in links:
+    #             weblink = {
+    #                 "politician_id": politician_id,
+    #                 "link": link,
+    #             }
+    #             weblinks.append(weblink)
+    # insert_and_update(PoliticianWeblink, weblinks)
+    print(cv_data)
 
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
+    populate_weblinks()
