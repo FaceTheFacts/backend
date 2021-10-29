@@ -49,7 +49,7 @@ def fetch_entity(entity: str) -> list[Any]:
 
 
 def load_entity(entity: str) -> list[Any]:
-    file_path = f"src/data/{entity}.json"
+    file_path = f"src/cron_jobs/data/{entity}.json"
     has_file = has_valid_file(file_path)
     if not has_file:
         data = fetch_entity(entity)
