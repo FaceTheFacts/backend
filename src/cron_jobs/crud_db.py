@@ -48,6 +48,7 @@ from src.cron_jobs.utils.parser import (
 # third-party
 from sqlalchemy.dialects.postgresql import insert
 
+
 def populate_countries() -> None:
     api_countries = load_entity("countries")
     countries = [
