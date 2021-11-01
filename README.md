@@ -30,7 +30,7 @@ $ poetry shell
 $ poetry install
 
 # start development server
-$ uvicorn main:app --reload`
+$ uvicorn src.api.main:app --reload
 ```
 
 ## container
