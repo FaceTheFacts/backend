@@ -47,7 +47,8 @@ from src.cron_jobs.utils.parser import (
 
 # third-party
 from sqlalchemy.dialects.postgresql import insert
-
+from sqlalchemy.sql.expression import bindparam
+from sqlalchemy import update
 
 def populate_countries() -> None:
     api_countries = load_entity("countries")
@@ -307,6 +308,26 @@ def populate_constituencies() -> None:
     ]
     insert_and_update(Constituency, constituencies)
 
+def update_constituencies_with_parliament_period_id() -> None:
+    data = read_json("src/data_scraper/json_data/constituency_id_parliament_period_id.json")
+    constituencies = []
+    for item in data:
+        new_dict = {
+            "constituency_id": item["constituency_id"],
+            "parliament_period_id": item["parliament_period_id"],
+        }
+        constituencies.append(new_dict)
+    
+
+    stmt = (
+        update(Constituency)
+        .where(Constituency.id == bindparam("constituency_id"))
+        .values({"parliament_period_id": bindparam("parliament_period_id")})
+    )
+    session = Session()
+    session.execute(stmt, constituencies)
+    session.commit()
+    session.close()
 
 def populate_electoral_lists() -> None:
     api_electoral_lists = load_entity("electoral-lists")
@@ -741,4 +762,4 @@ def populate_weblinks() -> None:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    populate_weblinks()
+    update_constituencies_with_parliament_period_id()
