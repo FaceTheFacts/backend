@@ -312,19 +312,23 @@ def populate_constituencies() -> None:
 
 def update_constituencies_with_parliament_period_id() -> None:
     begin_time = time.time()
-    data = read_json(
-        "src/data_scraper/json_data/constituency_id_parliament_period_id.json"
-    )
     constituencies = []
     constituency_dict = {}
+
     api_constituencies = load_entity("constituencies")
     for item in api_constituencies:
         constituency_dict[item["id"]] = item
 
-    for item in data:
-        has_constituency_id = constituency_dict.get(item["constituency_id"])
-        if has_constituency_id:
-            api_constituency = constituency_dict[item["constituency_id"]]
+    json_data = read_json(
+        "src/data_scraper/json_data/constituency_id_parliament_period_id.json"
+    )
+
+    for item in json_data:
+        constituency_id = item["constituency_id"]
+        has_api_constituency = constituency_dict.get(constituency_id)
+
+        if has_api_constituency:
+            api_constituency = constituency_dict[constituency_id]
             constituency = {
                 "id": api_constituency["id"],
                 "entity_type": api_constituency["entity_type"],
@@ -332,13 +336,14 @@ def update_constituencies_with_parliament_period_id() -> None:
                 "api_url": api_constituency["api_url"],
                 "name": api_constituency["name"],
                 "number": api_constituency["number"],
+                # Add parliament_period_id from json
                 "parliament_period_id": item["parliament_period_id"],
             }
 
             constituencies.append(constituency)
     insert_and_update(Constituency, constituencies)
     end_time = time.time()
-    print(f"Total runtime to store {len(data)} data is {end_time - begin_time}")
+    print(f"Total runtime to store {len(json_data)} data is {end_time - begin_time}")
 
 
 def populate_electoral_lists() -> None:
