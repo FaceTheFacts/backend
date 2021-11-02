@@ -50,6 +50,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.expression import bindparam
 from sqlalchemy import update
 
+
 def populate_countries() -> None:
     api_countries = load_entity("countries")
     countries = [
@@ -308,26 +309,37 @@ def populate_constituencies() -> None:
     ]
     insert_and_update(Constituency, constituencies)
 
-def update_constituencies_with_parliament_period_id() -> None:
-    data = read_json("src/data_scraper/json_data/constituency_id_parliament_period_id.json")
-    constituencies = []
-    for item in data:
-        new_dict = {
-            "constituency_id": item["constituency_id"],
-            "parliament_period_id": item["parliament_period_id"],
-        }
-        constituencies.append(new_dict)
-    
 
-    stmt = (
-        update(Constituency)
-        .where(Constituency.id == bindparam("constituency_id"))
-        .values({"parliament_period_id": bindparam("parliament_period_id")})
+def update_constituencies_with_parliament_period_id() -> None:
+    begin_time = time.time()
+    data = read_json(
+        "src/data_scraper/json_data/constituency_id_parliament_period_id.json"
     )
-    session = Session()
-    session.execute(stmt, constituencies)
-    session.commit()
-    session.close()
+    constituencies = []
+    constituency_dict = {}
+    api_constituencies = load_entity("constituencies")
+    for item in api_constituencies:
+        constituency_dict[item["id"]] = item
+
+    for item in data:
+        has_constituency_id = constituency_dict.get(item["constituency_id"])
+        if has_constituency_id:
+            api_constituency = constituency_dict[item["constituency_id"]]
+            constituency = {
+                "id": api_constituency["id"],
+                "entity_type": api_constituency["entity_type"],
+                "label": api_constituency["label"],
+                "api_url": api_constituency["api_url"],
+                "name": api_constituency["name"],
+                "number": api_constituency["number"],
+                "parliament_period_id": item["parliament_period_id"],
+            }
+
+            constituencies.append(constituency)
+    insert_and_update(Constituency, constituencies)
+    end_time = time.time()
+    print(f"Total runtime to store {len(data)} data is {end_time - begin_time}")
+
 
 def populate_electoral_lists() -> None:
     api_electoral_lists = load_entity("electoral-lists")
@@ -762,4 +774,5 @@ def populate_weblinks() -> None:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
+    # populate_constituencies()
     update_constituencies_with_parliament_period_id()
