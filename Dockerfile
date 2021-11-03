@@ -5,14 +5,12 @@ RUN apt-get update && apt-get install -y \
     # clear the cache
     && rm -rf /var/lib/apt/lists/*
 
-# install poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python - --preview
-ENV PATH=$PATH:/root/.local/bin
+# install pipenv
+RUN apt-get install pipenv
 
 # generate requirements.txt
-COPY pyproject.toml poetry.lock ./
-RUN poetry update
-RUN poetry export > requirements.txt
+COPY Pipfile Pipfile.lock ./
+RUN pipenv lock -r > requirements.txt
 
 FROM python:3.8-slim
 WORKDIR /src
