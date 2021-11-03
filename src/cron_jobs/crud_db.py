@@ -2,6 +2,7 @@
 import time
 
 # local
+from src.cron_jobs.utils.helper import create_zip_code_file
 from src.cron_jobs.utils.file import read_json
 from src.cron_jobs.utils.fetch import load_entity
 from src.db.connection import engine, Session, Base
@@ -37,6 +38,7 @@ from src.db.models.cv import CV
 from src.db.models.career_path import CareerPath
 from src.db.models.position import Position
 from src.db.models.politician_weblink import PoliticianWeblink
+from src.db.models.zip_code import ZipCode
 from src.cron_jobs.utils.insert_and_update import insert_and_update
 from src.cron_jobs.utils.parser import (
     gen_statements,
@@ -776,8 +778,29 @@ def populate_weblinks() -> None:
         weblinks.append(weblink)
     insert_and_update(PoliticianWeblink, weblinks)
 
+def populate_zip_codes() -> None:
+    create_zip_code_file()
+    constituency_data = read_json("src/cron_jobs/data/constituency.json")
+    zip_code_data = read_json("src/cron_jobs/data/zipcodes.json")
+    zip_code_table_data = []
+    zip_code_id = 1
+                           
+    for zip_code_data_entry in zip_code_data:                    
+        for constituency in constituency_data:
+            if int(zip_code_data_entry["constituency_number"]) == constituency["number"] and constituency["name"] == zip_code_data_entry["constituency_name"]:
+                for zip_code in zip_code_data_entry["zip_codes"]:
+                    zip_code_entry = {
+                        "id": zip_code_id,
+                        "constituency_id": constituency['id'],
+                        "zip_code": zip_code
+                    }
+                    zip_code_table_data.append(zip_code_entry)
+                    zip_code_id += 1
+    insert_and_update(ZipCode, zip_code_table_data)
+
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    # populate_constituencies()
-    update_constituencies_with_parliament_period_id()
+    #populate_constituencies()
+    #update_constituencies_with_parliament_period_id()
+    populate_zip_codes()
