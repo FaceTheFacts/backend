@@ -11,7 +11,7 @@ from src.db.connection import Session
 from src.db.models.sidejob import Sidejob
 
 
-PAGE_SIZE = 999
+PAGE_SIZE = 1000
 
 
 class ApiResponse(TypedDict):
