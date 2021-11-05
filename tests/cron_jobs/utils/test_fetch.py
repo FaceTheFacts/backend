@@ -2,7 +2,12 @@
 import requests
 
 # local
-from src.cron_jobs.utils.fetch import fetch_entity_count, fetch_json
+from src.cron_jobs.utils.fetch import (
+    fetch_entity_count,
+    fetch_json,
+    fetch_missing_entity,
+)
+from src.db.models.sidejob import Sidejob
 
 # third party
 import pytest
@@ -50,3 +55,12 @@ def test_fetch_entity_count():
     page_not_found()
     count_city()
     count_constituency()
+
+
+def test_fetch_missing_entity():
+    def test_sidejob_table():
+        assert fetch_missing_entity("sidejobs", Sidejob) == print(
+            "Table already updated"
+        )
+
+    test_sidejob_table()
