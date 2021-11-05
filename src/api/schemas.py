@@ -169,6 +169,8 @@ class Politician(BaseModel):
     qid_wikidata: Optional[str]
     field_title: Optional[str]
     sidejobs: Optional[List[Sidejob]]
+    cvs: Optional[List]
+    weblinks: Optional[List]
 
     class Config:
         orm_mode = True
