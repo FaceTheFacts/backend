@@ -44,7 +44,12 @@ def read_poll(id: int, db: Session = Depends(get_db)):
 
 
 @app.get("/politician/{id}", response_model=schemas.Politician)
-def read_politician(id: int, db: Session = Depends(get_db), number_of_sidejobs: int = None):
+def read_politician(
+    id: int,
+    db: Session = Depends(get_db),
+    number_of_sidejobs: int = None,
+    number_of_votes: int = 5,
+):
     politician = crud.get_politician_by_id(db, id)
     if politician is None:
         raise HTTPException(status_code=404, detail="Politician not found")
@@ -53,6 +58,9 @@ def read_politician(id: int, db: Session = Depends(get_db), number_of_sidejobs: 
     if number_of_sidejobs:
         sidejobs = sidejobs[:number_of_sidejobs]
     politician.__dict__["sidejobs"] = sidejobs
+
+    votes = crud.get_votes_by_politician_id(db, id, number_of_votes)
+    politician.__dict__["votes"] = votes
 
     return politician
 

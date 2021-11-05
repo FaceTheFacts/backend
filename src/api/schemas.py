@@ -59,6 +59,7 @@ class Poll(BaseModel):
     class Config:
         orm_mode = True
 
+
 # -----------------------
 class Constituency(BaseModel):
     id: int
@@ -149,7 +150,24 @@ class Sidejob(BaseModel):
     class Config:
         orm_mode = True
 
+
 # -----------------------
+class Vote(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+    mandate_id: int
+    fraction_id: Optional[int]
+    poll_id: int
+    vote: str
+    reason_no_show: Optional[str]
+    reason_no_show_other: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
 class Politician(BaseModel):
     id: int
     entity_type: str
@@ -171,6 +189,7 @@ class Politician(BaseModel):
     sidejobs: Optional[List[Sidejob]]
     cvs: Optional[List]
     weblinks: Optional[List]
+    votes: Optional[List[Vote]]
 
     class Config:
         orm_mode = True
