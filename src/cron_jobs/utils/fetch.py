@@ -16,24 +16,25 @@ class ApiResponse(TypedDict):
     data: list[Any]
 
 
-def request(url: str) -> ApiResponse:
+def fetch_json(url: str) -> ApiResponse:
     try:
         response = requests.get(url)
-    except requests.exceptions.RequestException as err:
+        response.raise_for_status()
+    except requests.exceptions.ConnectionError as err:
         raise Exception(err)
     return response.json()
-
+    
 
 def fetch_page(entity: str, page_nr: int) -> list[Any]:
     url = f"https://www.abgeordnetenwatch.de/api/v2/{entity}?range_start={page_nr * PAGE_SIZE}&range_end={PAGE_SIZE}"
-    result: ApiResponse = request(url)
+    result: ApiResponse = fetch_json(url)
     return result["data"]
 
 
 def fetch_entity(entity: str) -> list[Any]:
     time_begin = time.time()
     url = f"https://www.abgeordnetenwatch.de/api/v2/{entity}?range_end=0"
-    result = request(url)
+    result = fetch_json(url)
     total = result["meta"]["result"]["total"]
     page_count = math.ceil(total / PAGE_SIZE)
     entities = [None] * total
@@ -47,13 +48,11 @@ def fetch_entity(entity: str) -> list[Any]:
     print(f"Total runtime of fetching {entity} is {time_end - time_begin}")
     return entities
 
-
 def fetch_entity_count(entity: str) -> int:
     url = f"https://www.abgeordnetenwatch.de/api/v2/{entity}?range_end=0"
-    result = request(url)
+    result = fetch_json(url)
     total = result["meta"]["result"]["total"]
     return total
-
 
 def load_entity(entity: str) -> list[Any]:
     file_path = f"src/cron_jobs/data/{entity}.json"
@@ -66,6 +65,5 @@ def load_entity(entity: str) -> list[Any]:
     data: list[Any] = read_json(file_path)
     return data
 
-
 if __name__ == "__main__":
-    print(fetch_entity_count("cities"))
+    print(fetch_json("https://www.abgeordnetenwatch.de/api/v2/cities?range_end=0"))
