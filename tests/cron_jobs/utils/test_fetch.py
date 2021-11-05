@@ -36,9 +36,17 @@ def test_fetch_json():
     fetch_cities()
 
 
-# def test_fetch_entity_count():
-#     def page_not_found():
-#       with pytest.raises(requests.exceptions.RequestException):
-#         fetch_entity_count("city")
-#     page_not_found()
-# assert fetch_entity_count("cities") == 1065
+def test_fetch_entity_count():
+    def page_not_found():
+        with pytest.raises(Exception):
+            fetch_json("random_url")
+
+    def count_city():
+        assert fetch_entity_count("cities") == 1065
+
+    def count_constituency():
+        assert fetch_entity_count("constituencies") == 10195
+
+    page_not_found()
+    count_city()
+    count_constituency()
