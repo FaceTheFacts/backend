@@ -60,12 +60,23 @@ def fetch_entity_count(entity: str) -> int:
 
 
 def fetch_missing_entity(entity: str, model: Any):
+    data_list = []
     total_entity = fetch_entity_count(entity)
     session = Session()
     database_rows = session.query(model).count()
     diff = total_entity - database_rows
     if diff:
-        print(("You need to fetch {} data").format(diff))
+        last_id = session.query(model).order_by(model.id.desc()).first().id
+        page_count = math.ceil(last_id / PAGE_SIZE)
+        for page_num in range(page_count):
+            fetched_data = fetch_json(
+                f"https://www.abgeordnetenwatch.de/api/v2/{entity}?id[gt]={last_id}&page={page_num}&pager_limit={PAGE_SIZE}"
+            )
+            data = fetched_data["data"]
+            for item in data:
+                data_list.append(item)
+        print(("Fetched {} data").format(diff))
+        return data_list
     else:
         print("Table already updated")
 
