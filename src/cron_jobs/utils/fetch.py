@@ -48,6 +48,13 @@ def fetch_entity(entity: str) -> list[Any]:
     return entities
 
 
+def fetch_entity_count(entity: str) -> int:
+    url = f"https://www.abgeordnetenwatch.de/api/v2/{entity}?range_end=0"
+    result = request(url)
+    total = result["meta"]["result"]["total"]
+    return total
+
+
 def load_entity(entity: str) -> list[Any]:
     file_path = f"src/cron_jobs/data/{entity}.json"
     has_file = has_valid_file(file_path)
@@ -58,3 +65,7 @@ def load_entity(entity: str) -> list[Any]:
 
     data: list[Any] = read_json(file_path)
     return data
+
+
+if __name__ == "__main__":
+    print(fetch_entity_count("cities"))
