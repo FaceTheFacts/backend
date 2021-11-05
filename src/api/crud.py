@@ -21,6 +21,21 @@ def get_politician_by_id(db: Session, id: int):
     return db.query(models.Politician).filter(models.Politician.id == id).first()
 
 
+def get_votes_by_politician_id(db: Session, politician_id: int, number_of_votes: int):
+    candidacy_mandate_ids = get_candidacy_mandate_ids_by_politician_id(
+        db, politician_id
+    )
+
+    votes = (
+        db.query(models.Vote)
+        .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
+        .filter(models.Vote.poll_id == models.Poll.id)
+        .order_by(models.Poll.field_poll_date.desc())[:number_of_votes]
+    )
+
+    return votes
+
+
 def get_sidejob_by_id(db: Session, id: int):
     return db.query(models.Sidejob).filter(models.Sidejob.id == id).first()
 
