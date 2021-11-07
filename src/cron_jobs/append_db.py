@@ -60,6 +60,9 @@ def append_polls() -> None:
             for api_polls in missing_polls
         ]
         insert_and_update(models.Poll, polls)
+        return polls
+    else:
+        print("Nothing fetched")
 
 
 def append_votes() -> None:
