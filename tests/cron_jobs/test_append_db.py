@@ -1,6 +1,5 @@
 # local
 from src.cron_jobs.append_db import append_sidejobs
-from src.db.models.sidejob import Sidejob
 from src.db.connection import Session
 import src.db.models as models
 
@@ -11,15 +10,17 @@ from unittest import TestCase
 session = Session()
 
 
+def drop_last_item(model):
+    last_id = session.query(model).order_by(model.id.desc()).first().id
+    stmt = delete(model).where(model.id == last_id)
+    session.execute(stmt)
+    session.commit()
+    session.close()
+
+
 def test_append_sidejobs():
     def drop_last_item_and_update():
-        last_id = (
-            session.query(models.Sidejob).order_by(models.Sidejob.id.desc()).first().id
-        )
-        stmt = delete(Sidejob).where(Sidejob.id == last_id)
-        session.execute(stmt)
-        session.commit()
-        session.close()
+        drop_last_item(models.Sidejob)
         expected_dict = {
             "additional_information": None,
             "api_url": "https://www.abgeordnetenwatch.de/api/v2/sidejobs/11699",
@@ -43,3 +44,14 @@ def test_append_sidejobs():
 
     drop_last_item_and_update()
     fetch_nothing()
+
+
+# def test_append_polls():
+#     def drop_last_item_and_update():
+#         last_id = (
+#             session.query(models.Poll).order_by(models.Poll.id.desc()).first().id
+#         )
+#         stmt = delete(models.Poll).where(models.Poll.id == last_id)
+#         session.execute(stmt)
+#         session.commit()
+#         session.close()
