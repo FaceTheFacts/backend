@@ -19,8 +19,9 @@ def test_append_sidejobs():
         session.execute(stmt)
         session.commit()
         session.close()
-        assert append_sidejobs()[0]["label"] == 'Mitglied des Stiftungsrates, ehrenamtlich'
+        assert (
+            append_sidejobs()[0]["label"] == "Mitglied des Stiftungsrates, ehrenamtlich"
+        )
         assert append_sidejobs()[0]["id"] == 11699
-        
 
     drop_last_item_and_update()

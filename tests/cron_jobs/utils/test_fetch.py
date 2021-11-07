@@ -1,6 +1,3 @@
-# std
-import requests
-
 # local
 from src.cron_jobs.utils.fetch import (
     fetch_entity_count,

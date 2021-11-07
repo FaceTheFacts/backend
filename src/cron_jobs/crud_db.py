@@ -779,5 +779,3 @@ def populate_weblinks() -> None:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    # populate_constituencies()
-    update_constituencies_with_parliament_period_id()

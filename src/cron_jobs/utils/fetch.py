@@ -8,7 +8,6 @@ import math
 # local
 from src.cron_jobs.utils.file import read_json, write_json, has_valid_file
 from src.db.connection import Session
-from src.db.models.sidejob import Sidejob
 
 
 PAGE_SIZE = 1000
@@ -91,7 +90,3 @@ def load_entity(entity: str) -> list[Any]:
 
     data: list[Any] = read_json(file_path)
     return data
-
-
-if __name__ == "__main__":
-    print(fetch_missing_entity("sidejobs", Sidejob))
