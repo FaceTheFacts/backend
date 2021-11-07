@@ -1,5 +1,5 @@
 # local
-from src.cron_jobs.append_db import append_sidejobs
+from src.cron_jobs.append_db import append_polls, append_sidejobs
 from src.db.connection import Session
 import src.db.models as models
 
@@ -10,17 +10,21 @@ from unittest import TestCase
 session = Session()
 
 
-def drop_last_item(model):
-    last_id = session.query(model).order_by(model.id.desc()).first().id
-    stmt = delete(model).where(model.id == last_id)
+def return_last_id(model: any):
+    return session.query(model).order_by(model.id.desc()).first().id
+
+
+def delete_last_item(last_id, model: any, column: str):
+    stmt = delete(model).where(model.__dict__[column] == last_id)
     session.execute(stmt)
     session.commit()
     session.close()
 
 
 def test_append_sidejobs():
-    def drop_last_item_and_update():
-        drop_last_item(models.Sidejob)
+    def delete_last_item_and_update():
+        last_id = return_last_id(models.Sidejob)
+        delete_last_item(last_id, models.Sidejob, "id")
         expected_dict = {
             "additional_information": None,
             "api_url": "https://www.abgeordnetenwatch.de/api/v2/sidejobs/11699",
@@ -42,16 +46,21 @@ def test_append_sidejobs():
     def fetch_nothing():
         assert append_sidejobs() == print("Nothing fetched")
 
-    drop_last_item_and_update()
+    delete_last_item_and_update()
     fetch_nothing()
 
 
-# def test_append_polls():
-#     def drop_last_item_and_update():
-#         last_id = (
-#             session.query(models.Poll).order_by(models.Poll.id.desc()).first().id
-#         )
-#         stmt = delete(models.Poll).where(models.Poll.id == last_id)
-#         session.execute(stmt)
-#         session.commit()
-#         session.close()
+def test_append_polls():
+    def delete_last_item_and_update():
+        last_id = return_last_id(models.Poll)
+        delete_last_item(last_id, models.PollHasTopic, "poll_id")
+        delete_last_item(last_id, models.Poll, "id")
+
+        expected = "https://www.abgeordnetenwatch.de/api/v2/polls/4363"
+        assert append_polls()[0]["api_url"] == expected
+
+    def fetch_nothing():
+        assert append_polls() == print("Nothing fetched")
+
+    delete_last_item_and_update()
+    fetch_nothing()
