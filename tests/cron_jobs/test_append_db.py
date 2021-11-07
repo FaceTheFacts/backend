@@ -38,4 +38,8 @@ def test_append_sidejobs():
         }
         TestCase().assertDictEqual(expected_dict, append_sidejobs()[0])
 
+    def fetch_nothing():
+        assert append_sidejobs() == print("Nothing fetched")
+
     drop_last_item_and_update()
+    fetch_nothing()
