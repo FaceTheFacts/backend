@@ -223,7 +223,6 @@ def test_read_politician_sidejobs():
             "id": 2668,
             "entity_type": "sidejob_organization",
             "label": "Lupus Alpha Asset Management GmbH",
-            "api_url": "https://www.abgeordnetenwatch.de/api/v2/sidejob-organizations/2668"
         }
 
 
