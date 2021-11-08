@@ -120,10 +120,6 @@ class SidejobOrganization(BaseModel):
     id: int
     entity_type: str
     label: str
-    api_url: str
-    city: Optional[City]
-    country: Optional[City]
-    topics: Optional[List[Topic]]
 
     class Config:
         orm_mode = True
