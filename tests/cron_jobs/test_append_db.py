@@ -1,5 +1,5 @@
 # local
-from src.cron_jobs.append_db import append_polls, append_sidejobs
+from src.cron_jobs.append_db import append_polls, append_sidejobs, append_votes
 from src.db.connection import Session
 import src.db.models as models
 
@@ -64,3 +64,13 @@ def test_append_polls():
 
     delete_last_item_and_update()
     fetch_nothing()
+
+
+def test_append_votes():
+    def delete_last_item_and_update():
+        last_id = return_last_id(models.Vote)
+        delete_last_item(last_id, models.Vote, "id")
+
+        assert append_votes()[0]["api_url"] == ""
+
+    delete_last_item_and_update()
