@@ -207,6 +207,7 @@ class PoliticianSearch(BaseModel):
     id: int
     label: str
     party: Optional[PartySearch]
+    image_url: Optional[str]
 
     class Config:
         orm_mode = True

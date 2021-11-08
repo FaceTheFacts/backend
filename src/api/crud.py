@@ -1,4 +1,6 @@
 # std
+import urllib.request
+from urllib.error import HTTPError
 from typing import List
 
 # third-party
@@ -100,6 +102,30 @@ def get_politicians_by_zipcode(db: Session, zipcode: int):
 def get_politician_by_search(db: Session, search_text: str):
     try:
         zipcode = int(search_text)
-        return get_politicians_by_zipcode(db, zipcode)
+        politicians = get_politicians_by_zipcode(db, zipcode)
     except ValueError:
-        return get_politicians_by_partial_name(db, search_text)
+        politicians = get_politicians_by_partial_name(db, search_text)
+
+    return get_politicians_image_urls_by_id(politicians)
+
+
+def get_politician_by_image_scanner(db: Session, search_text: str):
+    politicians = get_politicians_by_partial_name(db, search_text)
+    return get_politicians_image_urls_by_id(politicians)
+
+
+def get_politicians_image_urls_by_id(politicians: list):
+    for politician in politicians:
+        image_url = (
+            "https://candidate-images.s3.eu-central-1.amazonaws.com/{}.jpg".format(
+                politician.id
+            )
+        )
+
+        try:
+            urllib.request.urlopen(image_url)
+            politician.__dict__["image_url"] = image_url
+        except HTTPError:
+            politician.__dict__["image_url"] = None
+
+    return politicians
