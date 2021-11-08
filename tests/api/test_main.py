@@ -99,14 +99,20 @@ def test_read_politician():
         assert type(response.json()) is dict
         assert response.json()["field_title"] == "Dr."
 
-    def votes_test():
-        response = client.get("/politician/73426?sidejobs_end=0&votes_end=5")
+    def votes_and_polls_test():
+        response = client.get("/politician/73426?sidejobs_end=0")
         assert response.status_code == 200
         assert type(response.json()) is dict
 
-        votes = response.json()["votes"]
-        assert type(votes) is list
-        assert len(votes) == 5
+        votes_and_polls = response.json()["votes_and_polls"]
+        assert type(votes_and_polls) is list
+        assert len(votes_and_polls) == 5
+
+        for index in range(4):
+            assert (
+                votes_and_polls[index]["Poll"]["field_poll_date"]
+                >= votes_and_polls[index + 1]["Poll"]["field_poll_date"]
+            )
 
     def politician_id_not_found():
         response = client.get("/politician/1")
@@ -118,7 +124,7 @@ def test_read_politician():
     specific_elements_test1()
     specific_elements_test_2()
     specific_elements_test_3()
-    votes_test()
+    votes_and_polls_test()
     politician_id_not_found()
 
 
