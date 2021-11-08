@@ -181,6 +181,7 @@ class Poll(BaseModel):
     class Config:
         orm_mode = True
 
+
 class Politician(BaseModel):
     id: int
     entity_type: str

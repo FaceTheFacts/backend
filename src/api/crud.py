@@ -23,7 +23,9 @@ def get_politician_by_id(db: Session, id: int):
     return db.query(models.Politician).filter(models.Politician.id == id).first()
 
 
-def get_votes_and_polls_by_politician_id(db: Session, politician_id: int, range_of_votes: tuple):
+def get_votes_and_polls_by_politician_id(
+    db: Session, politician_id: int, range_of_votes: tuple
+):
     candidacy_mandate_ids = get_candidacy_mandate_ids_by_politician_id(
         db, politician_id
     )

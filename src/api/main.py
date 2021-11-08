@@ -59,7 +59,9 @@ def read_politician(
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)[sidejobs_start:sidejobs_end]
     politician.__dict__["sidejobs"] = sidejobs
 
-    votes_and_polls = crud.get_votes_and_polls_by_politician_id(db, id, (votes_start, votes_end))
+    votes_and_polls = crud.get_votes_and_polls_by_politician_id(
+        db, id, (votes_start, votes_end)
+    )
     politician.__dict__["votes_and_polls"] = votes_and_polls
 
     return politician
