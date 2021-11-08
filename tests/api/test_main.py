@@ -223,71 +223,9 @@ def test_read_politician_sidejobs():
             "id": 2668,
             "entity_type": "sidejob_organization",
             "label": "Lupus Alpha Asset Management GmbH",
-            "api_url": "https://www.abgeordnetenwatch.de/api/v2/sidejob-organizations/2668",
-            "city": {
-                "id": 73,
-                "entity_type": "taxonomy_term",
-                "label": "Frankfurt/Main",
-                "api_url": "https://www.abgeordnetenwatch.de/api/v2/cities/73",
-            },
-            "country": {
-                "id": 61,
-                "entity_type": "taxonomy_term",
-                "label": "Deutschland",
-                "api_url": "https://www.abgeordnetenwatch.de/api/v2/countries/61",
-            },
-            "topics": [
-                {
-                    "id": 19,
-                    "entity_type": "taxonomy_term",
-                    "label": "Wirtschaft",
-                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/19",
-                    "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/wirtschaft",
-                    "description": None,
-                    "parent_id": None,
-                },
-                {
-                    "id": 22,
-                    "entity_type": "taxonomy_term",
-                    "label": "Öffentliche Finanzen, Steuern und Abgaben",
-                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/22",
-                    "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/oeffentliche-finanzen-steuern-und-abgaben",
-                    "description": None,
-                    "parent_id": None,
-                },
-                {
-                    "id": 41,
-                    "entity_type": "taxonomy_term",
-                    "label": "Finanzen",
-                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/41",
-                    "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/finanzen",
-                    "description": None,
-                    "parent_id": 22,
-                },
-            ],
+            "api_url": "https://www.abgeordnetenwatch.de/api/v2/sidejob-organizations/2668"
         }
 
-    def selected_values_test_2():
-        response = client.get("/politician/78808/sidejobs?page=2&size=1")
-        assert response.status_code == 200
-        assert response.json()["items"][0]["city"] == None
-        assert response.json()["items"][0]["country"] == {
-            "id": 61,
-            "entity_type": "taxonomy_term",
-            "label": "Deutschland",
-            "api_url": "https://www.abgeordnetenwatch.de/api/v2/countries/61",
-        }
-        assert response.json()["items"][0]["topics"] == [
-            {
-                "id": 7,
-                "entity_type": "taxonomy_term",
-                "label": "Kultur",
-                "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/7",
-                "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/kultur",
-                "description": None,
-                "parent_id": None,
-            }
-        ]
 
     def sidejob_not_found_test():
         response = client.get("/politician/28881/sidejobs?page=2&size=1")
@@ -295,7 +233,6 @@ def test_read_politician_sidejobs():
         assert response.json() == {"items": [], "total": 0, "page": 2, "size": 1}
 
     selected_values_test()
-    selected_values_test_2()
     sidejob_not_found_test()
 
 
