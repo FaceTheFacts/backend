@@ -67,6 +67,24 @@ def read_politician(
     return politician
 
 
+@app.get("/top-candidates", response_model=List[schemas.PoliticianSearch])
+def read_top_candidates(db: Session = Depends(get_db)):
+    top_candidates_ids = [
+        "130072",
+        "79475",
+        "66924",
+        "119742",
+        "145755",
+        "108379",
+        "135302",
+        "79454",
+    ]
+    politicians = crud.get_politicians_by_ids(db, top_candidates_ids)
+    if politicians is None:
+        raise HTTPException(status_code=404, detail="Politicians not found")
+    return politicians
+
+
 @app.get(
     "/politician/{id}/constituencies", response_model=schemas.PoliticianToConstituencies
 )
@@ -100,7 +118,7 @@ def read_politician_search(text: str, db: Session = Depends(get_db)):
 
 
 @app.get("/image-scanner", response_model=Page[schemas.PoliticianSearch])
-def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
+def read_top_candidates(text: str, db: Session = Depends(get_db)):
     politicians = crud.get_politician_by_image_scanner(db, text)
     if politicians is None:
         raise HTTPException(status_code=404, detail="Politicians not found")

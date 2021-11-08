@@ -23,6 +23,13 @@ def get_politician_by_id(db: Session, id: int):
     return db.query(models.Politician).filter(models.Politician.id == id).first()
 
 
+def get_politicians_by_ids(db: Session, ids: list):
+    politicians = []
+    for id in ids:
+        politicians.append(get_politician_by_id(db, id))
+    return add_image_urls_to_politicians(politicians)
+
+
 def get_votes_and_polls_by_politician_id(
     db: Session, politician_id: int, range_of_votes: tuple
 ):
@@ -111,15 +118,15 @@ def get_politician_by_search(db: Session, search_text: str):
     except ValueError:
         politicians = get_politicians_by_partial_name(db, search_text)
 
-    return get_politicians_image_urls_by_id(politicians)
+    return add_image_urls_to_politicians(politicians)
 
 
 def get_politician_by_image_scanner(db: Session, search_text: str):
     politicians = get_politicians_by_partial_name(db, search_text)
-    return get_politicians_image_urls_by_id(politicians)
+    return add_image_urls_to_politicians(politicians)
 
 
-def get_politicians_image_urls_by_id(politicians: list):
+def add_image_urls_to_politicians(politicians: list):
     for politician in politicians:
         image_url = (
             "https://candidate-images.s3.eu-central-1.amazonaws.com/{}.jpg".format(
