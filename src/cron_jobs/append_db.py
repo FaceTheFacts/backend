@@ -71,31 +71,32 @@ def append_votes() -> None:
         api_polls = load_entity("polls")
         poll_ids = set([api_poll["id"] for api_poll in api_polls])
         votes = []
-    for missing_vote in missing_votes:
-        poll_id = missing_vote["poll"]["id"] if missing_vote["poll"] else None
-        if poll_id in poll_ids:
-            vote = {
-                "id": missing_vote["id"],
-                "entity_type": missing_vote["entity_type"],
-                "label": missing_vote["label"],
-                "api_url": missing_vote["api_url"],
-                "mandate_id": missing_vote["mandate"]["id"]
-                if missing_vote["mandate"]
-                else None,
-                "fraction_id": missing_vote["fraction"]["id"]
-                if missing_vote["fraction"]
-                else None,
-                "poll_id": poll_id,
-                "vote": missing_vote["vote"],
-                "reason_no_show": missing_vote["reason_no_show"],
-                "reason_no_show_other": missing_vote["reason_no_show_other"],
-            }
-            votes.append(vote)
-        insert_and_update(models.Vote, votes)
+        for missing_vote in missing_votes:
+            poll_id = missing_vote["poll"]["id"] if missing_vote["poll"] else None
+            if poll_id in poll_ids:
+                vote = {
+                    "id": missing_vote["id"],
+                    "entity_type": missing_vote["entity_type"],
+                    "label": missing_vote["label"],
+                    "api_url": missing_vote["api_url"],
+                    "mandate_id": missing_vote["mandate"]["id"]
+                    if missing_vote["mandate"]
+                    else None,
+                    "fraction_id": missing_vote["fraction"]["id"]
+                    if missing_vote["fraction"]
+                    else None,
+                    "poll_id": poll_id,
+                    "vote": missing_vote["vote"],
+                    "reason_no_show": missing_vote["reason_no_show"],
+                    "reason_no_show_other": missing_vote["reason_no_show_other"],
+                }
+                votes.append(vote)
+            insert_and_update(models.Vote, votes)
+        return votes
+    else:
+        print("Nothing fetched")
 
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    append_sidejobs()
-    # append_polls()
-    # append_votes()
+    append_votes()
