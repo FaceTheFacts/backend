@@ -51,25 +51,26 @@ def test_read_politician():
     def random_test():
         response = client.get("/politician/178104")
         assert response.status_code == 200
-        assert response.json() == {
-            "id": 178104,
-            "entity_type": "politician",
-            "label": "Thomas Frost",
-            "first_name": "Thomas",
-            "last_name": "Frost",
-            "sex": "m",
-            "year_of_birth": "1985",
-            "party_past": None,
-            "deceased": None,
-            "deceased_date": None,
-            "education": "Erzieher/ Kitaleiter, Werkzeugmechaniker, Waffenmechaniker",
-            "residence": "Mestlin ",
-            "occupation": "Flohmarkt Betreiber ",
-            "statistic_questions": None,
-            "statistic_questions_answered": None,
-            "qid_wikidata": None,
-            "field_title": None,
-        }
+        assert type(response.json()) is dict
+        assert response.status_code == 200
+        assert response.json()["id"] == 178104
+        assert response.json()["entity_type"] == "politician"
+        assert response.json()["label"] == "Thomas Frost"
+        assert response.json()["first_name"] == "Thomas"
+        assert response.json()["last_name"] == "Frost"
+        assert response.json()["sex"] == "m"
+        assert response.json()["year_of_birth"] == "1985"
+        assert response.json()["party_past"] is None
+        assert response.json()["deceased"] is None
+        assert response.json()["deceased_date"] is None
+        assert response.json()["education"] == "Erzieher/ Kitaleiter, Werkzeugmechaniker, Waffenmechaniker"
+        assert response.json()["residence"] == "Mestlin "
+        assert response.json()["occupation"] == "Flohmarkt Betreiber "
+        assert response.json()["statistic_questions"] is None
+        assert response.json()["statistic_questions_answered"] is None
+        assert response.json()["qid_wikidata"] is None
+        assert response.json()["field_title"] is None
+
 
     def specific_elements_test1():
         # Testing past_party, statistic_questions and statistic_questions_answered
