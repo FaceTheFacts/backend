@@ -63,14 +63,16 @@ def test_read_politician():
         assert response.json()["party_past"] is None
         assert response.json()["deceased"] is None
         assert response.json()["deceased_date"] is None
-        assert response.json()["education"] == "Erzieher/ Kitaleiter, Werkzeugmechaniker, Waffenmechaniker"
+        assert (
+            response.json()["education"]
+            == "Erzieher/ Kitaleiter, Werkzeugmechaniker, Waffenmechaniker"
+        )
         assert response.json()["residence"] == "Mestlin "
         assert response.json()["occupation"] == "Flohmarkt Betreiber "
         assert response.json()["statistic_questions"] is None
         assert response.json()["statistic_questions_answered"] is None
         assert response.json()["qid_wikidata"] is None
         assert response.json()["field_title"] is None
-
 
     def specific_elements_test1():
         # Testing past_party, statistic_questions and statistic_questions_answered
@@ -97,6 +99,15 @@ def test_read_politician():
         assert type(response.json()) is dict
         assert response.json()["field_title"] == "Dr."
 
+    def votes_test():
+        response = client.get("/politician/73426?sidejobs_end=0&votes_end=5")
+        assert response.status_code == 200
+        assert type(response.json()) is dict
+
+        votes = response.json()["votes"]
+        assert type(votes) is list
+        assert len(votes) == 5
+
     def politician_id_not_found():
         response = client.get("/politician/1")
         assert response.status_code == 404
@@ -107,6 +118,7 @@ def test_read_politician():
     specific_elements_test1()
     specific_elements_test_2()
     specific_elements_test_3()
+    votes_test()
     politician_id_not_found()
 
 
