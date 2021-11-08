@@ -43,7 +43,7 @@ def read_poll(id: int, db: Session = Depends(get_db)):
     return poll
 
 
-@app.get("/politician/{id}", response_model=schemas.Politician)
+@app.get("/politician/{id}")
 def read_politician(
     id: int,
     db: Session = Depends(get_db),
@@ -59,8 +59,8 @@ def read_politician(
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)[sidejobs_start:sidejobs_end]
     politician.__dict__["sidejobs"] = sidejobs
 
-    votes = crud.get_votes_by_politician_id(db, id, (votes_start, votes_end))
-    politician.__dict__["votes"] = votes
+    votes_and_polls = crud.get_votes_and_polls_by_politician_id(db, id, (votes_start, votes_end))
+    politician.__dict__["votes_and_polls"] = votes_and_polls
 
     return politician
 

@@ -1,7 +1,7 @@
 # std
 from pydantic import BaseModel
 from datetime import date
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 
 class Country(BaseModel):
@@ -168,6 +168,19 @@ class Vote(BaseModel):
         orm_mode = True
 
 
+class Poll(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+    field_committees_id: int
+    field_intro: str
+    field_legislature_id: int
+    field_poll_date: date
+
+    class Config:
+        orm_mode = True
+
 class Politician(BaseModel):
     id: int
     entity_type: str
@@ -189,7 +202,7 @@ class Politician(BaseModel):
     sidejobs: Optional[List[Sidejob]]
     cvs: Optional[List]
     weblinks: Optional[List]
-    votes: Optional[List[Vote]]
+    votes_and_polls: Optional[List[Dict[Vote, Poll]]]
 
     class Config:
         orm_mode = True
