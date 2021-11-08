@@ -64,13 +64,3 @@ def test_append_polls():
 
     delete_last_item_and_update()
     fetch_nothing()
-
-
-def test_append_votes():
-    def delete_last_item_and_update():
-        last_id = return_last_id(models.Vote)
-        delete_last_item(last_id, models.Vote, "id")
-
-        assert append_votes()[0]["api_url"] == ""
-
-    delete_last_item_and_update()
