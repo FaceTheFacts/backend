@@ -195,9 +195,18 @@ class Politician(BaseModel):
         orm_mode = True
 
 
-class PoliticianName(BaseModel):
+class PartySearch(BaseModel):
     id: int
     label: str
+
+    class Config:
+        orm_mode = True
+
+
+class PoliticianSearch(BaseModel):
+    id: int
+    label: str
+    party: Optional[PartySearch]
 
     class Config:
         orm_mode = True
