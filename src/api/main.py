@@ -47,19 +47,19 @@ def read_poll(id: int, db: Session = Depends(get_db)):
 def read_politician(
     id: int,
     db: Session = Depends(get_db),
-    number_of_sidejobs: int = None,
-    number_of_votes: int = 5,
+    sidejobs_start: int = None,
+    sidejobs_end: int = None,
+    votes_start: int = None,
+    votes_end: int = 5,
 ):
     politician = crud.get_politician_by_id(db, id)
     if politician is None:
         raise HTTPException(status_code=404, detail="Politician not found")
 
-    sidejobs = crud.get_sidejobs_by_politician_id(db, id)
-    if number_of_sidejobs:
-        sidejobs = sidejobs[:number_of_sidejobs]
+    sidejobs = crud.get_sidejobs_by_politician_id(db, id)[sidejobs_start:sidejobs_end]
     politician.__dict__["sidejobs"] = sidejobs
 
-    votes = crud.get_votes_by_politician_id(db, id, number_of_votes)
+    votes = crud.get_votes_by_politician_id(db, id, (votes_start, votes_end))
     politician.__dict__["votes"] = votes
 
     return politician
