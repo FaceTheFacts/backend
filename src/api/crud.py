@@ -23,15 +23,16 @@ def get_politician_by_id(db: Session, id: int):
     return db.query(models.Politician).filter(models.Politician.id == id).first()
 
 
-def get_votes_by_politician_id(db: Session, politician_id: int, range_of_votes: tuple):
+def get_votes_and_polls_by_politician_id(db: Session, politician_id: int, range_of_votes: tuple):
     candidacy_mandate_ids = get_candidacy_mandate_ids_by_politician_id(
         db, politician_id
     )
 
     votes = (
-        db.query(models.Vote)
+        db.query(models.Vote, models.Poll)
         .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
         .filter(models.Vote.poll_id == models.Poll.id)
+        .filter(models.Vote.vote != "no_show")
         .order_by(models.Poll.field_poll_date.desc())[
             range_of_votes[0] : range_of_votes[1]
         ]
