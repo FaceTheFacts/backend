@@ -3,7 +3,7 @@ import time
 
 # local
 from src.cron_jobs.utils.file import read_json
-from src.cron_jobs.utils.fetch import load_entity
+from src.cron_jobs.utils.fetch import fetch_json, load_entity
 from src.db.connection import engine, Session, Base
 from src.db.models.country import Country
 from src.db.models.city import City
@@ -610,6 +610,41 @@ def populate_votes() -> None:
     print(f"Total runtime to store {len(api_votes)} data is {end_time - begin_time}")
 
 
+# id=1 to id=281 are missing
+def complement_missing_votes():
+    api_polls = load_entity("polls")
+    poll_ids = set([api_poll["id"] for api_poll in api_polls])
+    api_votes = list(
+        (
+            fetch_json(
+                "https://www.abgeordnetenwatch.de/api/v2/votes?id[lt]=282&range_end=1000"
+            )["data"]
+        )
+    )
+    votes = []
+    for api_vote in api_votes:
+        poll_id = api_vote["poll"]["id"] if api_vote["poll"] else None
+        if poll_id in poll_ids:
+            vote = {
+                "id": api_vote["id"],
+                "entity_type": api_vote["entity_type"],
+                "label": api_vote["label"],
+                "api_url": api_vote["api_url"],
+                "mandate_id": api_vote["mandate"]["id"]
+                if api_vote["mandate"]
+                else None,
+                "fraction_id": api_vote["fraction"]["id"]
+                if api_vote["fraction"]
+                else None,
+                "poll_id": poll_id,
+                "vote": api_vote["vote"],
+                "reason_no_show": api_vote["reason_no_show"],
+                "reason_no_show_other": api_vote["reason_no_show_other"],
+            }
+            votes.append(vote)
+    insert_and_update(Vote, votes)
+
+
 def populate_sidejob_organizations() -> None:
     api_sidejob_organizations = load_entity("sidejob-organizations")
     sidejob_organizations = [
@@ -779,3 +814,4 @@ def populate_weblinks() -> None:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
+    complement_missing_votes()
