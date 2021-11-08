@@ -84,36 +84,15 @@ def get_politicians_by_partial_name(db: Session, partial_name: str):
 
 
 def get_politicians_by_zipcode(db: Session, zipcode: int):
-    constituency_id = (
-        db.query(models.ZipCode.constituency_id)
+
+    politicians = (
+        db.query(models.Politician)
         .filter(models.ZipCode.zip_code == str(zipcode))
-        .first()["constituency_id"]
-    )
-
-    if constituency_id is None:
-        return []
-
-    electoral_data_ids = (
-        db.query(models.ElectoralData.id)
-        .filter(models.ElectoralData.constituency_id == constituency_id)
+        .filter(models.ElectoralData.constituency_id == models.ZipCode.constituency_id)
+        .filter(models.CandidacyMandate.electoral_data_id == models.ElectoralData.id)
+        .filter(models.Politician.id == models.CandidacyMandate.politician_id)
         .all()
     )
-
-    politician_ids = []
-    for electoral_data_id in electoral_data_ids:
-        politician_ids.append(
-            db.query(models.CandidacyMandate.politician_id)
-            .filter(models.CandidacyMandate.electoral_data_id == electoral_data_id.id)
-            .first()
-        )
-
-    politicians = []
-    for politician_id in politician_ids:
-        politicians.append(
-            db.query(models.Politician)
-            .filter(models.Politician.id == politician_id.politician_id)
-            .first()
-        )
 
     return politicians
 
