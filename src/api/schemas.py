@@ -1,7 +1,7 @@
 # std
 from pydantic import BaseModel
 from datetime import date
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 
 class Country(BaseModel):
@@ -55,38 +55,6 @@ class Poll(BaseModel):
     committee: Optional[Committee]
     field_intro: str
     field_poll_date: date
-
-    class Config:
-        orm_mode = True
-
-
-# -----------------------
-class Politician(BaseModel):
-    id: int
-    entity_type: str
-    label: str
-    first_name: str
-    last_name: str
-    sex: Optional[str]
-    year_of_birth: Optional[str]
-    party_past: Optional[str]
-    deceased: Optional[bool]
-    deceased_date: Optional[date]
-    education: Optional[str]
-    residence: Optional[str]
-    occupation: Optional[str]
-    statistic_questions: Optional[str]
-    statistic_questions_answered: Optional[str]
-    qid_wikidata: Optional[str]
-    field_title: Optional[str]
-
-    class Config:
-        orm_mode = True
-
-
-class PoliticianName(BaseModel):
-    id: int
-    label: str
 
     class Config:
         orm_mode = True
@@ -178,6 +146,82 @@ class Sidejob(BaseModel):
     city: Optional[City]
     country: Optional[Country]
     topics: Optional[List[Topic]]
+
+    class Config:
+        orm_mode = True
+
+
+# -----------------------
+class Vote(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+    mandate_id: int
+    fraction_id: Optional[int]
+    poll_id: int
+    vote: str
+    reason_no_show: Optional[str]
+    reason_no_show_other: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
+class Poll(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    api_url: str
+    field_committees_id: int
+    field_intro: str
+    field_legislature_id: int
+    field_poll_date: date
+
+    class Config:
+        orm_mode = True
+
+
+class Politician(BaseModel):
+    id: int
+    entity_type: str
+    label: str
+    first_name: str
+    last_name: str
+    sex: Optional[str]
+    year_of_birth: Optional[str]
+    party_past: Optional[str]
+    deceased: Optional[bool]
+    deceased_date: Optional[date]
+    education: Optional[str]
+    residence: Optional[str]
+    occupation: Optional[str]
+    statistic_questions: Optional[str]
+    statistic_questions_answered: Optional[str]
+    qid_wikidata: Optional[str]
+    field_title: Optional[str]
+    sidejobs: Optional[List[Sidejob]]
+    cvs: Optional[List]
+    weblinks: Optional[List]
+    votes_and_polls: Optional[List[Dict[Vote, Poll]]]
+
+    class Config:
+        orm_mode = True
+
+
+class PartySearch(BaseModel):
+    id: int
+    label: str
+
+    class Config:
+        orm_mode = True
+
+
+class PoliticianSearch(BaseModel):
+    id: int
+    label: str
+    party: Optional[PartySearch]
+    image_url: Optional[str]
 
     class Config:
         orm_mode = True

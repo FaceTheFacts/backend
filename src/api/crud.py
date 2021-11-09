@@ -1,4 +1,6 @@
 # std
+import urllib.request
+from urllib.error import HTTPError
 from typing import List
 
 # third-party
@@ -13,12 +15,28 @@ def get_country_by_id(db: Session, id: int):
     return db.query(models.Country).filter(models.Country.id == id).first()
 
 
-def get_poll_by_id(db: Session, id: int):
-    return db.query(models.Poll).filter(models.Poll.id == id).first()
-
-
 def get_politician_by_id(db: Session, id: int):
     return db.query(models.Politician).filter(models.Politician.id == id).first()
+
+
+def get_votes_and_polls_by_politician_id(
+    db: Session, politician_id: int, range_of_votes: tuple
+):
+    candidacy_mandate_ids = get_candidacy_mandate_ids_by_politician_id(
+        db, politician_id
+    )
+
+    votes = (
+        db.query(models.Vote, models.Poll)
+        .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
+        .filter(models.Vote.poll_id == models.Poll.id)
+        .filter(models.Vote.vote != "no_show")
+        .order_by(models.Poll.field_poll_date.desc())[
+            range_of_votes[0] : range_of_votes[1]
+        ]
+    )
+
+    return votes
 
 
 def get_sidejob_by_id(db: Session, id: int):
@@ -69,36 +87,15 @@ def get_politicians_by_partial_name(db: Session, partial_name: str):
 
 
 def get_politicians_by_zipcode(db: Session, zipcode: int):
-    constituency_id = (
-        db.query(models.ZipCode.constituency_id)
+
+    politicians = (
+        db.query(models.Politician)
         .filter(models.ZipCode.zip_code == str(zipcode))
-        .first()["constituency_id"]
-    )
-
-    if constituency_id is None:
-        return []
-
-    electoral_data_ids = (
-        db.query(models.ElectoralData.id)
-        .filter(models.ElectoralData.constituency_id == constituency_id)
+        .filter(models.ElectoralData.constituency_id == models.ZipCode.constituency_id)
+        .filter(models.CandidacyMandate.electoral_data_id == models.ElectoralData.id)
+        .filter(models.Politician.id == models.CandidacyMandate.politician_id)
         .all()
     )
-
-    politician_ids = []
-    for electoral_data_id in electoral_data_ids:
-        politician_ids.append(
-            db.query(models.CandidacyMandate.politician_id)
-            .filter(models.CandidacyMandate.electoral_data_id == electoral_data_id.id)
-            .first()
-        )
-
-    politicians = []
-    for politician_id in politician_ids:
-        politicians.append(
-            db.query(models.Politician)
-            .filter(models.Politician.id == politician_id.politician_id)
-            .first()
-        )
 
     return politicians
 
@@ -106,6 +103,30 @@ def get_politicians_by_zipcode(db: Session, zipcode: int):
 def get_politician_by_search(db: Session, search_text: str):
     try:
         zipcode = int(search_text)
-        return get_politicians_by_zipcode(db, zipcode)
+        politicians = get_politicians_by_zipcode(db, zipcode)
     except ValueError:
-        return get_politicians_by_partial_name(db, search_text)
+        politicians = get_politicians_by_partial_name(db, search_text)
+
+    return get_politicians_image_urls_by_id(politicians)
+
+
+def get_politician_by_image_scanner(db: Session, search_text: str):
+    politicians = get_politicians_by_partial_name(db, search_text)
+    return get_politicians_image_urls_by_id(politicians)
+
+
+def get_politicians_image_urls_by_id(politicians: list):
+    for politician in politicians:
+        image_url = (
+            "https://candidate-images.s3.eu-central-1.amazonaws.com/{}.jpg".format(
+                politician.id
+            )
+        )
+
+        try:
+            urllib.request.urlopen(image_url)
+            politician.__dict__["image_url"] = image_url
+        except HTTPError:
+            politician.__dict__["image_url"] = None
+
+    return politicians

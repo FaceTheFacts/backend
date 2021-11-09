@@ -1,75 +1,35 @@
 from fastapi.testclient import TestClient
-import json
 from src.api.main import app
 
 client = TestClient(app)
-
-
-def test_read_poll():
-    def all_elements_have_values():
-        response = client.get("/poll/1126")
-        assert response.status_code == 200
-        assert type(response.json()) is dict
-        assert response.json() == {
-            "id": 1126,
-            "entity_type": "node",
-            "label": "Auszahlung von Griechenlandhilfen",
-            "committee": {
-                "id": 480,
-                "entity_type": "node",
-                "label": "Ausschuss für Regionale Entwicklung",
-            },
-            "field_intro": '<p>\r\n\tDas Europäische Parlament hat der <a href="http://www.europarl.europa.eu/sides/getDoc.do?pubRef=-//EP//NONSGML+TA+P8-TA-2015-0332+0+DOC+PDF+V0//DE">zügigen Umsetzung</a> des Wachstums- und Beschäftigungsplans für Griechenland zugestimmt.\r\n</p>\r\n\r\n<p>\r\n\t<strong>Bitte beachten Sie, dass wir nur das Abstimmungsergebnis für die deutschen EU-Abgeordneten darstellen.</strong>\r\n</p>\r\n',
-            "field_poll_date": "2015-10-06",
-        }
-
-    def committee_id_null():
-        response = client.get("/poll/643")
-        assert response.status_code == 200
-        assert type(response.json()) is dict
-        assert response.json() == {
-            "id": 643,
-            "entity_type": "node",
-            "label": "Veränderung der Volksgesetzgebung",
-            "committee": None,
-            "field_intro": "Mit 60 zu 56 Stimmen hat die Bürgerschaft eine Veränderung der Volksgesetzgebung beschlossen. Die CDU votierte einstimmig für den Gesetzesentwurf, SPD und GAL dagegen. Der Beschluss sieht u.a. vor, dass das Sammeln von Unterschriften für ein Volksbegehren künftig in Ämtern erfolgen muss und nicht mehr auf der Straße.",
-            "field_poll_date": "2005-04-14",
-        }
-
-    def poll_id_not_found():
-        response = client.get("/poll/1")
-        assert response.status_code == 404
-        assert type(response.json()) is dict
-        assert response.json() == {"detail": "Poll not found"}
-
-    all_elements_have_values()
-    committee_id_null()
-    poll_id_not_found()
 
 
 def test_read_politician():
     def random_test():
         response = client.get("/politician/178104")
         assert response.status_code == 200
-        assert response.json() == {
-            "id": 178104,
-            "entity_type": "politician",
-            "label": "Thomas Frost",
-            "first_name": "Thomas",
-            "last_name": "Frost",
-            "sex": "m",
-            "year_of_birth": "1985",
-            "party_past": None,
-            "deceased": None,
-            "deceased_date": None,
-            "education": "Erzieher/ Kitaleiter, Werkzeugmechaniker, Waffenmechaniker",
-            "residence": "Mestlin ",
-            "occupation": "Flohmarkt Betreiber ",
-            "statistic_questions": None,
-            "statistic_questions_answered": None,
-            "qid_wikidata": None,
-            "field_title": None,
-        }
+        assert type(response.json()) is dict
+        assert response.status_code == 200
+        assert response.json()["id"] == 178104
+        assert response.json()["entity_type"] == "politician"
+        assert response.json()["label"] == "Thomas Frost"
+        assert response.json()["first_name"] == "Thomas"
+        assert response.json()["last_name"] == "Frost"
+        assert response.json()["sex"] == "m"
+        assert response.json()["year_of_birth"] == "1985"
+        assert response.json()["party_past"] is None
+        assert response.json()["deceased"] is None
+        assert response.json()["deceased_date"] is None
+        assert (
+            response.json()["education"]
+            == "Erzieher/ Kitaleiter, Werkzeugmechaniker, Waffenmechaniker"
+        )
+        assert response.json()["residence"] == "Mestlin "
+        assert response.json()["occupation"] == "Flohmarkt Betreiber "
+        assert response.json()["statistic_questions"] is None
+        assert response.json()["statistic_questions_answered"] is None
+        assert response.json()["qid_wikidata"] is None
+        assert response.json()["field_title"] is None
 
     def specific_elements_test1():
         # Testing past_party, statistic_questions and statistic_questions_answered
@@ -96,6 +56,21 @@ def test_read_politician():
         assert type(response.json()) is dict
         assert response.json()["field_title"] == "Dr."
 
+    def votes_and_polls_test():
+        response = client.get("/politician/73426?sidejobs_end=0")
+        assert response.status_code == 200
+        assert type(response.json()) is dict
+
+        votes_and_polls = response.json()["votes_and_polls"]
+        assert type(votes_and_polls) is list
+        assert len(votes_and_polls) == 5
+
+        for index in range(4):
+            assert (
+                votes_and_polls[index]["Poll"]["field_poll_date"]
+                >= votes_and_polls[index + 1]["Poll"]["field_poll_date"]
+            )
+
     def politician_id_not_found():
         response = client.get("/politician/1")
         assert response.status_code == 404
@@ -106,6 +81,7 @@ def test_read_politician():
     specific_elements_test1()
     specific_elements_test_2()
     specific_elements_test_3()
+    votes_and_polls_test()
     politician_id_not_found()
 
 
@@ -267,7 +243,7 @@ def test_read_politician_sidejobs():
 
 
 def test_read_politician_image_scanner():
-    def random_test():
+    def label_and_id_test():
         response = client.get("/image-scanner?text=ronald")
         assert response.status_code == 200
         assert type(response.json()) is dict
@@ -277,8 +253,17 @@ def test_read_politician_image_scanner():
             {"id": 124295, "label": "Ronald Doege"},
             {"id": 32270, "label": "Ronald Krügel"},
         ]
+
         for item in test_responses:
-            assert item in response.json()["items"]
+            check_response = False
+            for response_item in response.json()["items"]:
+                if (
+                    item["id"] == response_item["id"]
+                    and item["label"] == response_item["label"]
+                ):
+                    check_response = True
+                    break
+            assert check_response, "{} item not fount in the response".format(item)
 
     def pagination_response():
         response = client.get("/image-scanner?text=christian&page=4&size=50")
@@ -290,7 +275,7 @@ def test_read_politician_image_scanner():
 
         assert response.json()["page"] == 4
 
-    random_test()
+    label_and_id_test()
     pagination_response()
 
 
@@ -306,7 +291,15 @@ def test_read_politician_search():
         ]
 
         for item in test_responses:
-            assert item in response.json()["items"]
+            check_response = False
+            for response_item in response.json()["items"]:
+                if (
+                    item["id"] == response_item["id"]
+                    and item["label"] == response_item["label"]
+                ):
+                    check_response = True
+                    break
+            assert check_response, "{} item not fount in the response".format(item)
 
     selected_values_test()
 

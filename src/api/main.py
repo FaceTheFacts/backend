@@ -1,5 +1,5 @@
 # std
-from typing import Optional, List
+from typing import Optional
 
 # third-party
 import uvicorn
@@ -54,19 +54,27 @@ def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
 
 
-@app.get("/poll/{id}", response_model=schemas.Poll)
-def read_poll(id: int, db: Session = Depends(get_db)):
-    poll = crud.get_poll_by_id(db, id)
-    if poll is None:
-        raise HTTPException(status_code=404, detail="Poll not found")
-    return poll
-
-
-@app.get("/politician/{id}", response_model=schemas.Politician)
-def read_politician(id: int, db: Session = Depends(get_db)):
+@app.get("/politician/{id}")
+def read_politician(
+    id: int,
+    db: Session = Depends(get_db),
+    sidejobs_start: int = None,
+    sidejobs_end: int = None,
+    votes_start: int = None,
+    votes_end: int = 5,
+):
     politician = crud.get_politician_by_id(db, id)
     if politician is None:
         raise HTTPException(status_code=404, detail="Politician not found")
+
+    sidejobs = crud.get_sidejobs_by_politician_id(db, id)[sidejobs_start:sidejobs_end]
+    politician.__dict__["sidejobs"] = sidejobs
+
+    votes_and_polls = crud.get_votes_and_polls_by_politician_id(
+        db, id, (votes_start, votes_end)
+    )
+    politician.__dict__["votes_and_polls"] = votes_and_polls
+
     return politician
 
 
@@ -94,18 +102,20 @@ def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     return paginate(sidejobs)
 
 
-@app.get("/search", response_model=Page[schemas.PoliticianName])
+@app.get("/search", response_model=Page[schemas.PoliticianSearch])
 def read_politician_search(text: str, db: Session = Depends(get_db)):
-    politician = crud.get_politician_by_search(db, text)
-    if politician is None:
-        raise HTTPException(status_code=404, detail="Politician not found")
-    return paginate(politician)
+    politicians = crud.get_politician_by_search(db, text)
+    if politicians is None:
+        raise HTTPException(status_code=404, detail="Politicians not found")
+    return paginate(politicians)
 
 
-@app.get("/image-scanner", response_model=Page[schemas.PoliticianName])
+@app.get("/image-scanner", response_model=Page[schemas.PoliticianSearch])
 def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
-    politician = crud.get_politician_by_search(db, text)
-    return paginate(politician)
+    politicians = crud.get_politician_by_image_scanner(db, text)
+    if politicians is None:
+        raise HTTPException(status_code=404, detail="Politicians not found")
+    return paginate(politicians)
 
 
 # https://uriyyo-fastapi-pagination.netlify.app/
