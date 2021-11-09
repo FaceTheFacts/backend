@@ -350,8 +350,8 @@ def test_read_politician_search():
             check_response = False
             for response_item in response.json()["items"]:
                 if (
-                        item["id"] == response_item["id"]
-                        and item["label"] == response_item["label"]
+                    item["id"] == response_item["id"]
+                    and item["label"] == response_item["label"]
                 ):
                     check_response = True
                     break
