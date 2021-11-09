@@ -216,6 +216,27 @@ def test_read_politician_positions():
 
 
 def test_read_politician_sidejobs():
+    def whole_values_test():
+        response = client.get("/politician/119742/sidejobs?page=1&size=1")
+        assert response.status_code == 200
+        assert response.json()["items"][0] == {
+            "id": 11693,
+            "entity_type": "sidejob",
+            "label": "Vortrag (Sommergespräch)",
+            "job_title_extra": None,
+            "additional_information": None,
+            "category": "29647",
+            "income_level": "3",
+            "interval": None,
+            "data_change_date": "2021-09-10",
+            "created": 1631266255,
+            "sidejob_organization": {
+                "id": 2668,
+                "entity_type": "sidejob_organization",
+                "label": "Lupus Alpha Asset Management GmbH"
+            },
+        }
+
     def selected_values_test():
         response = client.get("/politician/119742/sidejobs?page=1&size=1")
         assert response.status_code == 200
@@ -231,6 +252,7 @@ def test_read_politician_sidejobs():
         assert response.status_code == 200
         assert response.json() == {"items": [], "total": 0, "page": 2, "size": 1}
 
+    whole_values_test()
     selected_values_test()
     sidejob_not_found_test()
 
