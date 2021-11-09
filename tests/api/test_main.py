@@ -223,17 +223,13 @@ def test_read_politician_sidejobs():
             "id": 11693,
             "entity_type": "sidejob",
             "label": "Vortrag (Sommergespräch)",
-            "job_title_extra": None,
-            "additional_information": None,
-            "category": "29647",
             "income_level": "3",
             "interval": None,
             "data_change_date": "2021-09-10",
-            "created": 1631266255,
             "sidejob_organization": {
                 "id": 2668,
                 "entity_type": "sidejob_organization",
-                "label": "Lupus Alpha Asset Management GmbH"
+                "label": "Lupus Alpha Asset Management GmbH",
             },
         }
 
@@ -245,7 +241,6 @@ def test_read_politician_sidejobs():
             "entity_type": "sidejob_organization",
             "label": "Lupus Alpha Asset Management GmbH",
         }
-
 
     def sidejob_not_found_test():
         response = client.get("/politician/28881/sidejobs?page=2&size=1")
