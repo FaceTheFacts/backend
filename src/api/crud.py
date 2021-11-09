@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 # local
 import src.db.models as models
 import src.api.schemas as schemas
+from src.api.utils.sidejob import convert_income_level
 
 
 def get_country_by_id(db: Session, id: int):
@@ -47,7 +48,9 @@ def get_votes_and_polls_by_politician_id(
 
 
 def get_sidejob_by_id(db: Session, id: int):
-    return db.query(models.Sidejob).filter(models.Sidejob.id == id).first()
+    sidejob = db.query(models.Sidejob).filter(models.Sidejob.id == id).first()
+    sidejob.income_level = convert_income_level(sidejob.income_level)
+    return sidejob
 
 
 def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int]:
