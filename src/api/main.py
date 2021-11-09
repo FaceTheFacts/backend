@@ -1,5 +1,5 @@
 # std
-from typing import Optional, List
+from typing import Optional
 
 # third-party
 import uvicorn
@@ -33,14 +33,6 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"])
 @app.get("/")
 def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
-
-
-@app.get("/poll/{id}", response_model=schemas.Poll)
-def read_poll(id: int, db: Session = Depends(get_db)):
-    poll = crud.get_poll_by_id(db, id)
-    if poll is None:
-        raise HTTPException(status_code=404, detail="Poll not found")
-    return poll
 
 
 @app.get("/politician/{id}")

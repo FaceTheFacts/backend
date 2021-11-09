@@ -1,50 +1,7 @@
 from fastapi.testclient import TestClient
-import json
 from src.api.main import app
 
 client = TestClient(app)
-
-
-def test_read_poll():
-    def all_elements_have_values():
-        response = client.get("/poll/1126")
-        assert response.status_code == 200
-        assert type(response.json()) is dict
-        assert response.json() == {
-            "id": 1126,
-            "entity_type": "node",
-            "label": "Auszahlung von Griechenlandhilfen",
-            "committee": {
-                "id": 480,
-                "entity_type": "node",
-                "label": "Ausschuss für Regionale Entwicklung",
-            },
-            "field_intro": '<p>\r\n\tDas Europäische Parlament hat der <a href="http://www.europarl.europa.eu/sides/getDoc.do?pubRef=-//EP//NONSGML+TA+P8-TA-2015-0332+0+DOC+PDF+V0//DE">zügigen Umsetzung</a> des Wachstums- und Beschäftigungsplans für Griechenland zugestimmt.\r\n</p>\r\n\r\n<p>\r\n\t<strong>Bitte beachten Sie, dass wir nur das Abstimmungsergebnis für die deutschen EU-Abgeordneten darstellen.</strong>\r\n</p>\r\n',
-            "field_poll_date": "2015-10-06",
-        }
-
-    def committee_id_null():
-        response = client.get("/poll/643")
-        assert response.status_code == 200
-        assert type(response.json()) is dict
-        assert response.json() == {
-            "id": 643,
-            "entity_type": "node",
-            "label": "Veränderung der Volksgesetzgebung",
-            "committee": None,
-            "field_intro": "Mit 60 zu 56 Stimmen hat die Bürgerschaft eine Veränderung der Volksgesetzgebung beschlossen. Die CDU votierte einstimmig für den Gesetzesentwurf, SPD und GAL dagegen. Der Beschluss sieht u.a. vor, dass das Sammeln von Unterschriften für ein Volksbegehren künftig in Ämtern erfolgen muss und nicht mehr auf der Straße.",
-            "field_poll_date": "2005-04-14",
-        }
-
-    def poll_id_not_found():
-        response = client.get("/poll/1")
-        assert response.status_code == 404
-        assert type(response.json()) is dict
-        assert response.json() == {"detail": "Poll not found"}
-
-    all_elements_have_values()
-    committee_id_null()
-    poll_id_not_found()
 
 
 def test_read_politician():
@@ -342,7 +299,7 @@ def test_read_politician_sidejobs():
 
 
 def test_read_politician_image_scanner():
-    def random_test():
+    def label_and_id_test():
         response = client.get("/image-scanner?text=ronald")
         assert response.status_code == 200
         assert type(response.json()) is dict
@@ -352,8 +309,17 @@ def test_read_politician_image_scanner():
             {"id": 124295, "label": "Ronald Doege"},
             {"id": 32270, "label": "Ronald Krügel"},
         ]
+
         for item in test_responses:
-            assert item in response.json()["items"]
+            check_response = False
+            for response_item in response.json()["items"]:
+                if (
+                    item["id"] == response_item["id"]
+                    and item["label"] == response_item["label"]
+                ):
+                    check_response = True
+                    break
+            assert check_response, "{} item not fount in the response".format(item)
 
     def pagination_response():
         response = client.get("/image-scanner?text=christian&page=4&size=50")
@@ -365,7 +331,7 @@ def test_read_politician_image_scanner():
 
         assert response.json()["page"] == 4
 
-    random_test()
+    label_and_id_test()
     pagination_response()
 
 
@@ -381,7 +347,15 @@ def test_read_politician_search():
         ]
 
         for item in test_responses:
-            assert item in response.json()["items"]
+            check_response = False
+            for response_item in response.json()["items"]:
+                if (
+                        item["id"] == response_item["id"]
+                        and item["label"] == response_item["label"]
+                ):
+                    check_response = True
+                    break
+            assert check_response, "{} item not fount in the response".format(item)
 
     selected_values_test()
 
