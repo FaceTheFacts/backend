@@ -223,7 +223,7 @@ def test_read_politician_sidejobs():
             "id": 11693,
             "entity_type": "sidejob",
             "label": "Vortrag (Sommergespräch)",
-            "income_level": "3",
+            "income_level": "7.000 € bis 15.000 €",
             "interval": None,
             "data_change_date": "2021-09-10",
             "sidejob_organization": {
