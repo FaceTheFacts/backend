@@ -1,9 +1,9 @@
 # std
-from typing import Optional
+from typing import Optional, List
 
 # third-party
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import Page, add_pagination, paginate
 
@@ -26,8 +26,27 @@ def get_db():
 
 # CORS-policy
 # * docs: https://fastapi.tiangolo.com/tutorial/cors/
-# * TODO: Can we restrict this policy? E.g. https-only
 app.add_middleware(CORSMiddleware, allow_origins=["*"])
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+
+    response.headers["Cache-Control"] = "no-store"
+    response.headers["Content-Type"] = "application/json"
+    response.headers["Strict-Transport-Security"] = "max-age=63072000; preload"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers[
+        "Content-Security-Policy"
+    ] = "default-src 'none'; frame-ancestors 'none'"
+
+    # HTML-related (future-proof)
+    response.headers["Feature-Policy"] = "'none'"
+    response.headers["Referrer-Policy"] = "no-referrer"
+
+    return response
 
 
 @app.get("/")
@@ -110,7 +129,7 @@ def read_politician_search(text: str, db: Session = Depends(get_db)):
 
 
 @app.get("/image-scanner", response_model=Page[schemas.PoliticianSearch])
-def read_top_candidates(text: str, db: Session = Depends(get_db)):
+def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
     politicians = crud.get_politician_by_image_scanner(db, text)
     if politicians is None:
         raise HTTPException(status_code=404, detail="Politicians not found")
