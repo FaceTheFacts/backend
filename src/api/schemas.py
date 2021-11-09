@@ -130,18 +130,10 @@ class Sidejob(BaseModel):
     id: int
     entity_type: str
     label: str
-    api_url: str
-    job_title_extra: Optional[str]
-    additional_information: Optional[str]
-    category: str
     income_level: Optional[str]
     interval: Optional[str]
     data_change_date: date
-    created: int
     sidejob_organization: Optional[SidejobOrganization]
-    city: Optional[City]
-    country: Optional[Country]
-    topics: Optional[List[Topic]]
 
     class Config:
         orm_mode = True
