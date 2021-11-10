@@ -88,7 +88,7 @@ def test_read_politician():
 def test_read_top_candidates():
     response = client.get("/top-candidates")
     assert response.status_code == 200
-    assert type(response.json()) is dict
+    assert type(response.json()) is list
     assert response.json() == [
         {
             "id": 130072,
