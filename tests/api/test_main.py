@@ -124,7 +124,8 @@ def test_read_top_candidates():
             "id": 108379,
             "label": "Alice Weidel",
             "party": {"id": 9, "label": "AfD"},
-            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/108379.jpg",
+            "image_url": None
+            # "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/108379.jpg",
         },
         {
             "id": 135302,
