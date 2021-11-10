@@ -219,19 +219,23 @@ def test_read_politician_sidejobs():
     def whole_values_test():
         response = client.get("/politician/119742/sidejobs?page=1&size=1")
         assert response.status_code == 200
-        assert response.json()["items"][0] == {
-            "id": 11693,
-            "entity_type": "sidejob",
-            "label": "Vortrag (Sommergespräch)",
-            "income_level": "7.000 € bis 15.000 €",
-            "interval": None,
-            "data_change_date": "2021-09-10",
-            "sidejob_organization": {
-                "id": 2668,
-                "entity_type": "sidejob_organization",
-                "label": "Lupus Alpha Asset Management GmbH",
-            },
-        }
+        response_items = [
+            {
+                "id": 11693,
+                "entity_type": "sidejob",
+                "label": "Vortrag (Sommergespräch)",
+                "income_level": "7.000 € bis 15.000 €",
+                "interval": None,
+                "data_change_date": "2021-09-10",
+                "sidejob_organization": {
+                    "id": 2668,
+                    "entity_type": "sidejob_organization",
+                    "label": "Lupus Alpha Asset Management GmbH",
+                },
+            }
+        ]
+        for item in response_items:
+            assert item in response.json()["items"]
 
     def selected_values_test():
         response = client.get("/politician/119742/sidejobs?page=1&size=1")
