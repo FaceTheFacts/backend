@@ -125,7 +125,7 @@ def test_read_top_candidates():
             "label": "Alice Weidel",
             "party": {"id": 9, "label": "AfD"},
             "image_url": None
-            # "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/108379.jpg",
+            # TODO add images to S3 bucket and change response to --> "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/108379.jpg",
         },
         {
             "id": 135302,
