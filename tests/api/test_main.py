@@ -85,6 +85,63 @@ def test_read_politician():
     politician_id_not_found()
 
 
+def test_read_top_candidates():
+    response = client.get("/top-candidates")
+    assert response.status_code == 200
+    assert type(response.json()) is list
+    assert response.json() == [
+        {
+            "id": 130072,
+            "label": "Armin Laschet",
+            "party": {"id": 2, "label": "CDU"},
+            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/130072.jpg",
+        },
+        {
+            "id": 79475,
+            "label": "Annalena Baerbock",
+            "party": {"id": 5, "label": "Bündnis 90/Die Grünen"},
+            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/79475.jpg",
+        },
+        {
+            "id": 66924,
+            "label": "Olaf Scholz",
+            "party": {"id": 1, "label": "SPD"},
+            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/66924.jpg",
+        },
+        {
+            "id": 119742,
+            "label": "Christian Lindner",
+            "party": {"id": 4, "label": "FDP"},
+            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/119742.jpg",
+        },
+        {
+            "id": 145755,
+            "label": "Tino Chrupalla",
+            "party": {"id": 9, "label": "AfD"},
+            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/145755.jpg",
+        },
+        {
+            "id": 108379,
+            "label": "Alice Weidel",
+            "party": {"id": 9, "label": "AfD"},
+            "image_url": None
+            # TODO add images to S3 bucket and change response to --> "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/108379.jpg",
+        },
+        {
+            "id": 135302,
+            "label": "Janine Wissler",
+            "party": {"id": 8, "label": "DIE LINKE"},
+            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/135302.jpg",
+        },
+        {
+            "id": 79454,
+            "label": "Dietmar Bartsch",
+            "party": {"id": 8, "label": "DIE LINKE"},
+            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/79454.jpg",
+        },
+    ]
+
+
 def test_read_politician_constituencies():
     def all_elements_have_values():
         response = client.get("/politician/138540/constituencies")

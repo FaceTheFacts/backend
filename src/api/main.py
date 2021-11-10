@@ -1,5 +1,5 @@
 # std
-from typing import Optional
+from typing import Optional, List
 
 # third-party
 import uvicorn
@@ -76,6 +76,24 @@ def read_politician(
     politician.__dict__["votes_and_polls"] = votes_and_polls
 
     return politician
+
+
+@app.get("/top-candidates", response_model=List[schemas.PoliticianSearch])
+def read_top_candidates(db: Session = Depends(get_db)):
+    top_candidates_ids = [
+        "130072",
+        "79475",
+        "66924",
+        "119742",
+        "145755",
+        "108379",
+        "135302",
+        "79454",
+    ]
+    politicians = crud.get_politicians_by_ids(db, top_candidates_ids)
+    if politicians is None:
+        raise HTTPException(status_code=404, detail="Politicians not found")
+    return politicians
 
 
 @app.get(
