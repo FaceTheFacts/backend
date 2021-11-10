@@ -12,10 +12,10 @@ load_dotenv()
 
 connection_uri = sa.engine.URL.create(
     "postgresql+psycopg2",
-    username=os.getenv("DATABASE_USER"),
-    password=os.getenv("DATABASE_PASSWORD"),
-    host=os.getenv("DATABASE_HOST"),
-    database=os.getenv("DATABASE_NAME"),
+    username=os.environ["DATABASE_USER"],
+    password=os.environ["DATABASE_PASSWORD"],
+    host=os.environ["DATABASE_HOST"],
+    database=os.environ["DATABASE_NAME"],
 )
 
 engine = create_engine(connection_uri)
