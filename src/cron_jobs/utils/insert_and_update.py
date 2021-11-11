@@ -1,5 +1,5 @@
 # std
-from typing import Any
+from typing import Any, List
 
 # local
 from src.db.connection import Session
@@ -8,7 +8,7 @@ from src.db.connection import Session
 from sqlalchemy.dialects.postgresql import insert
 
 
-def insert_and_update(model: Any, data: list[Any]) -> None:
+def insert_and_update(model: Any, data: List[Any]) -> None:
     session = Session()
     stmt = insert(model).values(data)
     stmt = stmt.on_conflict_do_update(

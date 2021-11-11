@@ -1,5 +1,5 @@
 # std
-from typing import TypedDict, Optional, Any
+from typing import TypedDict, Optional, Any, List, Dict
 
 # local
 from src.cron_jobs.utils.file import read_json
@@ -44,11 +44,11 @@ class Position(TypedDict):
     position_statement_id: int
 
 
-def gen_party_styles_map(api_parties: list[Any]) -> dict[int, PartyStyle]:
+def gen_party_styles_map(api_parties: List[Any]) -> Dict[int, PartyStyle]:
     party_colors = read_json("src/static/party_colors.json")
     party_names = [party_color["displayName"].lower() for party_color in party_colors]
 
-    party_styles_map: dict[int, PartyStyle] = {}
+    party_styles_map: Dict[int, PartyStyle] = {}
     for api_party in api_parties:
         label = api_party["label"]
         has_ref = label in CUSTOM_PARTY_NAME
@@ -70,10 +70,10 @@ def gen_party_styles_map(api_parties: list[Any]) -> dict[int, PartyStyle]:
     return party_styles_map
 
 
-def gen_statements(period_id: int) -> list[Statement]:
+def gen_statements(period_id: int) -> List[Statement]:
     file_path = f"src/static/{PERIOD_POSITION_TABLE[period_id]}-assumptions.json"
     assumptions = read_json(file_path)
-    statements: list[Statement] = []
+    statements: List[Statement] = []
     for id in assumptions:
         statement_id = str(period_id) + str(id)
         statement: Statement = {
@@ -85,12 +85,12 @@ def gen_statements(period_id: int) -> list[Statement]:
     return statements
 
 
-def gen_positions(period_id: int) -> list[Position]:
+def gen_positions(period_id: int) -> List[Position]:
     file_path = f"src/static/{PERIOD_POSITION_TABLE[period_id]}-positions.json"
     position_data = read_json(file_path)
     api_politicians = load_entity("politicians")
     politician_ids: set[int] = set([politician["id"] for politician in api_politicians])
-    positions: list[Position] = []
+    positions: List[Position] = []
     for politician_id in position_data:
         if int(politician_id) not in politician_ids:
             print(politician_id)
