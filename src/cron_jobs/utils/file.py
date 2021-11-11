@@ -1,5 +1,5 @@
 # std
-from typing import Any
+from typing import Any, List
 import os.path as path
 import json
 import time
@@ -21,6 +21,6 @@ def read_json(file_path: str) -> Any:
         return data
 
 
-def write_json(file_path: str, data: list[Any]) -> None:
+def write_json(file_path: str, data: List[Any]) -> None:
     with open(file_path, "w", encoding="utf-8") as file:
         json.dump(data, file, ensure_ascii=False, indent=4)

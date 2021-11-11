@@ -1,5 +1,5 @@
 # std
-from typing import Any, TypedDict
+from typing import Any, TypedDict, Dict, List
 import requests
 import time
 import math
@@ -14,8 +14,8 @@ PAGE_SIZE = 1000
 
 
 class ApiResponse(TypedDict):
-    meta: dict[str, Any]
-    data: list[Any]
+    meta: Dict[str, Any]
+    data: List[Any]
 
 
 def fetch_json(url: str) -> ApiResponse:
@@ -27,13 +27,13 @@ def fetch_json(url: str) -> ApiResponse:
     return response.json()
 
 
-def fetch_page(entity: str, page_nr: int) -> list[Any]:
+def fetch_page(entity: str, page_nr: int) -> List[Any]:
     url = f"https://www.abgeordnetenwatch.de/api/v2/{entity}?range_start={page_nr * PAGE_SIZE}&range_end={PAGE_SIZE}"
     result: ApiResponse = fetch_json(url)
     return result["data"]
 
 
-def fetch_entity(entity: str) -> list[Any]:
+def fetch_entity(entity: str) -> List[Any]:
     time_begin = time.time()
     url = f"https://www.abgeordnetenwatch.de/api/v2/{entity}?range_end=0"
     result = fetch_json(url)
@@ -80,7 +80,7 @@ def fetch_missing_entity(entity: str, model: Any):
         print("Table already updated")
 
 
-def load_entity(entity: str) -> list[Any]:
+def load_entity(entity: str) -> List[Any]:
     file_path = f"src/cron_jobs/data/{entity}.json"
     has_file = has_valid_file(file_path)
     if not has_file:
@@ -88,5 +88,5 @@ def load_entity(entity: str) -> list[Any]:
         write_json(file_path, data)
         return data
 
-    data: list[Any] = read_json(file_path)
+    data: List[Any] = read_json(file_path)
     return data

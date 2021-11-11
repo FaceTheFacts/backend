@@ -1,11 +1,11 @@
 # std
-from typing import Any, TypedDict
+from typing import Any, TypedDict, Dict, List
 import requests
 
 
 class ApiResponse(TypedDict):
-    meta: dict[str, Any]
-    data: list[Any]
+    meta: Dict[str, Any]
+    data: List[Any]
 
 
 def request(url: str) -> ApiResponse:
