@@ -27,13 +27,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Tests
-        env:
-          DATABASE_HOST: ${{ secrets.DATABASE_HOST}}
-          DATABASE_USER: ${{ secrets.DATABASE_USER}}
-          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD}}
-          DATABASE_NAME: ${{ secrets.DATABASE_NAME}}
-        run: poetry run pytest
+#       - name: Tests
+#         env:
+#           DATABASE_HOST: ${{ secrets.DATABASE_HOST}}
+#           DATABASE_USER: ${{ secrets.DATABASE_USER}}
+#           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD}}
+#           DATABASE_NAME: ${{ secrets.DATABASE_NAME}}
+#         run: poetry run pytest
 
   cd:
     runs-on: ubuntu-latest
