@@ -136,6 +136,14 @@ def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
     return paginate(politicians)
 
 
+@app.get("/polls")
+def read_latest_polls(db: Session = Depends(get_db)):
+    polls = crud.get_polls_total(db)
+    if polls is None:
+        raise HTTPException(status_code=404, detail="Polls not found")
+    return polls
+
+
 # https://uriyyo-fastapi-pagination.netlify.app/
 add_pagination(app)
 

@@ -814,4 +814,3 @@ def populate_weblinks() -> None:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    complement_missing_votes()

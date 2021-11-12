@@ -5,6 +5,7 @@ from typing import List
 
 # third-party
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 # local
 import src.db.models as models
@@ -144,3 +145,26 @@ def add_image_urls_to_politicians(politicians: List):
 
 def get_latest_polls(db: Session):
     return db.query(models.Poll).order_by(models.Poll.field_poll_date.desc()).all()
+
+def get_polls_total(db: Session):
+    data_list = []
+    polls = get_latest_polls(db)
+    for poll in polls[:10]:
+        poll_id = poll.id
+        poll_label = poll.label 
+        poll_field_poll_date = poll.field_poll_date 
+        sql = text("SELECT vote, COUNT(*) as total FROM public.vote WHERE poll_id = {} GROUP BY vote".format(poll_id))
+        results = db.execute(sql).fetchall()
+        result_dict = {}
+        for result in results:
+            result_dict[result.vote] = result.total
+             
+
+        item_dict = {
+            "poll_id": poll_id,
+            "poll_label": poll_label,
+            "poll_field_poll_date": poll_field_poll_date,
+            "result": result_dict,
+        }
+        data_list.append(item_dict)
+    return data_list

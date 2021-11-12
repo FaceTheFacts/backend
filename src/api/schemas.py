@@ -50,10 +50,8 @@ class Committee(BaseModel):
 
 class Poll(BaseModel):
     id: int
-    entity_type: str
-    label: str
-    committee: Optional[Committee]
-    field_intro: str
+    label: Optional[str]
+    field_intro: Optional[str]
     field_poll_date: date
 
     class Config:
@@ -151,20 +149,6 @@ class Vote(BaseModel):
     vote: str
     reason_no_show: Optional[str]
     reason_no_show_other: Optional[str]
-
-    class Config:
-        orm_mode = True
-
-
-class Poll(BaseModel):
-    id: int
-    entity_type: str
-    label: str
-    api_url: str
-    field_committees_id: int
-    field_intro: str
-    field_legislature_id: int
-    field_poll_date: date
 
     class Config:
         orm_mode = True
