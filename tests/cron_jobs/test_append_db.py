@@ -2,6 +2,7 @@
 from src.cron_jobs.append_db import append_polls, append_sidejobs, append_votes
 from src.db.connection import Session
 import src.db.models as models
+from typing import Any
 
 # third-party
 from sqlalchemy import delete
@@ -10,11 +11,11 @@ from unittest import TestCase
 session = Session()
 
 
-def return_last_id(model: any):
+def return_last_id(model: Any):
     return session.query(model).order_by(model.id.desc()).first().id
 
 
-def delete_last_item(last_id, model: any, column: str):
+def delete_last_item(last_id, model: Any, column: str):
     stmt = delete(model).where(model.__dict__[column] == last_id)
     session.execute(stmt)
     session.commit()
