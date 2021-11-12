@@ -5,7 +5,7 @@ from typing import List
 
 # third-party
 from sqlalchemy.orm import Session
-from db.models.politician import Politician
+from src.db.models.politician import Politician
 
 # local
 import src.db.models as models
