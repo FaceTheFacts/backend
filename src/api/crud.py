@@ -140,3 +140,7 @@ def add_image_urls_to_politicians(politicians: List):
             politician.__dict__["image_url"] = None
 
     return politicians
+
+
+def get_latest_polls(db: Session):
+    return db.query(models.Poll).order_by(models.Poll.field_poll_date.desc()).all()
