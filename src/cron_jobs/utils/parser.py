@@ -1,5 +1,5 @@
 # std
-from typing import TypedDict, Optional, Any
+from typing import TypedDict, Optional, Any, List, Dict
 
 # local
 from src.cron_jobs.utils.file import read_json
@@ -44,7 +44,7 @@ class Position(TypedDict):
     position_statement_id: int
 
 
-def gen_party_styles_map(api_parties: list[Any]) -> dict[int, PartyStyle]:
+def gen_party_styles_map(api_parties: List[Any]) -> Dict[int, PartyStyle]:
     party_colors = read_json("src/static/party_colors.json")
     party_names = [party_color["displayName"].lower() for party_color in party_colors]
 
@@ -70,7 +70,7 @@ def gen_party_styles_map(api_parties: list[Any]) -> dict[int, PartyStyle]:
     return party_styles_map
 
 
-def gen_statements(period_id: int) -> list[Statement]:
+def gen_statements(period_id: int) -> List[Statement]:
     file_path = f"src/static/{PERIOD_POSITION_TABLE[period_id]}-assumptions.json"
     assumptions = read_json(file_path)
     statements: list[Statement] = []
@@ -85,7 +85,7 @@ def gen_statements(period_id: int) -> list[Statement]:
     return statements
 
 
-def gen_positions(period_id: int) -> list[Position]:
+def gen_positions(period_id: int) -> List[Position]:
     file_path = f"src/static/{PERIOD_POSITION_TABLE[period_id]}-positions.json"
     position_data = read_json(file_path)
     api_politicians = load_entity("politicians")

@@ -1,10 +1,10 @@
 # std
-from typing import Any, TypedDict
+from typing import Any, TypedDict, Dict
 import requests
 
 
 class ApiResponse(TypedDict):
-    meta: dict[str, Any]
+    meta: Dict[str, Any]
     data: list[Any]
 
 
