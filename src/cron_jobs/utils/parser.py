@@ -73,7 +73,7 @@ def gen_party_styles_map(api_parties: List[Any]) -> Dict[int, PartyStyle]:
 def gen_statements(period_id: int) -> List[Statement]:
     file_path = f"src/static/{PERIOD_POSITION_TABLE[period_id]}-assumptions.json"
     assumptions = read_json(file_path)
-    statements: list[Statement] = []
+    statements: List[Statement] = []
     for id in assumptions:
         statement_id = str(period_id) + str(id)
         statement: Statement = {
@@ -90,7 +90,7 @@ def gen_positions(period_id: int) -> List[Position]:
     position_data = read_json(file_path)
     api_politicians = load_entity("politicians")
     politician_ids: set[int] = set([politician["id"] for politician in api_politicians])
-    positions: list[Position] = []
+    positions: List[Position] = []
     for politician_id in position_data:
         if int(politician_id) not in politician_ids:
             print(politician_id)
