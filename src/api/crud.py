@@ -20,7 +20,7 @@ def get_politician_by_id(db: Session, id: int):
     return db.query(models.Politician).filter(models.Politician.id == id).first()
 
 
-def get_politicians_by_ids(db: Session, ids: list):
+def get_politicians_by_ids(db: Session, ids: List):
     politicians = []
     for id in ids:
         politicians.append(get_politician_by_id(db, id))
@@ -125,7 +125,7 @@ def get_politician_by_image_scanner(db: Session, search_text: str):
     return add_image_urls_to_politicians(politicians)
 
 
-def add_image_urls_to_politicians(politicians: list):
+def add_image_urls_to_politicians(politicians: List):
     for politician in politicians:
         image_url = (
             "https://candidate-images.s3.eu-central-1.amazonaws.com/{}.jpg".format(
