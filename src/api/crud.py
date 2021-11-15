@@ -80,13 +80,20 @@ def get_sidejob_ids_by_politician_id(db: Session, id: int) -> List[int]:
     return data_list
 
 
-def get_sidejobs_by_politician_id(db: Session, id: int) -> List[schemas.Sidejob]:
-    data_list = []
-    sidejob_ids = get_sidejob_ids_by_politician_id(db, id)
-    for sidejob_id in sidejob_ids:
-        sidejob = get_sidejob_by_id(db, sidejob_id)
-        data_list.append(sidejob)
-    return data_list
+def get_sidejobs_by_politician_id(db: Session, id: int):
+    sidejobs = (
+        db.query(models.Sidejob)
+        .filter(models.Politician.id == id)
+        .filter(models.Politician.id == models.CandidacyMandate.politician_id)
+        .filter(models.CandidacyMandate.id == models.SidejobHasMandate.candidacy_mandate_id)
+        .filter(models.SidejobHasMandate.sidejob_id == models.Sidejob.id)
+        .all()
+    )
+
+    for item in sidejobs:
+        item.__dict__["income_level"] = convert_income_level(item.__dict__["income_level"])
+
+    return sidejobs
 
 
 def get_politicians_by_partial_name(db: Session, partial_name: str):
