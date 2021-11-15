@@ -154,9 +154,11 @@ class Vote(BaseModel):
     class Config:
         orm_mode = True
 
+
 class VoteAndPoll(BaseModel):
     Vote: Vote
     Poll: Poll
+
 
 class Politician(BaseModel):
     id: int

@@ -135,19 +135,18 @@ def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Politicians not found")
     return paginate(politicians)
 
-@app.get("/politician/{id}/votes", response_model=List[schemas.VoteAndPoll])
+
+@app.get("/politician/{id}/votes", response_model=Page[schemas.VoteAndPoll])
 def read_politician_votes(
     id: int,
     db: Session = Depends(get_db),
     filters: List[int] = Query(None),
 ):
-    votes = crud.get_votes_and_polls_by_politician_id(
-        db, id, (None, None), filters
-    )
+    votes = crud.get_votes_and_polls_by_politician_id(db, id, (None, None), filters)
     if votes is None:
         raise HTTPException(status_code=404, detail="No Votes Found")
 
-    return votes
+    return paginate(votes)
 
 
 # https://uriyyo-fastapi-pagination.netlify.app/
