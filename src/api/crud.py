@@ -6,6 +6,7 @@ from typing import List
 # third-party
 from sqlalchemy.orm import Session
 from src.db.models.politician import Politician
+import certifi
 
 # local
 import src.db.models as models
@@ -126,7 +127,7 @@ def add_image_urls_to_politicians(politicians: List[Politician]):
         )
 
         try:
-            urllib.request.urlopen(image_url)
+            urllib.request.urlopen(image_url, cafile=certifi.where())
             politician.__dict__["image_url"] = image_url
         except HTTPError:
             politician.__dict__["image_url"] = None
