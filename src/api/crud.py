@@ -29,21 +29,42 @@ def get_politicians_by_ids(db: Session, ids: List[int]):
 
 
 def get_votes_and_polls_by_politician_id(
-    db: Session, politician_id: int, range_of_votes: tuple
+    db: Session, politician_id: int, range_of_votes: tuple, topic_ids: list[int] = None
 ):
     candidacy_mandate_ids = get_candidacy_mandate_ids_by_politician_id(
         db, politician_id
     )
 
-    votes = (
-        db.query(models.Vote, models.Poll)
-        .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
-        .filter(models.Vote.poll_id == models.Poll.id)
-        .filter(models.Vote.vote != "no_show")
-        .order_by(models.Poll.field_poll_date.desc())[
-            range_of_votes[0] : range_of_votes[1]
-        ]
-    )
+    if topic_ids:
+        votes = (
+            db.query(models.Vote, models.Poll)
+            .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
+            .filter(models.Vote.poll_id == models.Poll.id)
+            .filter(
+                (models.Topic.id.in_(topic_ids))
+                | (models.Topic.parent_id.in_(topic_ids))
+            )
+            .filter(
+                (models.PollHasTopic.topic_id == models.Topic.id)
+                & (models.Poll.id == models.PollHasTopic.poll_id)
+            )
+            .filter(models.Vote.vote != "no_show")
+            .order_by(models.Poll.field_poll_date.desc())[
+                range_of_votes[0] : range_of_votes[1]
+            ]
+        )
+    else:
+        votes = (
+            db.query(models.Vote, models.Poll)
+            .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
+            .filter(models.Vote.poll_id == models.Poll.id)
+            .filter(models.Vote.vote != "no_show")
+            .order_by(models.Poll.field_poll_date.desc())[
+                range_of_votes[0] : range_of_votes[1]
+            ]
+        )
+
+    print(len(votes))
 
     return votes
 
@@ -89,7 +110,6 @@ def get_politicians_by_partial_name(db: Session, partial_name: str):
 
 
 def get_politicians_by_zipcode(db: Session, zipcode: int):
-
     politicians = (
         db.query(models.Politician)
         .filter(models.ZipCode.zip_code == str(zipcode))
