@@ -48,12 +48,6 @@ def get_votes_and_polls_by_politician_id(
     return votes
 
 
-def get_sidejob_by_id(db: Session, id: int):
-    sidejob = db.query(models.Sidejob).filter(models.Sidejob.id == id).first()
-    sidejob.income_level = convert_income_level(sidejob.income_level)
-    return sidejob
-
-
 def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int]:
     data_list = []
     data = (
@@ -66,27 +60,24 @@ def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int
     return data_list
 
 
-def get_sidejob_ids_by_politician_id(db: Session, id: int) -> List[int]:
-    data_list = []
-    candidacy_mandate_ids = get_candidacy_mandate_ids_by_politician_id(db, id)
-    for candidacy_mandate_id in candidacy_mandate_ids:
-        data = db.query(models.SidejobHasMandate.sidejob_id).filter(
-            models.SidejobHasMandate.candidacy_mandate_id == candidacy_mandate_id
+def get_sidejobs_by_politician_id(db: Session, id: int):
+    sidejobs = (
+        db.query(models.Sidejob)
+        .filter(models.Politician.id == id)
+        .filter(models.Politician.id == models.CandidacyMandate.politician_id)
+        .filter(
+            models.CandidacyMandate.id == models.SidejobHasMandate.candidacy_mandate_id
         )
-        for datum in data:
-            if datum != None:
-                data_list.append(datum["sidejob_id"])
+        .filter(models.SidejobHasMandate.sidejob_id == models.Sidejob.id)
+        .all()
+    )
 
-    return data_list
+    for item in sidejobs:
+        item.__dict__["income_level"] = convert_income_level(
+            item.__dict__["income_level"]
+        )
 
-
-def get_sidejobs_by_politician_id(db: Session, id: int) -> List[schemas.Sidejob]:
-    data_list = []
-    sidejob_ids = get_sidejob_ids_by_politician_id(db, id)
-    for sidejob_id in sidejob_ids:
-        sidejob = get_sidejob_by_id(db, sidejob_id)
-        data_list.append(sidejob)
-    return data_list
+    return sidejobs
 
 
 def get_politicians_by_partial_name(db: Session, partial_name: str):

@@ -217,7 +217,7 @@ def test_read_politician_positions():
 
 def test_read_politician_sidejobs():
     def whole_values_test():
-        response = client.get("/politician/119742/sidejobs?page=1&size=1")
+        response = client.get("/politician/119742/sidejobs?page=1&size=50")
         assert response.status_code == 200
         response_items = [
             {
@@ -232,7 +232,33 @@ def test_read_politician_sidejobs():
                     "entity_type": "sidejob_organization",
                     "label": "Lupus Alpha Asset Management GmbH",
                 },
-            }
+            },
+            {
+                "id": 11599,
+                "entity_type": "sidejob",
+                "label": "Vortrag - Executive Dinner, Donner & Reuschel AG, Hamburg",
+                "income_level": "7.000 € bis 15.000 €",
+                "interval": None,
+                "data_change_date": "2021-08-05",
+                "sidejob_organization": {
+                    "id": 4086,
+                    "entity_type": "sidejob_organization",
+                    "label": "Galler & Company",
+                },
+            },
+            {
+                "id": 11600,
+                "entity_type": "sidejob",
+                "label": "Online-Vortrag - Keynote Human-Works-Kongress",
+                "income_level": "3.500 € bis 7.000 €",
+                "interval": None,
+                "data_change_date": "2021-08-05",
+                "sidejob_organization": {
+                    "id": 4087,
+                    "entity_type": "sidejob_organization",
+                    "label": "Mercer Deutschland GmbH",
+                },
+            },
         ]
         for item in response_items:
             assert item in response.json()["items"]
