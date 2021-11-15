@@ -3,7 +3,7 @@ from typing import Optional, List
 
 # third-party
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi import FastAPI, HTTPException, Depends, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import Page, add_pagination, paginate
 
@@ -134,6 +134,22 @@ def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
     if politicians is None:
         raise HTTPException(status_code=404, detail="Politicians not found")
     return paginate(politicians)
+
+
+# @app.get("/politician/{id}/votes", response_model=List[Tuple[schemas.Vote, schemas.Poll]])
+@app.get("/politician/{id}/votes")
+def read_politician_votes(
+    id: int,
+    db: Session = Depends(get_db),
+    filters: List[int] = Query(None),
+):
+    votes = crud.get_votes_and_polls_by_politician_id(
+        db, id, (None, None), filters
+    )
+    if votes is None:
+        raise HTTPException(status_code=404, detail="No Votes Found")
+
+    return votes
 
 
 # https://uriyyo-fastapi-pagination.netlify.app/
