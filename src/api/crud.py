@@ -36,7 +36,7 @@ def get_votes_and_polls_by_politician_id(
     )
 
     if topic_ids:
-        votes = (
+        votes_and_polls = (
             db.query(models.Vote, models.Poll)
             .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
             .filter(models.Vote.poll_id == models.Poll.id)
@@ -54,7 +54,7 @@ def get_votes_and_polls_by_politician_id(
             ]
         )
     else:
-        votes = (
+        votes_and_polls = (
             db.query(models.Vote, models.Poll)
             .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
             .filter(models.Vote.poll_id == models.Poll.id)
@@ -64,9 +64,7 @@ def get_votes_and_polls_by_politician_id(
             ]
         )
 
-    print(len(votes))
-
-    return votes
+    return votes_and_polls
 
 
 def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int]:
