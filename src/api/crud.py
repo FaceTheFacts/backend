@@ -48,12 +48,6 @@ def get_votes_and_polls_by_politician_id(
     return votes
 
 
-def get_sidejob_by_id(db: Session, id: int):
-    sidejob = db.query(models.Sidejob).filter(models.Sidejob.id == id).first()
-    sidejob.income_level = convert_income_level(sidejob.income_level)
-    return sidejob
-
-
 def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int]:
     data_list = []
     data = (
@@ -66,32 +60,22 @@ def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int
     return data_list
 
 
-def get_sidejob_ids_by_politician_id(db: Session, id: int) -> List[int]:
-    data_list = []
-    candidacy_mandate_ids = get_candidacy_mandate_ids_by_politician_id(db, id)
-    for candidacy_mandate_id in candidacy_mandate_ids:
-        data = db.query(models.SidejobHasMandate.sidejob_id).filter(
-            models.SidejobHasMandate.candidacy_mandate_id == candidacy_mandate_id
-        )
-        for datum in data:
-            if datum != None:
-                data_list.append(datum["sidejob_id"])
-
-    return data_list
-
-
 def get_sidejobs_by_politician_id(db: Session, id: int):
     sidejobs = (
         db.query(models.Sidejob)
         .filter(models.Politician.id == id)
         .filter(models.Politician.id == models.CandidacyMandate.politician_id)
-        .filter(models.CandidacyMandate.id == models.SidejobHasMandate.candidacy_mandate_id)
+        .filter(
+            models.CandidacyMandate.id == models.SidejobHasMandate.candidacy_mandate_id
+        )
         .filter(models.SidejobHasMandate.sidejob_id == models.Sidejob.id)
         .all()
     )
 
     for item in sidejobs:
-        item.__dict__["income_level"] = convert_income_level(item.__dict__["income_level"])
+        item.__dict__["income_level"] = convert_income_level(
+            item.__dict__["income_level"]
+        )
 
     return sidejobs
 
