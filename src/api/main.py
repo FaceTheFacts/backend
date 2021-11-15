@@ -34,13 +34,12 @@ async def add_security_headers(request: Request, call_next):
     response = await call_next(request)
 
     response.headers["Cache-Control"] = "no-store"
-    # response.headers["Content-Type"] = "application/json"
     response.headers["Strict-Transport-Security"] = "max-age=63072000; preload"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
-    # response.headers[
-    #    "Content-Security-Policy"
-    # ] = "default-src 'none'; frame-ancestors 'none'"
+    response.headers[
+        "Content-Security-Policy"
+    ] = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-bundle.js 'sha256-R2r7jpC1j6BEeer9P/YDRn6ufsaSnnARhKTdfrSKStk='; style-src 'self' https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css; frame-ancestors 'none'"
 
     # HTML-related (future-proof)
     response.headers["Feature-Policy"] = "'none'"
