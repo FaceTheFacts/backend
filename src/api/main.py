@@ -54,7 +54,7 @@ def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
 
 
-@app.get("/politician/{id}")
+@app.get("/politician/{id}", response_model=schemas.Politician)
 def read_politician(
     id: int,
     db: Session = Depends(get_db),
@@ -135,9 +135,7 @@ def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Politicians not found")
     return paginate(politicians)
 
-
-# @app.get("/politician/{id}/votes", response_model=List[Tuple[schemas.Vote, schemas.Poll]])
-@app.get("/politician/{id}/votes")
+@app.get("/politician/{id}/votes", response_model=List[schemas.VoteAndPoll])
 def read_politician_votes(
     id: int,
     db: Session = Depends(get_db),
