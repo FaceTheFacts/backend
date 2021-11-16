@@ -1,4 +1,3 @@
-# std
 import urllib.request
 from urllib.error import HTTPError
 from typing import List
@@ -29,7 +28,7 @@ def get_politicians_by_ids(db: Session, ids: List[int]):
 
 
 def get_votes_and_polls_by_politician_id(
-    db: Session, politician_id: int, range_of_votes: tuple, topic_ids: list[int] = None
+    db: Session, politician_id: int, range_of_votes: tuple, topic_ids: List[int] = None
 ):
     candidacy_mandate_ids = get_candidacy_mandate_ids_by_politician_id(
         db, politician_id
