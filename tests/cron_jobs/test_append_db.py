@@ -25,23 +25,8 @@ def test_append_sidejobs():
     def delete_last_item_and_update():
         last_id = return_last_id(models.Sidejob)
         delete_last_item(last_id, models.Sidejob, "id")
-        expected_dict = {
-            "additional_information": None,
-            "api_url": "https://www.abgeordnetenwatch.de/api/v2/sidejobs/11699",
-            "category": "29230",
-            "created": 1635272113,
-            "data_change_date": "2021-10-26",
-            "entity_type": "sidejob",
-            "field_city_id": 65,
-            "field_country_id": 61,
-            "id": 11699,
-            "income_level": None,
-            "interval": None,
-            "job_title_extra": None,
-            "label": "Mitglied des Stiftungsrates, ehrenamtlich",
-            "sidejob_organization_id": 1107,
-        }
-        TestCase().assertDictEqual(expected_dict, append_sidejobs()[0])
+        expected = "https://www.abgeordnetenwatch.de/api/v2/sidejobs/{}".format(last_id)
+        assert append_sidejobs()[0]["api_url"] == expected
 
     def fetch_nothing():
         assert append_sidejobs() == print("Nothing fetched")
@@ -56,7 +41,7 @@ def test_append_polls():
         delete_last_item(last_id, models.PollHasTopic, "poll_id")
         delete_last_item(last_id, models.Poll, "id")
 
-        expected = "https://www.abgeordnetenwatch.de/api/v2/polls/4363"
+        expected = "https://www.abgeordnetenwatch.de/api/v2/polls/{}".format(last_id)
         assert append_polls()[0]["api_url"] == expected
 
     def fetch_nothing():

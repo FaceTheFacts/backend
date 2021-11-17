@@ -99,4 +99,4 @@ def append_votes() -> None:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    append_votes()
+    append_sidejobs()
