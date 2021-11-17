@@ -136,7 +136,7 @@ def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
     return paginate(politicians)
 
 
-@app.get("/polls")
+@app.get("/bundestag-latest-polls")
 def read_latest_polls(db: Session = Depends(get_db)):
     polls = crud.get_polls_total(db)
     if polls is None:
