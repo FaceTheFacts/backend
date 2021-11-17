@@ -142,6 +142,7 @@ def add_image_urls_to_politicians(politicians: List):
 
     return politicians
 
+
 # SELECT * FROM public.poll WHERE field_legislature_id = 111 or WHERE field_legislature_id = 132 ORDER by field_poll_date DESC
 def get_latest_bundestag_polls(db: Session):
     return (

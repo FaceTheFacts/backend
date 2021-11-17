@@ -197,3 +197,22 @@ class PoliticianSearch(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+# -----------------------
+class Result(BaseModel):
+    yes: Optional[int]
+    no: Optional[int]
+    abstain: Optional[int]
+    no_show: Optional[int]
+
+
+class BundestagPoll(BaseModel):
+    poll_field_legislature_id: int
+    poll_id: int
+    poll_label: str
+    poll_field_poll_date: date
+    result: Result
+
+
+# -----------------------
