@@ -54,5 +54,8 @@ For scheduled database tasks, functions under the src/cron-jobs directory handle
 ## Scraping/ Datasource
 The programme collects data in two ways. Functions in src/cron-jobs retrieve third-party APIs (e.g., [abgeordnetenwatch.de API](https://www.abgeordnetenwatch.de/api)) from our partners and store them in our database. In addition, programmes in the src/scraper directory scrape websites with [Scrapy](https://scrapy.org/) to compensate lack of political data. 
 Our team defines classes to scrape information from a website under the src/data-scraper/spiders directory. For instance, if users execute functions in the directory, it generates a JSON file with the scraped information (e.g., python -m src/data-scraper/profile:generates profile.json). src/data-scraper directory also includes helper functions under the utils directory.
+## Continuous Integration/Deployment
+This repository includes an automatic CI/CD pipeline for checking the respective push/pull-request event and in case of code is merged or pushed into the `main` branch, it automatically triggers a deployment to AWS Elastic Beanstalk. A ruff overview of this flow can be found in the diagram below:
+![CI/CD Flow](img/ci_cd-flow-backend.png)
 ## Automated Testing
 Our git workflow assesses functions with [pytest](https://docs.pytest.org/en/6.2.x/). Tests directory defines all tests by following the same structure in the src directory. Every time users merge branches, .github/workflows/ci.yml file detects errors in codes.
