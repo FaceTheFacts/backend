@@ -814,8 +814,8 @@ def populate_weblinks() -> None:
     insert_and_update(PoliticianWeblink, weblinks)
 
 
-# SELECT poll_id, vote, Count(*) FROM public.vote GROUP BY poll_id, vote ORDER by poll_id ASC;
-def populate_vote_result() -> None:
+def get_vote_results_by_poll_id(poll_id: int):
+    data = {}
     session = Session()
     results = (
         session.query(
@@ -825,6 +825,21 @@ def populate_vote_result() -> None:
         .order_by(models.Vote.poll_id.asc())
         .all()
     )
+    # https://stackoverflow.com/questions/10614702/python-list-of-tuples-organize-by-unique-elements-to-a-dictionary
+    for result in results:
+        data.setdefault(result[0], []).append({result[1]: result[2]})
+
+    return data[poll_id]
+
+
+# SELECT poll_id, vote, Count(*) FROM public.vote GROUP BY poll_id, vote ORDER by poll_id ASC;
+def populate_vote_result() -> None:
+    new_dict = {}
+    results = get_vote_results_by_poll_id(643)
+    for result in results:
+        for k, v in result.items():
+            new_dict[k] = v
+    print(new_dict)
 
 
 if __name__ == "__main__":
