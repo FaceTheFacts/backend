@@ -10,6 +10,7 @@ from fastapi_pagination import Page, add_pagination, paginate
 # local
 import src.api.crud as crud
 import src.api.schemas as schemas
+from src.db import models
 from src.db.connection import Session
 from src.api.utils.error import check_entity_not_found
 
@@ -63,7 +64,7 @@ def asread_politician(
     votes_start: int = None,
     votes_end: int = 5,
 ):
-    politician = crud.get_politician_by_id(db, id)
+    politician = crud.get_entity_by_id(db, models.Politician, id)
     check_entity_not_found(politician, "Politician")
 
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)[sidejobs_start:sidejobs_end]
@@ -98,14 +99,14 @@ def read_top_candidates(db: Session = Depends(get_db)):
     "/politician/{id}/constituencies", response_model=schemas.PoliticianToConstituencies
 )
 def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
-    politician = crud.get_politician_by_id(db, id)
+    politician = crud.get_entity_by_id(db, models.Politician, id)
     check_entity_not_found(politician, "Politician")
     return politician
 
 
 @app.get("/politician/{id}/positions", response_model=schemas.PoliticianToPosition)
 def read_politician_positions(id: int, db: Session = Depends(get_db)):
-    politician = crud.get_politician_by_id(db, id)
+    politician = crud.get_entity_by_id(db, models.Politician, id)
     check_entity_not_found(politician, "Politician")
     return politician
 

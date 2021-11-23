@@ -347,7 +347,7 @@ def test_read_politician_search():
 # combined test for read_politician_search and read_politicians_image_scanner
 def test_search_and_image_scanner():
     search_response = client.get("/search?text=Philipp")
-    image_scanner_response = client.get("image-scanner?text=Philipp")
+    image_scanner_response = client.get("/image-scanner?text=Philipp")
 
     assert search_response.json() == image_scanner_response.json()
 
