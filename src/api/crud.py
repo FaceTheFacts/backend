@@ -15,6 +15,7 @@ from src.api.utils.sidejob import convert_income_level
 def get_entity_by_id(db: Session, model, id: int):
     return db.query(model).filter(model.id == id).first()
 
+
 def get_politicians_by_ids(db: Session, ids: List[int]):
     politicians = []
     for id in ids:
