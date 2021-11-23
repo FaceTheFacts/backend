@@ -56,7 +56,7 @@ def read_root(name: Optional[str] = "World"):
 
 
 @app.get("/politician/{id}", response_model=schemas.Politician)
-def asread_politician(
+def read_politician(
     id: int,
     db: Session = Depends(get_db),
     sidejobs_start: int = None,
