@@ -352,7 +352,6 @@ def test_search_and_image_scanner():
     assert search_response.json() == image_scanner_response.json()
 
 
-
 def test_read_latest_polls():
     def whole_values_test():
         response = client.get("/bundestag-latest-polls?page=1&size=1")

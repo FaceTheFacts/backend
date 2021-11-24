@@ -154,7 +154,6 @@ class Vote(BaseModel):
         orm_mode = True
 
 
-
 class VoteAndPoll(BaseModel):
     Vote: Vote
     Poll: Poll

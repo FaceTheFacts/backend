@@ -22,7 +22,6 @@ def get_politician_by_id(db: Session, id: int):
     return db.query(models.Politician).filter(models.Politician.id == id).first()
 
 
-
 def get_politicians_by_ids(db: Session, ids: List[int]):
 
     politicians = []
@@ -136,7 +135,6 @@ def get_politician_by_search(db: Session, search_text: str):
 def get_politician_by_image_scanner(db: Session, search_text: str):
     politicians = get_politicians_by_partial_name(db, search_text)
     return add_image_urls_to_politicians(politicians)
-
 
 
 def add_image_urls_to_politicians(politicians: List[Politician]):
