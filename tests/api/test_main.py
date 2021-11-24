@@ -344,14 +344,6 @@ def test_read_politician_search():
     selected_values_test()
 
 
-# combined test for read_politician_search and read_politicians_image_scanner
-def test_search_and_image_scanner():
-    search_response = client.get("/search?text=Philipp")
-    image_scanner_response = client.get("image-scanner?text=Philipp")
-
-    assert search_response.json() == image_scanner_response.json()
-
-
 def test_read_latest_polls():
     def whole_values_test():
         response = client.get("/bundestag-latest-polls?page=1&size=1")
