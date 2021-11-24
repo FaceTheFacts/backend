@@ -22,23 +22,21 @@ def get_vote_result(df: DataFrame, poll_id: int, vote: str) -> any:
     if is_exist_result == False:
         return 0
     else:
-        return df[(df.poll_id == poll_id) & (df.vote == vote)]["count"].values[0]
+        return df[(df.poll_id == poll_id) & (df.vote == vote)]["count"].values[0].item()
 
 
 def generate_vote_results():
     data_list = []
     df = read_poll_vote_result_df()
-    poll_ids = df.poll_id.values
+    poll_ids = set(df.poll_id.values)
     for poll_id in poll_ids:
         if poll_id != None:
             new_dict = {
-                "poll_id": poll_id,
                 "yes": get_vote_result(df, poll_id, "yes"),
                 "no": get_vote_result(df, poll_id, "no"),
                 "abstain": get_vote_result(df, poll_id, "abstain"),
                 "no_show": get_vote_result(df, poll_id, "no_show"),
+                "poll_id": poll_id.item(),
             }
         data_list.append(new_dict)
-
     return data_list
-
