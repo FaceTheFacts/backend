@@ -1,15 +1,12 @@
-import urllib.request
-from urllib.error import HTTPError
 from typing import List
 
 # third-party
 from sqlalchemy.orm import Session
-from src.db.models.politician import Politician
 
 # local
 import src.db.models as models
-import src.api.schemas as schemas
 from src.api.utils.sidejob import convert_income_level
+from src.api.utils.politician import add_image_urls_to_politicians
 
 
 def get_entity_by_id(db: Session, model, id: int):
@@ -128,20 +125,3 @@ def get_politician_by_search(db: Session, search_text: str):
 def get_politician_by_image_scanner(db: Session, search_text: str):
     politicians = get_politicians_by_partial_name(db, search_text)
     return add_image_urls_to_politicians(politicians)
-
-
-def add_image_urls_to_politicians(politicians: List[Politician]):
-    for politician in politicians:
-        image_url = (
-            "https://candidate-images.s3.eu-central-1.amazonaws.com/{}.jpg".format(
-                politician.id
-            )
-        )
-
-        try:
-            urllib.request.urlopen(image_url)
-            politician.__dict__["image_url"] = image_url
-        except HTTPError:
-            politician.__dict__["image_url"] = None
-
-    return politicians
