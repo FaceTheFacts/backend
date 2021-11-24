@@ -135,6 +135,19 @@ def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
     return paginate(politicians)
 
 
+@app.get("/politician/{id}/votes", response_model=Page[schemas.VoteAndPoll])
+def read_politician_votes(
+    id: int,
+    db: Session = Depends(get_db),
+    filters: List[int] = Query(None),
+):
+    votes = crud.get_votes_and_polls_by_politician_id(db, id, (None, None), filters)
+    if votes is None:
+        raise HTTPException(status_code=404, detail="No Votes Found")
+
+    return paginate(votes)
+
+
 @app.get("/bundestag-latest-polls", response_model=Page[schemas.BundestagPoll])
 def read_latest_polls(db: Session = Depends(get_db)):
     polls = crud.get_polls_total(db)

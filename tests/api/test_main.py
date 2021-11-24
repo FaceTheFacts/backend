@@ -344,6 +344,56 @@ def test_read_politician_search():
     selected_values_test()
 
 
+def test_read_politician_votes():
+    def no_filters_random_test():
+        response = client.get("/politician/79454/votes")
+        test_responses = [
+            {
+                "Vote": {
+                    "id": 410777,
+                    "entity_type": "vote",
+                    "label": "Dietmar Bartsch - Unternehmerische Sorgfaltspflichten in Lieferketten",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/410777",
+                    "mandate_id": 46023,
+                    "fraction_id": 41,
+                    "poll_id": 4199,
+                    "vote": "abstain",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4199,
+                    "entity_type": "node",
+                    "label": "Unternehmerische Sorgfaltspflichten in Lieferketten",
+                    "field_intro": '<p>Der Gesetzentwurf der Bundesregierung soll die Sicherung von Menschenrechten und Umweltstandards für deutsche Unternehmen im internationalen Handel bedeuten. Lieferketten sollen nachweislich fair sein.</p>\r\n\r\n<p>Der Gesetzentwurf wurde mit den Stimmen der Fraktionen CDU/CSU, SPD und B90/DIE GRÜNEN angenommen. Ablehnung erhielt der Entwurf von den Fraktionen AfD und FDP. Entgegen des Fraktionsdrucks stimmten auch 10 Abgeordnete der CDU mit NEIN, darunter <a href="https://www.abgeordnetenwatch.de/profile/axel-eduard-fischer">Axel Eduard Fischer</a>, <a href="https://www.abgeordnetenwatch.de/profile/hans-juergen-irmer">Hans-Jürgen Irmer</a> und <a href="https://www.abgeordnetenwatch.de/profile/andreas-laemmel">Andreas Lämmel</a>. Die Fraktion DIE LINKE enthielt sich, mit Ausnahme von <a href="https://www.abgeordnetenwatch.de/profile/ulla-jelpke">Ulla Jelpke</a>, die mit JA stimmte. Insgesamt stimmten 412 Abgeordnete für den Antrag und 159 Abgeordnete dagegen.</p>\r\n\r\n<p>&nbsp;</p>\r\n',
+                    "field_poll_date": "2021-06-11",
+                },
+            },
+        ]
+
+        for item in test_responses:
+            assert item in response.json()["items"]
+
+    def response_size_by_filters_test():
+        complete_response_total = client.get("/politician/119742/votes").json()["total"]
+        single_filter_response_total = client.get(
+            "/politician/119742/votes?filters=2"
+        ).json()["total"]
+        double_filter_response_total = client.get(
+            "/politician/119742/votes?filters=2&filters=1"
+        ).json()["total"]
+        triple_filter_response_total = client.get(
+            "/politician/119742/votes?filters=2&filters=1&filters=6"
+        ).json()["total"]
+
+        assert complete_response_total >= triple_filter_response_total
+        assert triple_filter_response_total >= double_filter_response_total
+        assert double_filter_response_total >= single_filter_response_total
+
+    no_filters_random_test()
+    response_size_by_filters_test()
+
+
 def test_read_latest_polls():
     def whole_values_test():
         response = client.get("/bundestag-latest-polls?page=1&size=1")
