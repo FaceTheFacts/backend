@@ -39,7 +39,7 @@ from src.db.models.position import Position
 from src.db.models.politician_weblink import PoliticianWeblink
 
 import src.db.models as models
-
+from src.cron_jobs.utils.vote_result import generate_vote_results
 from src.cron_jobs.utils.insert_and_update import insert_and_update
 from src.cron_jobs.utils.parser import (
     gen_statements,
@@ -816,73 +816,11 @@ def populate_weblinks() -> None:
     insert_and_update(PoliticianWeblink, weblinks)
 
 
-def get_vote_results_by_poll_id(poll_id: int):
-    data = {}
-    results = (
-        session.query(
-            models.Vote.poll_id, models.Vote.vote, func.count(models.Vote.poll_id)
-        )
-        .group_by(models.Vote.poll_id, models.Vote.vote)
-        .order_by(models.Vote.poll_id.asc())
-        .all()
-    )
-    # https://stackoverflow.com/questions/10614702/python-list-of-tuples-organize-by-unique-elements-to-a-dictionary
-    for result in results:
-        data.setdefault(result[0], []).append({result[1]: result[2]})
-
-    return data[poll_id]
-
-
-def generate_vote_results(poll_id: int):
-    time_begin = time.time()
-    new_dict = {}
-    results = get_vote_results_by_poll_id(poll_id)
-    for result in results:
-        for k, v in result.items():
-            new_dict[k] = v
-    new_dict["poll_id"] = poll_id
-    time_end = time.time()
-    print(f"Total runtime is {time_end - time_begin}")
-    return new_dict
-
-
-import time
-
-
-def get_poll_ids_from_vote():
-    time_begin = time.time()
-    data_list = []
-    poll_ids = session.query(models.Vote.poll_id).distinct(models.Vote.poll_id).all()
-    for poll_id in poll_ids:
-        if poll_id[0] != None:
-            data_list.append(poll_id[0])
-    time_end = time.time()
-    print(f"Total runtime is {time_end - time_begin}")
-    return data_list
-
-
 def populate_vote_result() -> None:
-    time_begin = time.time()
-    vote_results = []
-    poll_ids = get_poll_ids_from_vote()
-    print(len(poll_ids))
-    for poll_id in poll_ids[:10]:
-        item = generate_vote_results(poll_id)
-        vote_result = {
-            "yes": item["yes"] if item.get("yes") else 0,
-            "no": item["no"] if item.get("no") else 0,
-            "abstain": item["abstain"] if item.get("abstain") else 0,
-            "no_show": item["no_show"] if item.get("no_show") else 0,
-            "poll_id": item["poll_id"],
-        }
-        vote_results.append(vote_result)
-    time_end = time.time()
-    print(f"Total runtime is {time_end - time_begin}")
+    vote_results = generate_vote_results()
     insert_and_update(models.VoteResult, vote_results)
 
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    # populate_vote_result()
-    # get_poll_ids_from_vote()
-    generate_vote_results(643)
+    populate_vote_result()
