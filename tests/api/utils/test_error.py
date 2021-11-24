@@ -3,7 +3,7 @@ from fastapi import HTTPException
 
 
 def test_check_entity_not_found():
-    def pass_None_test():
+    def pass_none_test():
         try:
             check_entity_not_found(None, "Entity")
             assert (
@@ -21,5 +21,5 @@ def test_check_entity_not_found():
         except HTTPException:
             assert True
 
-    pass_None_test()
+    pass_none_test()
     pass_empty_list_test()
