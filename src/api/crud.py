@@ -1,5 +1,3 @@
-import urllib.request
-from urllib.error import HTTPError
 from typing import List
 
 # third-party
@@ -10,23 +8,18 @@ from sqlalchemy import text, or_
 
 # local
 import src.db.models as models
-import src.api.schemas as schemas
 from src.api.utils.sidejob import convert_income_level
+from src.api.utils.politician import add_image_urls_to_politicians
 
 
-def get_country_by_id(db: Session, id: int):
-    return db.query(models.Country).filter(models.Country.id == id).first()
-
-
-def get_politician_by_id(db: Session, id: int):
-    return db.query(models.Politician).filter(models.Politician.id == id).first()
+def get_entity_by_id(db: Session, model, id: int):
+    return db.query(model).filter(model.id == id).first()
 
 
 def get_politicians_by_ids(db: Session, ids: List[int]):
-
     politicians = []
     for id in ids:
-        politicians.append(get_politician_by_id(db, id))
+        politicians.append(get_entity_by_id(db, models.Politician, id))
     return add_image_urls_to_politicians(politicians)
 
 
@@ -135,23 +128,6 @@ def get_politician_by_search(db: Session, search_text: str):
 def get_politician_by_image_scanner(db: Session, search_text: str):
     politicians = get_politicians_by_partial_name(db, search_text)
     return add_image_urls_to_politicians(politicians)
-
-
-def add_image_urls_to_politicians(politicians: List[models.Politician]):
-    for politician in politicians:
-        image_url = (
-            "https://candidate-images.s3.eu-central-1.amazonaws.com/{}.jpg".format(
-                politician.id
-            )
-        )
-
-        try:
-            urllib.request.urlopen(image_url)
-            politician.__dict__["image_url"] = image_url
-        except HTTPError:
-            politician.__dict__["image_url"] = None
-
-    return politicians
 
 
 # SELECT * FROM public.poll WHERE field_legislature_id = 111 or WHERE field_legislature_id = 132 ORDER by field_poll_date DESC

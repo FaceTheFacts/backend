@@ -4,27 +4,26 @@ from datetime import date
 from typing import Optional, List, Dict
 
 
-class Country(BaseModel):
+class FTFBaseModel(BaseModel):
+    class Config:
+        orm_mode = True
+
+
+class Country(FTFBaseModel):
     id: int
     entity_type: str
     label: str
     api_url: str
 
-    class Config:
-        orm_mode = True
 
-
-class City(BaseModel):
+class City(FTFBaseModel):
     id: int
     entity_type: str
     label: str
     api_url: str
 
-    class Config:
-        orm_mode = True
 
-
-class Topic(BaseModel):
+class Topic(FTFBaseModel):
     id: int
     entity_type: str
     label: str
@@ -34,32 +33,23 @@ class Topic(BaseModel):
     # parent: Optional[Topic]
     parent_id: Optional[int]
 
-    class Config:
-        orm_mode = True
-
 
 # -----------------------
-class Committee(BaseModel):
+class Committee(FTFBaseModel):
     id: int
     entity_type: str
     label: str
 
-    class Config:
-        orm_mode = True
 
-
-class Poll(BaseModel):
+class Poll(FTFBaseModel):
     id: int
     label: Optional[str]
     field_intro: Optional[str]
     field_poll_date: date
 
-    class Config:
-        orm_mode = True
-
 
 # -----------------------
-class Constituency(BaseModel):
+class Constituency(FTFBaseModel):
     id: int
     entity_type: str
     label: str
@@ -67,64 +57,43 @@ class Constituency(BaseModel):
     name: str
     number: Optional[int]
 
-    class Config:
-        orm_mode = True
 
-
-class ElectoralDataToConstituency(BaseModel):
+class ElectoralDataToConstituency(FTFBaseModel):
     id: int
     constituency: Optional[Constituency]
 
-    class Config:
-        orm_mode = True
 
-
-class CandidacyMandateToConstituencies(BaseModel):
+class CandidacyMandateToConstituencies(FTFBaseModel):
     id: int
     electoral_data: ElectoralDataToConstituency
 
-    class Config:
-        orm_mode = True
 
-
-class PoliticianToConstituencies(BaseModel):
+class PoliticianToConstituencies(FTFBaseModel):
     id: int
     candidacy_mandates: List[CandidacyMandateToConstituencies]
 
-    class Config:
-        orm_mode = True
-
 
 # -----------------------
-class Position(BaseModel):
+class Position(FTFBaseModel):
     id: int
     position: str
     reason: Optional[str]
 
-    class Config:
-        orm_mode = True
 
-
-class PoliticianToPosition(BaseModel):
+class PoliticianToPosition(FTFBaseModel):
     id: int
     positions: List[Position]
 
-    class Config:
-        orm_mode = True
-
 
 # -----------------------
-class SidejobOrganization(BaseModel):
+class SidejobOrganization(FTFBaseModel):
     id: int
     entity_type: str
     label: str
 
-    class Config:
-        orm_mode = True
-
 
 # -----------------------
-class Sidejob(BaseModel):
+class Sidejob(FTFBaseModel):
     id: int
     entity_type: str
     label: str
@@ -133,12 +102,9 @@ class Sidejob(BaseModel):
     data_change_date: date
     sidejob_organization: Optional[SidejobOrganization]
 
-    class Config:
-        orm_mode = True
-
 
 # -----------------------
-class Vote(BaseModel):
+class Vote(FTFBaseModel):
     id: int
     entity_type: str
     label: str
@@ -150,16 +116,13 @@ class Vote(BaseModel):
     reason_no_show: Optional[str]
     reason_no_show_other: Optional[str]
 
-    class Config:
-        orm_mode = True
 
-
-class VoteAndPoll(BaseModel):
+class VoteAndPoll(FTFBaseModel):
     Vote: Vote
     Poll: Poll
 
 
-class Politician(BaseModel):
+class Politician(FTFBaseModel):
     id: int
     entity_type: str
     label: str
@@ -182,45 +145,29 @@ class Politician(BaseModel):
     weblinks: Optional[List]
     votes_and_polls: Optional[List[VoteAndPoll]]
 
-    class Config:
-        orm_mode = True
 
-
-class PartySearch(BaseModel):
+class PartySearch(FTFBaseModel):
     id: int
     label: str
 
-    class Config:
-        orm_mode = True
 
-
-class PoliticianSearch(BaseModel):
+class PoliticianSearch(FTFBaseModel):
     id: int
     label: str
     party: Optional[PartySearch]
     image_url: Optional[str]
 
-    class Config:
-        orm_mode = True
 
-
-# -----------------------
-class VoteResult(BaseModel):
+class VoteResult(FTFBaseModel):
     yes: int
     no: int
     abstain: int
     no_show: int
 
-    class Config:
-        orm_mode = True
 
-
-class BundestagPoll(BaseModel):
+class BundestagPoll(FTFBaseModel):
     poll_field_legislature_id: int
     poll_id: int
     poll_label: str
     poll_field_poll_date: date
     result: VoteResult
-
-
-# -----------------------

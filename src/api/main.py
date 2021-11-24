@@ -10,7 +10,9 @@ from fastapi_pagination import Page, add_pagination, paginate
 # local
 import src.api.crud as crud
 import src.api.schemas as schemas
+from src.db import models
 from src.db.connection import Session
+from src.api.utils.error import check_entity_not_found
 
 app = FastAPI()
 
@@ -62,9 +64,8 @@ def read_politician(
     votes_start: int = None,
     votes_end: int = 5,
 ):
-    politician = crud.get_politician_by_id(db, id)
-    if politician is None:
-        raise HTTPException(status_code=404, detail="Politician not found")
+    politician = crud.get_entity_by_id(db, models.Politician, id)
+    check_entity_not_found(politician, "Politician")
 
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)[sidejobs_start:sidejobs_end]
     politician.__dict__["sidejobs"] = sidejobs
@@ -90,8 +91,7 @@ def read_top_candidates(db: Session = Depends(get_db)):
         "79454",
     ]
     politicians = crud.get_politicians_by_ids(db, top_candidates_ids)
-    if politicians is None:
-        raise HTTPException(status_code=404, detail="Politicians not found")
+    check_entity_not_found(politicians, "Politicians")
     return politicians
 
 
@@ -99,17 +99,15 @@ def read_top_candidates(db: Session = Depends(get_db)):
     "/politician/{id}/constituencies", response_model=schemas.PoliticianToConstituencies
 )
 def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
-    politician = crud.get_politician_by_id(db, id)
-    if politician is None:
-        raise HTTPException(status_code=404, detail="Politician not found")
+    politician = crud.get_entity_by_id(db, models.Politician, id)
+    check_entity_not_found(politician, "Politician")
     return politician
 
 
 @app.get("/politician/{id}/positions", response_model=schemas.PoliticianToPosition)
 def read_politician_positions(id: int, db: Session = Depends(get_db)):
-    politician = crud.get_politician_by_id(db, id)
-    if politician is None:
-        raise HTTPException(status_code=404, detail="Politician not found")
+    politician = crud.get_entity_by_id(db, models.Politician, id)
+    check_entity_not_found(politician, "Politician")
     return politician
 
 
@@ -122,16 +120,14 @@ def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
 @app.get("/search", response_model=Page[schemas.PoliticianSearch])
 def read_politician_search(text: str, db: Session = Depends(get_db)):
     politicians = crud.get_politician_by_search(db, text)
-    if politicians is None:
-        raise HTTPException(status_code=404, detail="Politicians not found")
+    check_entity_not_found(politicians, "Politicians")
     return paginate(politicians)
 
 
 @app.get("/image-scanner", response_model=Page[schemas.PoliticianSearch])
 def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
     politicians = crud.get_politician_by_image_scanner(db, text)
-    if politicians is None:
-        raise HTTPException(status_code=404, detail="Politicians not found")
+    check_entity_not_found(politicians, "Politicians")
     return paginate(politicians)
 
 
@@ -142,9 +138,7 @@ def read_politician_votes(
     filters: List[int] = Query(None),
 ):
     votes = crud.get_votes_and_polls_by_politician_id(db, id, (None, None), filters)
-    if votes is None:
-        raise HTTPException(status_code=404, detail="No Votes Found")
-
+    check_entity_not_found(votes, "Votes")
     return paginate(votes)
 
 
