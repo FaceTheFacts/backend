@@ -2,43 +2,12 @@
 import time
 
 # local
+import src.db.models as models
+
+from src.db.connection import engine, Session, Base
+
 from src.cron_jobs.utils.file import read_json
 from src.cron_jobs.utils.fetch import fetch_json, load_entity
-from src.db.connection import engine, Session, Base
-from src.db.models.country import Country
-from src.db.models.city import City
-from src.db.models.party_style import PartyStyle
-from src.db.models.party import Party
-from src.db.models.politician import Politician
-from src.db.models.parliament import Parliament
-from src.db.models.parliament_period import ParliamentPeriod
-from src.db.models.topic import Topic
-from src.db.models.committee import Committee
-from src.db.models.committee_has_topic import CommitteeHasTopic
-from src.db.models.fraction import Fraction
-from src.db.models.constituency import Constituency
-from src.db.models.electoral_list import ElectoralList
-from src.db.models.election_program import ElectionProgram
-from src.db.models.fraction_membership import FractionMembership
-from src.db.models.electoral_data import ElectoralData
-from src.db.models.candidacy_mandate import CandidacyMandate
-from src.db.models.committee_membership import CommitteeMembership
-from src.db.models.poll import Poll
-from src.db.models.poll_has_topic import PollHasTopic
-from src.db.models.field_related_link import FieldRelatedLink
-from src.db.models.vote import Vote
-from src.db.models.sidejob_organization import SidejobOrganization
-from src.db.models.sidejob_organization_has_topic import SidejobOrganizationHasTopic
-from src.db.models.sidejob import Sidejob
-from src.db.models.sidejob_has_mandate import SidejobHasMandate
-from src.db.models.sidejob_has_topic import SidejobHasTopic
-from src.db.models.position_statement import PositionStatement
-from src.db.models.cv import CV
-from src.db.models.career_path import CareerPath
-from src.db.models.position import Position
-from src.db.models.politician_weblink import PoliticianWeblink
-
-import src.db.models as models
 from src.cron_jobs.utils.vote_result import generate_vote_results
 from src.cron_jobs.utils.insert_and_update import insert_and_update
 from src.cron_jobs.utils.parser import (
@@ -50,7 +19,6 @@ from src.cron_jobs.utils.parser import (
 
 # third-party
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy import func
 
 session = Session()
 
@@ -66,7 +34,7 @@ def populate_countries() -> None:
         }
         for api_country in api_countries
     ]
-    insert_and_update(Country, countries)
+    insert_and_update(models.Country, countries)
 
 
 def populate_cities() -> None:
@@ -80,7 +48,7 @@ def populate_cities() -> None:
         }
         for api_city in api_cities
     ]
-    insert_and_update(City, cities)
+    insert_and_update(models.City, cities)
 
 
 def populate_party_styles() -> None:
@@ -100,7 +68,7 @@ def populate_party_styles() -> None:
                 "border_color": None,
             }
             party_styles.append(party_style)
-    insert_and_update(PartyStyle, party_styles)
+    insert_and_update(models.PartyStyle, party_styles)
 
 
 def populate_parties() -> None:
@@ -117,7 +85,7 @@ def populate_parties() -> None:
         }
         for api_party in api_parties
     ]
-    insert_and_update(Party, parties)
+    insert_and_update(models.Party, parties)
 
 
 def populate_politicians() -> None:
@@ -153,7 +121,7 @@ def populate_politicians() -> None:
         }
         for api_politician in api_politicians
     ]
-    insert_and_update(Politician, politicians)
+    insert_and_update(models.Politician, politicians)
     end_time = time.time()
     print(
         f"Total runtime to store {len(api_politicians)} data is {end_time - begin_time}"
@@ -173,7 +141,7 @@ def populate_parliaments() -> None:
         }
         for api_parliament in api_parliaments
     ]
-    insert_and_update(Parliament, parliaments)
+    insert_and_update(models.Parliament, parliaments)
 
 
 def update_parliament_current_project_ids() -> None:
@@ -192,7 +160,7 @@ def update_parliament_current_project_ids() -> None:
         if parliament["current_project_id"]:
             engine.execute(
                 "UPDATE {table} SET current_project_id = {current_project_id} WHERE id = {id}".format(
-                    table=Parliament.__tablename__,
+                    table=models.Parliament.__tablename__,
                     current_project_id=parliament["current_project_id"],
                     id=parliament["id"],
                 )
@@ -222,7 +190,7 @@ def populate_parliament_periods() -> None:
         for api_parliament_period in api_parliament_periods
     ]
     parliament_periods = sorted(parliament_periods, key=lambda p: p["id"])
-    insert_and_update(ParliamentPeriod, parliament_periods)
+    insert_and_update(models.ParliamentPeriod, parliament_periods)
     update_parliament_current_project_ids()
 
 
@@ -241,7 +209,7 @@ def populate_topics() -> None:
         for api_topic in api_topics
     ]
     topics = sorted(topics, key=lambda t: t["id"])
-    insert_and_update(Topic, topics)
+    insert_and_update(models.Topic, topics)
 
 
 def populate_committees() -> None:
@@ -256,7 +224,7 @@ def populate_committees() -> None:
         }
         for api_committee in api_committees
     ]
-    insert_and_update(Committee, committees)
+    insert_and_update(models.Committee, committees)
 
 
 def populate_committee_has_topic() -> None:
@@ -271,7 +239,7 @@ def populate_committee_has_topic() -> None:
                     "topic_id": topic["id"],
                 }
                 committee_topics.append(committee_topic)
-    stmt = insert(CommitteeHasTopic).values(committee_topics)
+    stmt = insert(models.CommitteeHasTopic).values(committee_topics)
     stmt = stmt.on_conflict_do_nothing()
     session = Session()
     session.execute(stmt)
@@ -295,7 +263,7 @@ def populate_fractions() -> None:
         }
         for api_fraction in api_fractions
     ]
-    insert_and_update(Fraction, fractions)
+    insert_and_update(models.Fraction, fractions)
 
 
 def populate_constituencies() -> None:
@@ -311,7 +279,7 @@ def populate_constituencies() -> None:
         }
         for api_constituency in api_constituencies
     ]
-    insert_and_update(Constituency, constituencies)
+    insert_and_update(models.Constituency, constituencies)
 
 
 def update_constituencies_with_parliament_period_id() -> None:
@@ -345,7 +313,7 @@ def update_constituencies_with_parliament_period_id() -> None:
             }
 
             constituencies.append(constituency)
-    insert_and_update(Constituency, constituencies)
+    insert_and_update(models.Constituency, constituencies)
     end_time = time.time()
     print(f"Total runtime to store {len(json_data)} data is {end_time - begin_time}")
 
@@ -365,7 +333,7 @@ def populate_electoral_lists() -> None:
         }
         for api_electoral_list in api_electoral_lists
     ]
-    insert_and_update(ElectoralList, electoral_lists)
+    insert_and_update(models.ElectoralList, electoral_lists)
 
 
 def populate_election_programs() -> None:
@@ -391,7 +359,7 @@ def populate_election_programs() -> None:
         }
         for api_election_program in api_election_programs
     ]
-    insert_and_update(ElectionProgram, election_programs)
+    insert_and_update(models.ElectionProgram, election_programs)
 
 
 def populate_fraction_memberships() -> None:
@@ -410,7 +378,7 @@ def populate_fraction_memberships() -> None:
                 "valid_until": membership["valid_until"],
             }
             fraction_memberships.append(new_fraction_membership)
-    insert_and_update(FractionMembership, fraction_memberships)
+    insert_and_update(models.FractionMembership, fraction_memberships)
 
 
 def populate_electoral_data() -> None:
@@ -437,7 +405,7 @@ def populate_electoral_data() -> None:
                 "mandate_won": electoral_data["mandate_won"],
             }
             electoral_data_list.append(new_electoral_data)
-    insert_and_update(ElectoralData, electoral_data_list)
+    insert_and_update(models.ElectoralData, electoral_data_list)
 
 
 def populate_candidacies_mandates() -> None:
@@ -481,7 +449,7 @@ def populate_candidacies_mandates() -> None:
         }
         for api_candidacies_mandate in api_candidacies_mandates
     ]
-    insert_and_update(CandidacyMandate, candidacies_mandates)
+    insert_and_update(models.CandidacyMandate, candidacies_mandates)
     end_time = time.time()
     print(
         f"Total runtime to store {len(candidacies_mandates)} data is {end_time - begin_time}"
@@ -517,7 +485,7 @@ def populate_committee_memberships() -> None:
                 "committee_role": api_committee_membership["committee_role"],
             }
             committee_memberships.append(new_membership)
-    insert_and_update(CommitteeMembership, committee_memberships)
+    insert_and_update(models.CommitteeMembership, committee_memberships)
     end_time = time.time()
     print(
         f"Total runtime to store {len(committee_memberships)} data is {end_time - begin_time}"
@@ -543,7 +511,7 @@ def populate_polls() -> None:
         }
         for api_polls in api_polls
     ]
-    insert_and_update(Poll, polls)
+    insert_and_update(models.Poll, polls)
 
 
 def populate_poll_has_topic() -> None:
@@ -559,7 +527,7 @@ def populate_poll_has_topic() -> None:
                 }
                 polls_topics.append(poll_topic)
     session = Session()
-    stmt = insert(PollHasTopic).values(polls_topics)
+    stmt = insert(models.PollHasTopic).values(polls_topics)
     stmt = stmt.on_conflict_do_nothing()
     session.execute(stmt)
     session.commit()
@@ -580,7 +548,7 @@ def populate_field_related_link() -> None:
                     "title": field_related_link["title"],
                 }
                 poll_related_links.append(poll_related_link)
-    insert_and_update(FieldRelatedLink, poll_related_links)
+    insert_and_update(models.FieldRelatedLink, poll_related_links)
 
 
 def populate_votes() -> None:
@@ -609,7 +577,7 @@ def populate_votes() -> None:
                 "reason_no_show_other": api_vote["reason_no_show_other"],
             }
             votes.append(vote)
-    insert_and_update(Vote, votes)
+    insert_and_update(models.Vote, votes)
     end_time = time.time()
     print(f"Total runtime to store {len(api_votes)} data is {end_time - begin_time}")
 
@@ -646,7 +614,7 @@ def complement_missing_votes():
                 "reason_no_show_other": api_vote["reason_no_show_other"],
             }
             votes.append(vote)
-    insert_and_update(Vote, votes)
+    insert_and_update(models.Vote, votes)
 
 
 def populate_sidejob_organizations() -> None:
@@ -666,7 +634,7 @@ def populate_sidejob_organizations() -> None:
         }
         for api_sidejob_organization in api_sidejob_organizations
     ]
-    insert_and_update(SidejobOrganization, sidejob_organizations)
+    insert_and_update(models.SidejobOrganization, sidejob_organizations)
 
 
 def populate_sidejob_organization_has_topic() -> None:
@@ -682,7 +650,7 @@ def populate_sidejob_organization_has_topic() -> None:
                 }
                 organization_topics.append(organization_topic)
     session = Session()
-    stmt = insert(SidejobOrganizationHasTopic).values(organization_topics)
+    stmt = insert(models.SidejobOrganizationHasTopic).values(organization_topics)
     stmt = stmt.on_conflict_do_nothing()
     session.execute(stmt)
     session.commit()
@@ -716,7 +684,7 @@ def populate_sidejobs() -> None:
         }
         for api_sidejob in api_sidejobs
     ]
-    insert_and_update(Sidejob, sidejobs)
+    insert_and_update(models.Sidejob, sidejobs)
 
 
 def populate_sidejob_has_mandate() -> None:
@@ -731,7 +699,7 @@ def populate_sidejob_has_mandate() -> None:
                     "candidacy_mandate_id": mandate["id"],
                 }
                 sidejob_mandates.append(sidejob_mandate)
-    stmt = insert(SidejobHasMandate).values(sidejob_mandates)
+    stmt = insert(models.SidejobHasMandate).values(sidejob_mandates)
     stmt = stmt.on_conflict_do_nothing()
     session = Session()
     session.execute(stmt)
@@ -751,7 +719,7 @@ def populate_sidejob_has_topic() -> None:
                     "topic_id": topic["id"],
                 }
                 sidejob_topics.append(sidejob_topic)
-    stmt = insert(SidejobHasTopic).values(sidejob_topics)
+    stmt = insert(models.SidejobHasTopic).values(sidejob_topics)
     stmt = stmt.on_conflict_do_nothing()
     session = Session()
     session.execute(stmt)
@@ -764,7 +732,7 @@ def populate_position_statements() -> None:
     for period_id in PERIOD_POSITION_TABLE:
         statements = gen_statements(period_id)
         position_statements += statements
-    insert_and_update(PositionStatement, position_statements)
+    insert_and_update(models.PositionStatement, position_statements)
 
 
 def populate_positions() -> None:
@@ -772,7 +740,7 @@ def populate_positions() -> None:
     for period_id in PERIOD_POSITION_TABLE:
         positions = gen_positions(period_id)
         positions_list += positions
-    insert_and_update(Position, positions_list)
+    insert_and_update(models.Position, positions_list)
 
 
 def populate_cvs_and_career_paths() -> None:
@@ -800,8 +768,8 @@ def populate_cvs_and_career_paths() -> None:
                 career_paths.append(career_path)
         cvs.append(cv)
         cv_id += 1
-    insert_and_update(CV, cvs)
-    insert_and_update(CareerPath, career_paths)
+    insert_and_update(models.CV, cvs)
+    insert_and_update(models.CareerPath, career_paths)
 
 
 def populate_weblinks() -> None:
@@ -813,7 +781,7 @@ def populate_weblinks() -> None:
             "link": item["weblink"],
         }
         weblinks.append(weblink)
-    insert_and_update(PoliticianWeblink, weblinks)
+    insert_and_update(models.PoliticianWeblink, weblinks)
 
 
 def populate_vote_result() -> None:
@@ -823,4 +791,3 @@ def populate_vote_result() -> None:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    populate_vote_result()
