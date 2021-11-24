@@ -37,6 +37,9 @@ from src.db.models.cv import CV
 from src.db.models.career_path import CareerPath
 from src.db.models.position import Position
 from src.db.models.politician_weblink import PoliticianWeblink
+
+import src.db.models as models
+from src.cron_jobs.utils.vote_result import generate_vote_results
 from src.cron_jobs.utils.insert_and_update import insert_and_update
 from src.cron_jobs.utils.parser import (
     gen_statements,
@@ -47,8 +50,9 @@ from src.cron_jobs.utils.parser import (
 
 # third-party
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.sql.expression import bindparam
-from sqlalchemy import update
+from sqlalchemy import func
+
+session = Session()
 
 
 def populate_countries() -> None:
@@ -812,6 +816,11 @@ def populate_weblinks() -> None:
     insert_and_update(PoliticianWeblink, weblinks)
 
 
+def populate_vote_result() -> None:
+    vote_results = generate_vote_results()
+    insert_and_update(models.VoteResult, vote_results)
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    complement_missing_votes()
+    populate_vote_result()

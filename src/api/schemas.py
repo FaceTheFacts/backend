@@ -50,9 +50,8 @@ class Committee(BaseModel):
 
 class Poll(BaseModel):
     id: int
-    entity_type: str
-    label: str
-    field_intro: str
+    label: Optional[str]
+    field_intro: Optional[str]
     field_poll_date: date
 
     class Config:
@@ -203,3 +202,25 @@ class PoliticianSearch(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+# -----------------------
+class VoteResult(BaseModel):
+    yes: int
+    no: int
+    abstain: int
+    no_show: int
+
+    class Config:
+        orm_mode = True
+
+
+class BundestagPoll(BaseModel):
+    poll_field_legislature_id: int
+    poll_id: int
+    poll_label: str
+    poll_field_poll_date: date
+    result: VoteResult
+
+
+# -----------------------

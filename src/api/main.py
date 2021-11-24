@@ -148,6 +148,14 @@ def read_politician_votes(
     return paginate(votes)
 
 
+@app.get("/bundestag-latest-polls", response_model=Page[schemas.BundestagPoll])
+def read_latest_polls(db: Session = Depends(get_db)):
+    polls = crud.get_polls_total(db)
+    if polls is None:
+        raise HTTPException(status_code=404, detail="Polls not found")
+    return paginate(polls)
+
+
 # https://uriyyo-fastapi-pagination.netlify.app/
 add_pagination(app)
 

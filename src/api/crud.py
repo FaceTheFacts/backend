@@ -4,7 +4,9 @@ from typing import List
 
 # third-party
 from sqlalchemy.orm import Session
-from src.db.models.politician import Politician
+
+from sqlalchemy import text, or_
+
 
 # local
 import src.db.models as models
@@ -21,6 +23,7 @@ def get_politician_by_id(db: Session, id: int):
 
 
 def get_politicians_by_ids(db: Session, ids: List[int]):
+
     politicians = []
     for id in ids:
         politicians.append(get_politician_by_id(db, id))
@@ -134,7 +137,7 @@ def get_politician_by_image_scanner(db: Session, search_text: str):
     return add_image_urls_to_politicians(politicians)
 
 
-def add_image_urls_to_politicians(politicians: List[Politician]):
+def add_image_urls_to_politicians(politicians: List[models.Politician]):
     for politician in politicians:
         image_url = (
             "https://candidate-images.s3.eu-central-1.amazonaws.com/{}.jpg".format(
@@ -149,3 +152,43 @@ def add_image_urls_to_politicians(politicians: List[Politician]):
             politician.__dict__["image_url"] = None
 
     return politicians
+
+
+# SELECT * FROM public.poll WHERE field_legislature_id = 111 or WHERE field_legislature_id = 132 ORDER by field_poll_date DESC
+def get_latest_bundestag_polls(db: Session):
+    return (
+        db.query(models.Poll)
+        .filter(
+            or_(
+                models.Poll.field_legislature_id == 111,
+                models.Poll.field_legislature_id == 132,
+            )
+        )
+        .order_by(models.Poll.field_poll_date.desc())
+        .all()
+    )
+
+
+def get_polls_total(db: Session):
+    data_list = []
+    polls = get_latest_bundestag_polls(db)
+    for poll in polls:
+        poll_field_legislature_id = poll.field_legislature_id
+        poll_id = poll.id
+        poll_label = poll.label
+        poll_field_poll_date = poll.field_poll_date
+        result = (
+            db.query(models.VoteResult)
+            .filter(models.VoteResult.poll_id == poll_id)
+            .first()
+        )
+
+        item_dict = {
+            "poll_field_legislature_id": poll_field_legislature_id,
+            "poll_id": poll_id,
+            "poll_label": poll_label,
+            "poll_field_poll_date": poll_field_poll_date,
+            "result": result,
+        }
+        data_list.append(item_dict)
+    return data_list
