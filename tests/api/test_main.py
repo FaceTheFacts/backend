@@ -363,7 +363,6 @@ def test_read_politician_votes():
                 },
                 "Poll": {
                     "id": 4199,
-                    "entity_type": "node",
                     "label": "Unternehmerische Sorgfaltspflichten in Lieferketten",
                     "field_intro": '<p>Der Gesetzentwurf der Bundesregierung soll die Sicherung von Menschenrechten und Umweltstandards für deutsche Unternehmen im internationalen Handel bedeuten. Lieferketten sollen nachweislich fair sein.</p>\r\n\r\n<p>Der Gesetzentwurf wurde mit den Stimmen der Fraktionen CDU/CSU, SPD und B90/DIE GRÜNEN angenommen. Ablehnung erhielt der Entwurf von den Fraktionen AfD und FDP. Entgegen des Fraktionsdrucks stimmten auch 10 Abgeordnete der CDU mit NEIN, darunter <a href="https://www.abgeordnetenwatch.de/profile/axel-eduard-fischer">Axel Eduard Fischer</a>, <a href="https://www.abgeordnetenwatch.de/profile/hans-juergen-irmer">Hans-Jürgen Irmer</a> und <a href="https://www.abgeordnetenwatch.de/profile/andreas-laemmel">Andreas Lämmel</a>. Die Fraktion DIE LINKE enthielt sich, mit Ausnahme von <a href="https://www.abgeordnetenwatch.de/profile/ulla-jelpke">Ulla Jelpke</a>, die mit JA stimmte. Insgesamt stimmten 412 Abgeordnete für den Antrag und 159 Abgeordnete dagegen.</p>\r\n\r\n<p>&nbsp;</p>\r\n',
                     "field_poll_date": "2021-06-11",
@@ -392,3 +391,39 @@ def test_read_politician_votes():
 
     no_filters_random_test()
     response_size_by_filters_test()
+
+
+def test_read_latest_polls():
+    def whole_values_test():
+        response = client.get("/bundestag-latest-polls?page=1&size=1")
+        assert response.status_code == 200
+        response_items = [
+            {
+                "poll_field_legislature_id": 111,
+                "poll_id": 4293,
+                "poll_label": "Änderung des Infektionsschutzgesetzes und Grundrechtseinschränkungen",
+                "poll_field_poll_date": "2021-09-07",
+                "result": {"yes": 344, "no": 280, "abstain": 1, "no_show": 84},
+            }
+        ]
+        for item in response_items:
+            assert item in response.json()["items"]
+
+    def selected_values_test():
+        response = client.get("/bundestag-latest-polls?page=3&size=1")
+        assert response.status_code == 200
+        assert response.json()["items"][0]["result"] == {
+            "yes": 538,
+            "no": 9,
+            "abstain": 89,
+            "no_show": 73,
+        }
+
+    def polls_not_found_test():
+        response = client.get("/bundestag-latest-polls?page=100&size=10")
+        assert response.status_code == 200
+        assert response.json() == {"items": [], "total": 176, "page": 100, "size": 10}
+
+    whole_values_test()
+    selected_values_test()
+    polls_not_found_test()

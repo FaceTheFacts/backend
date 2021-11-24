@@ -43,9 +43,8 @@ class Committee(FTFBaseModel):
 
 class Poll(FTFBaseModel):
     id: int
-    entity_type: str
-    label: str
-    field_intro: str
+    label: Optional[str]
+    field_intro: Optional[str]
     field_poll_date: date
 
 
@@ -157,3 +156,18 @@ class PoliticianSearch(FTFBaseModel):
     label: str
     party: Optional[PartySearch]
     image_url: Optional[str]
+
+
+class VoteResult(FTFBaseModel):
+    yes: int
+    no: int
+    abstain: int
+    no_show: int
+
+
+class BundestagPoll(FTFBaseModel):
+    poll_field_legislature_id: int
+    poll_id: int
+    poll_label: str
+    poll_field_poll_date: date
+    result: VoteResult
