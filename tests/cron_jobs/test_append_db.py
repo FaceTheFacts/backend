@@ -26,8 +26,8 @@ def test_append_sidejobs():
     def delete_last_item_and_update():
         last_id = return_last_id(models.Sidejob)
         delete_last_item(last_id, models.Sidejob, "id")
-        
-        assert len(append_sidejobs()) >0
+
+        assert len(append_sidejobs()) > 0
 
     delete_last_item_and_update()
 
