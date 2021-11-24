@@ -137,7 +137,7 @@ def get_politician_by_image_scanner(db: Session, search_text: str):
     return add_image_urls_to_politicians(politicians)
 
 
-def add_image_urls_to_politicians(politicians: List[Politician]):
+def add_image_urls_to_politicians(politicians: List[models.Politician]):
     for politician in politicians:
         image_url = (
             "https://candidate-images.s3.eu-central-1.amazonaws.com/{}.jpg".format(
