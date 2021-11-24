@@ -37,9 +37,9 @@ def test_append_sidejobs():
 #         last_id = return_last_id(models.Poll)
 #         delete_last_item(last_id, models.PollHasTopic, "poll_id")
 #         delete_last_item(last_id, models.Poll, "id")
-
 #         expected = "https://www.abgeordnetenwatch.de/api/v2/polls/4363"
 #         assert append_polls()[0]["api_url"] == expected
+
 
 #     def fetch_nothing():
 #         assert append_polls() == print("Nothing fetched")

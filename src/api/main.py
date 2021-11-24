@@ -3,7 +3,7 @@ from typing import Optional, List
 
 # third-party
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi import FastAPI, HTTPException, Depends, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import Page, add_pagination, paginate
 
@@ -34,13 +34,12 @@ async def add_security_headers(request: Request, call_next):
     response = await call_next(request)
 
     response.headers["Cache-Control"] = "no-store"
-    # response.headers["Content-Type"] = "application/json"
     response.headers["Strict-Transport-Security"] = "max-age=63072000; preload"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
-    # response.headers[
-    #    "Content-Security-Policy"
-    # ] = "default-src 'none'; frame-ancestors 'none'"
+    response.headers[
+        "Content-Security-Policy"
+    ] = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-bundle.js 'sha256-R2r7jpC1j6BEeer9P/YDRn6ufsaSnnARhKTdfrSKStk='; style-src 'self' https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css; frame-ancestors 'none'"
 
     # HTML-related (future-proof)
     response.headers["Feature-Policy"] = "'none'"
@@ -54,7 +53,7 @@ def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
 
 
-@app.get("/politician/{id}")
+@app.get("/politician/{id}", response_model=schemas.Politician)
 def read_politician(
     id: int,
     db: Session = Depends(get_db),
@@ -134,6 +133,7 @@ def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
     if politicians is None:
         raise HTTPException(status_code=404, detail="Politicians not found")
     return paginate(politicians)
+
 
 
 @app.get("/bundestag-latest-polls", response_model=Page[schemas.BundestagPoll])

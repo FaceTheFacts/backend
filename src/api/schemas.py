@@ -154,6 +154,12 @@ class Vote(BaseModel):
         orm_mode = True
 
 
+
+class VoteAndPoll(BaseModel):
+    Vote: Vote
+    Poll: Poll
+
+
 class Politician(BaseModel):
     id: int
     entity_type: str
@@ -175,7 +181,7 @@ class Politician(BaseModel):
     sidejobs: Optional[List[Sidejob]]
     cvs: Optional[List]
     weblinks: Optional[List]
-    votes_and_polls: Optional[List[Dict[Vote, Poll]]]
+    votes_and_polls: Optional[List[VoteAndPoll]]
 
     class Config:
         orm_mode = True

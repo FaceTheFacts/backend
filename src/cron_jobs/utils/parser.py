@@ -48,7 +48,7 @@ def gen_party_styles_map(api_parties: List[Any]) -> Dict[int, PartyStyle]:
     party_colors = read_json("src/static/party_colors.json")
     party_names = [party_color["displayName"].lower() for party_color in party_colors]
 
-    party_styles_map: dict[int, PartyStyle] = {}
+    party_styles_map: Dict[int, PartyStyle] = {}
     for api_party in api_parties:
         label = api_party["label"]
         has_ref = label in CUSTOM_PARTY_NAME
