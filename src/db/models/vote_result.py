@@ -6,7 +6,7 @@ from src.db.connection import Base, engine
 
 class VoteResult(Base):
     __tablename__ = "vote_result"
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     yes = Column(Integer, nullable=False)
     no = Column(Integer, nullable=False)
     abstain = Column(Integer, nullable=False)
