@@ -200,11 +200,14 @@ class PoliticianSearch(BaseModel):
 
 
 # -----------------------
-class Result(BaseModel):
-    yes: Optional[int]
-    no: Optional[int]
-    abstain: Optional[int]
-    no_show: Optional[int]
+class VoteResult(BaseModel):
+    yes: int
+    no: int
+    abstain: int
+    no_show: int
+
+    class Config:
+        orm_mode = True
 
 
 class BundestagPoll(BaseModel):
@@ -212,7 +215,7 @@ class BundestagPoll(BaseModel):
     poll_id: int
     poll_label: str
     poll_field_poll_date: date
-    result: Result
+    result: VoteResult
 
 
 # -----------------------

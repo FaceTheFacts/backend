@@ -166,22 +166,18 @@ def get_polls_total(db: Session):
         poll_id = poll.id
         poll_label = poll.label
         poll_field_poll_date = poll.field_poll_date
-        sql = text(
-            "SELECT vote, COUNT(*) as total FROM public.vote WHERE poll_id = {} GROUP BY vote".format(
-                poll_id
-            )
+        result = (
+            db.query(models.VoteResult)
+            .filter(models.VoteResult.poll_id == poll_id)
+            .first()
         )
-        results = db.execute(sql).fetchall()
-        result_dict = {}
-        for result in results:
-            result_dict[result.vote] = result.total
 
         item_dict = {
             "poll_field_legislature_id": poll_field_legislature_id,
             "poll_id": poll_id,
             "poll_label": poll_label,
             "poll_field_poll_date": poll_field_poll_date,
-            "result": result_dict,
+            "result": result,
         }
         data_list.append(item_dict)
     return data_list
