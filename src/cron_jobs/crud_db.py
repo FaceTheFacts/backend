@@ -823,6 +823,4 @@ def populate_vote_result() -> None:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    # populate_vote_result()
-    # get_poll_ids_from_vote()
-    generate_vote_results(643)
+    populate_vote_result()
