@@ -7,9 +7,7 @@ from src.db import models
 
 def add_image_urls_to_politicians(politicians: List[models.Politician]):
     for politician in politicians:
-        image_url = (
-            f"https://candidate-images.s3.eu-central-1.amazonaws.com/{politician.id}.jpg"
-        )
+        image_url = f"https://candidate-images.s3.eu-central-1.amazonaws.com/{politician.id}.jpg"
 
         try:
             urllib.request.urlopen(image_url)
