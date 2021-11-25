@@ -21,6 +21,7 @@ from src.db.models.politician import *
 from src.db.models.politician_weblink import *
 from src.db.models.poll import *
 from src.db.models.poll_has_topic import *
+from src.db.models.poll_result_per_party import *
 from src.db.models.position import *
 from src.db.models.position_statement import *
 from src.db.models.sidejob import *
