@@ -3,7 +3,7 @@ from typing import Optional, List
 
 # third-party
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, Request, Query
+from fastapi import FastAPI, Depends, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import Page, add_pagination, paginate
 
@@ -145,8 +145,7 @@ def read_politician_votes(
 @app.get("/bundestag-latest-polls", response_model=Page[schemas.BundestagPoll])
 def read_latest_polls(db: Session = Depends(get_db)):
     polls = crud.get_polls_total(db)
-    if polls is None:
-        raise HTTPException(status_code=404, detail="Polls not found")
+    check_entity_not_found(polls, "Polls")
     return paginate(polls)
 
 
