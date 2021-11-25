@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-from src.db.connection import Base, engine
+from src.db.connection import Base
 
 
 class PollResultPerParty(Base):
@@ -19,7 +19,3 @@ class PollResultPerParty(Base):
     # Many to One
     poll = relationship("Poll", back_populates="poll_results_per_party")
     party = relationship("Party", back_populates="poll_results_per_party")
-
-
-if __name__ == "__main__":
-    Base.metadata.create_all(engine)
