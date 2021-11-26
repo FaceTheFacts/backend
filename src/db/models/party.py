@@ -17,4 +17,3 @@ class Party(Base):
 
     # One to Many
     candidacy_mandates = relationship("CandidacyMandate", back_populates="party")
-    poll_results_per_party = relationship("PollResultPerParty", back_populates="party")

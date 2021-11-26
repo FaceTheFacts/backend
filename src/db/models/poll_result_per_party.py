@@ -10,7 +10,7 @@ class PollResultPerParty(Base):
     id = Column(Integer(), primary_key=True)
     entity_type = Column(String)
     poll_id = Column(Integer, ForeignKey("poll.id"))
-    party_id = Column(Integer, ForeignKey("party.id"))
+    fraction_id = Column(Integer, ForeignKey("fraction.id"))
     total_yes = Column(Integer)
     total_no = Column(Integer)
     total_abstain = Column(Integer)
@@ -18,4 +18,4 @@ class PollResultPerParty(Base):
 
     # Many to One
     poll = relationship("Poll", back_populates="poll_results_per_party")
-    party = relationship("Party", back_populates="poll_results_per_party")
+    fraction = relationship("Fraction", back_populates="poll_results_per_party")
