@@ -25,7 +25,7 @@ class Poll(Base):
     # One to Many
     field_related_links = relationship("FieldRelatedLink", back_populates="poll")
     votes = relationship("Vote", back_populates="poll")
-    poll_results_per_party = relationship("PollResultPerParty", back_populates="poll")
+    poll_results_per_fraction = relationship("PollResultPerFraction", back_populates="poll")
 
     # One to One
     vote_result = relationship("VoteResult", back_populates="poll", uselist=False)

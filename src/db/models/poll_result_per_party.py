@@ -4,8 +4,8 @@ from sqlalchemy.orm import relationship
 from src.db.connection import Base
 
 
-class PollResultPerParty(Base):
-    __tablename__ = "poll_result_per_party"
+class PollResultPerFraction(Base):
+    __tablename__ = "poll_result_per_fraction"
 
     id = Column(Integer(), primary_key=True)
     entity_type = Column(String)
@@ -17,5 +17,5 @@ class PollResultPerParty(Base):
     total_no_show = Column(Integer)
 
     # Many to One
-    poll = relationship("Poll", back_populates="poll_results_per_party")
-    fraction = relationship("Fraction", back_populates="poll_results_per_party")
+    poll = relationship("Poll", back_populates="poll_results_per_fraction")
+    fraction = relationship("Fraction", back_populates="poll_results_per_fraction")
