@@ -19,4 +19,6 @@ class Fraction(Base):
 
     # One to Many
     votes = relationship("Vote", back_populates="fraction")
-    poll_results_per_fraction = relationship("PollResultPerFraction", back_populates="fraction")
+    poll_results_per_fraction = relationship(
+        "PollResultPerFraction", back_populates="fraction"
+    )
