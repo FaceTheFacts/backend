@@ -4,6 +4,9 @@ from typing import List
 # Third Party
 import pandas
 from pandas.core.frame import DataFrame
+from sqlalchemy.orm import Session
+
+from src.db.models import *
 
 
 def read_csv(dir: str, header: any) -> DataFrame:
@@ -51,3 +54,15 @@ def generate_vote_results():
             }
         data_list.append(new_dict)
     return data_list
+
+
+def get_total_votes_of_type(
+    vote_type: str, poll_id: int, fraction_id: int, session: Session
+):
+    return (
+        session.query(Vote.id)
+        .filter(Vote.poll_id == poll_id)
+        .filter(Vote.vote == vote_type)
+        .filter(Vote.fraction_id == fraction_id)
+        .count()
+    )
