@@ -39,7 +39,10 @@ from src.db.models.position import Position
 from src.db.models.politician_weblink import PoliticianWeblink
 
 import src.db.models as models
-from src.cron_jobs.utils.vote_result import generate_vote_results
+from src.cron_jobs.utils.vote_result import (
+    generate_vote_results,
+    get_total_votes_of_type,
+)
 from src.cron_jobs.utils.insert_and_update import insert_and_update
 from src.cron_jobs.utils.parser import (
     gen_statements,
@@ -821,6 +824,57 @@ def populate_vote_result() -> None:
     insert_and_update(models.VoteResult, vote_results)
 
 
+def populate_poll_results_per_fraction():
+    print("Starting Process to populate poll_result_per_fraction table")
+    begin_time = time.time()
+
+    polls = session.query(Poll.id).all()
+    poll_ids = [poll_id[0] for poll_id in polls]
+
+    poll_results_per_fraction = []
+    for poll_id in poll_ids:
+        print(f"    Creating items when poll_id is {poll_id}")
+        fractions = (
+            session.query(Vote.fraction_id)
+            .filter(Vote.poll_id == poll_id)
+            .distinct()
+            .all()
+        )
+        fraction_ids = [fraction_id[0] for fraction_id in fractions]
+        for fraction_id in fraction_ids:
+            total_yes = get_total_votes_of_type("yes", poll_id, fraction_id, session)
+            total_no = get_total_votes_of_type("no", poll_id, fraction_id, session)
+            total_abstain = get_total_votes_of_type(
+                "abstain", poll_id, fraction_id, session
+            )
+            total_no_show = get_total_votes_of_type(
+                "no_show", poll_id, fraction_id, session
+            )
+
+            poll_result = {
+                "entity_type": "poll_result",
+                "poll_id": poll_id,
+                "fraction_id": fraction_id,
+                "total_yes": total_yes,
+                "total_no": total_no,
+                "total_abstain": total_abstain,
+                "total_no_show": total_no_show,
+            }
+            print(f"        -> Item of fraction_id {fraction_id} created")
+
+            poll_results_per_fraction.append(poll_result)
+
+    print(
+        f"Inserting {len(poll_results_per_fraction)} items into poll_results_per_fraction table"
+    )
+    insert_and_update(models.PollResultPerFraction, poll_results_per_fraction)
+
+    end_time = time.time()
+    print(
+        f"Total runtime to store {len(poll_results_per_fraction)} data is {end_time - begin_time}"
+    )
+
+
 if __name__ == "__main__":
-    Base.metadata.create_all(engine)
-    populate_vote_result()
+    # Base.metadata.create_all(engine)
+    populate_poll_results_per_fraction()
