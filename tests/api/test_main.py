@@ -427,3 +427,64 @@ def test_read_latest_polls():
     whole_values_test()
     selected_values_test()
     polls_not_found_test()
+
+
+def test_read_poll_details():
+    def random_test():
+        response = client.get("/poll/4217/details")
+        assert response.status_code == 200
+        response_items = [
+            {
+                "id": 7585,
+                "poll_id": 4217,
+                "fraction": {
+                    "id": 14,
+                    "full_name": "FDP",
+                    "short_name": "FDP",
+                    "label": "FDP (Bundestag 2017 - 2021)",
+                },
+                "total_yes": 0,
+                "total_no": 71,
+                "total_abstain": 0,
+                "total_no_show": 9,
+            },
+            {
+                "id": 7590,
+                "poll_id": 4217,
+                "fraction": {
+                    "id": 153,
+                    "full_name": "DIE GRÜNEN",
+                    "short_name": "DIE GRÜNEN",
+                    "label": "DIE GRÜNEN (Bundestag 2017 - 2021)",
+                },
+                "total_yes": 62,
+                "total_no": 0,
+                "total_abstain": 0,
+                "total_no_show": 5,
+            },
+        ]
+        for item in response_items:
+            assert item in response.json()
+
+    def test_unique_fractions_in_response():
+        response = client.get("/poll/4174/details")
+        fraction_ids = []
+        for item in response.json():
+            fraction_id = item["fraction"]["id"]
+            assert (
+                fraction_id not in fraction_ids
+            ), f"duplicate fraction of id {fraction_id} in response. All objects must have a unique fraction id"
+            fraction_ids.append(fraction_id)
+
+    def test_same_poll_id_in_response():
+        poll_id = 713
+        response = client.get(f"/poll/{poll_id}/details")
+
+        for item in response.json():
+            assert (
+                item["poll_id"] == poll_id
+            ), f"Item of id {item['id']} is returned with poll_id {item['poll_id']}. Only items with poll_id {poll_id} should be returned"
+
+    random_test()
+    test_unique_fractions_in_response()
+    test_same_poll_id_in_response()
