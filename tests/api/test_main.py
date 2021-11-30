@@ -305,18 +305,7 @@ def test_read_politician_image_scanner():
                     break
             assert check_response, "{} item not fount in the response".format(item)
 
-    def pagination_response():
-        response = client.get("/image-scanner?text=christian&page=4&size=50")
-        assert response.status_code == 200
-        assert type(response.json()) is dict
-
-        assert len(response.json()["items"]) == 50
-        assert len(response.json()["items"]) == response.json()["size"]
-
-        assert response.json()["page"] == 4
-
     label_and_id_test()
-    pagination_response()
 
 
 def test_read_politician_search():
