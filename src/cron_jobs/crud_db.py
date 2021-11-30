@@ -831,6 +831,7 @@ def populate_poll_results_per_fraction():
     polls = session.query(Poll.id).all()
     poll_ids = [poll_id[0] for poll_id in polls]
 
+    id = 1
     poll_results_per_fraction = []
     for poll_id in poll_ids:
         print(f"    Creating items when poll_id is {poll_id}")
@@ -852,6 +853,7 @@ def populate_poll_results_per_fraction():
             )
 
             poll_result = {
+                "id": id,
                 "entity_type": "poll_result",
                 "poll_id": poll_id,
                 "fraction_id": fraction_id,
@@ -861,8 +863,8 @@ def populate_poll_results_per_fraction():
                 "total_no_show": total_no_show,
             }
             print(f"        -> Item of fraction_id {fraction_id} created")
-
             poll_results_per_fraction.append(poll_result)
+            id += 1
 
     print(
         f"Inserting {len(poll_results_per_fraction)} items into poll_results_per_fraction table"
