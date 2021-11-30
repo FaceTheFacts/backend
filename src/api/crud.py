@@ -1,3 +1,5 @@
+import json
+import urllib.request
 from typing import List
 
 # third-party
@@ -7,6 +9,7 @@ from sqlalchemy import text, or_
 
 # local
 import src.db.models as models
+from src.api.utils.read_url import load_json_from_url
 from src.api.utils.sidejob import convert_income_level
 from src.api.utils.politician import add_image_urls_to_politicians
 
@@ -175,3 +178,24 @@ def get_poll_results_by_poll_id(db: Session, poll_id: int) -> list:
         .filter(models.PollResultPerFraction.poll_id == poll_id)
         .all()
     )
+
+
+def get_politician_media(db: Session, abgeordnetenwatchID: int):
+    raw_data = load_json_from_url(
+        f"https://de.openparliament.tv/api/v1/search/media?abgeordnetenwatchID={abgeordnetenwatchID}"
+    )
+    media_list = []
+    for item in raw_data["data"]:
+        attributes = item["attributes"]
+        media_item = {
+            "videoFileURI": attributes["videoFileURI"],
+            "creator": attributes["creator"],
+            "timestamp": attributes["timestamp"],
+            "dateStart": attributes["dateStart"],
+            "dateEnd": attributes["dateEnd"],
+        }
+        media_list.append(media_item)
+
+    sorted_media_list = sorted(media_list, key=lambda d: d["timestamp"], reverse=True)
+
+    return sorted_media_list
