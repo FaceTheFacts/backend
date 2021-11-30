@@ -145,9 +145,15 @@ def read_politician_votes(
 @app.get("/bundestag-latest-polls", response_model=Page[schemas.BundestagPoll])
 def read_latest_polls(db: Session = Depends(get_db)):
     polls = crud.get_polls_total(db)
-    if polls is None:
-        raise HTTPException(status_code=404, detail="Polls not found")
+    check_entity_not_found(polls, "Polls")
     return paginate(polls)
+
+
+@app.get("/poll/{id}/details", response_model=List[schemas.PollResult])
+def read_poll_details(id: int, db: Session = Depends(get_db)):
+    poll_results = crud.get_poll_results_by_poll_id(db, id)
+    check_entity_not_found(poll_results, "Poll Results")
+    return poll_results
 
 
 # https://uriyyo-fastapi-pagination.netlify.app/

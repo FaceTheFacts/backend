@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 
 from sqlalchemy import text, or_
 
-
 # local
 import src.db.models as models
 from src.api.utils.sidejob import convert_income_level
@@ -168,3 +167,11 @@ def get_polls_total(db: Session):
         }
         data_list.append(item_dict)
     return data_list
+
+
+def get_poll_results_by_poll_id(db: Session, poll_id: int) -> list:
+    return (
+        db.query(models.PollResultPerFraction)
+        .filter(models.PollResultPerFraction.poll_id == poll_id)
+        .all()
+    )
