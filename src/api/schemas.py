@@ -1,6 +1,6 @@
 # std
 from pydantic import BaseModel
-from datetime import date
+from datetime import date, datetime
 from typing import Optional, List, Dict
 
 
@@ -188,3 +188,11 @@ class PollResult(FTFBaseModel):
     total_no: int
     total_abstain: int
     total_no_show: int
+
+
+class PoliticianMedia(BaseModel):
+    videoFileURI: Optional[str]
+    creator: str
+    timestamp: int
+    dateStart: datetime
+    dateEnd: datetime
