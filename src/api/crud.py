@@ -180,7 +180,7 @@ def get_poll_results_by_poll_id(db: Session, poll_id: int) -> list:
     )
 
 
-def get_politician_media(db: Session, abgeordnetenwatchID: int):
+def get_politician_media(abgeordnetenwatchID: int):
     raw_data = load_json_from_url(
         f"https://de.openparliament.tv/api/v1/search/media?abgeordnetenwatchID={abgeordnetenwatchID}"
     )

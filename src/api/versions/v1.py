@@ -130,8 +130,8 @@ def read_poll_details(id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/politician/{id}/media", response_model=List[schemas.PoliticianMedia])
-def read_politician_media(id: int, db: Session = Depends(get_db)):
-    politician_media = crud.get_politician_media(db, id)
+def read_politician_media(id: int):
+    politician_media = crud.get_politician_media(id)
     check_entity_not_found(politician_media, "Politician Media")
     return politician_media
 
