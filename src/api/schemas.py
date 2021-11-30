@@ -171,3 +171,20 @@ class BundestagPoll(FTFBaseModel):
     poll_label: str
     poll_field_poll_date: date
     result: VoteResult
+
+
+class Fraction(FTFBaseModel):
+    id: int
+    full_name: str
+    short_name: str
+    label: str
+
+
+class PollResult(FTFBaseModel):
+    id: int
+    poll_id: int
+    fraction: Fraction
+    total_yes: int
+    total_no: int
+    total_abstain: int
+    total_no_show: int
