@@ -184,6 +184,10 @@ def get_politician_media(db: Session, abgeordnetenwatchID: int):
     raw_data = load_json_from_url(
         f"https://de.openparliament.tv/api/v1/search/media?abgeordnetenwatchID={abgeordnetenwatchID}"
     )
+
+    if raw_data["meta"]["results"]["total"] == 0:
+        return None
+
     media_list = []
     for item in raw_data["data"]:
         attributes = item["attributes"]
