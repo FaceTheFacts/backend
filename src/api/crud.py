@@ -76,6 +76,7 @@ def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int
     return data_list
 
 
+# Tested with mockup
 def get_sidejobs_by_politician_id(db: Session, id: int):
     sidejobs = (
         db.query(models.Sidejob)
