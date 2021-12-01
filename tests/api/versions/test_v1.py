@@ -6,7 +6,7 @@ client = TestClient(app)
 
 def test_read_politician():
     def random_test():
-        response = client.get("/politician/178104")
+        response = client.get("/v1/politician/178104")
         assert response.status_code == 200
         assert type(response.json()) is dict
         assert response.status_code == 200
@@ -33,7 +33,7 @@ def test_read_politician():
 
     def specific_elements_test1():
         # Testing past_party, statistic_questions and statistic_questions_answered
-        response = client.get("/politician/176101")
+        response = client.get("/v1/politician/176101")
         assert response.status_code == 200
         assert type(response.json()) is dict
         assert response.json()["party_past"] == "Vorher Mitglied der Freien Wähler"
@@ -42,7 +42,7 @@ def test_read_politician():
 
     def specific_elements_test_2():
         # Testing deceased, deceased_date and qid_wikidata
-        response = client.get("/politician/79107")
+        response = client.get("/v1/politician/79107")
         assert response.status_code == 200
         assert type(response.json()) is dict
         assert response.json()["deceased"] is True
@@ -51,13 +51,13 @@ def test_read_politician():
 
     def specific_elements_test_3():
         # Testing field_title
-        response = client.get("/politician/79109")
+        response = client.get("/v1/politician/79109")
         assert response.status_code == 200
         assert type(response.json()) is dict
         assert response.json()["field_title"] == "Dr."
 
     def votes_and_polls_test():
-        response = client.get("/politician/73426?sidejobs_end=0")
+        response = client.get("/v1/politician/73426?sidejobs_end=0")
         assert response.status_code == 200
         assert type(response.json()) is dict
 
@@ -72,7 +72,7 @@ def test_read_politician():
             )
 
     def politician_id_not_found():
-        response = client.get("/politician/1")
+        response = client.get("/v1/politician/1")
         assert response.status_code == 404
         assert type(response.json()) is dict
         assert response.json() == {"detail": "Politician not found"}
@@ -86,7 +86,7 @@ def test_read_politician():
 
 
 def test_read_top_candidates():
-    response = client.get("/top-candidates")
+    response = client.get("/v1/top-candidates")
     assert response.status_code == 200
     assert type(response.json()) is list
     assert response.json() == [
@@ -144,7 +144,7 @@ def test_read_top_candidates():
 
 def test_read_politician_constituencies():
     def all_elements_have_values():
-        response = client.get("/politician/138540/constituencies")
+        response = client.get("/v1/politician/138540/constituencies")
         assert response.status_code == 200
         assert type(response.json()) is dict
         assert response.json()["candidacy_mandates"].__contains__(
@@ -165,7 +165,7 @@ def test_read_politician_constituencies():
         )
 
     def null_constituencies_exist():
-        response = client.get("/politician/138124/constituencies")
+        response = client.get("/v1/politician/138124/constituencies")
         assert response.status_code == 200
         assert type(response.json()) is dict
         assert response.json() == {
@@ -198,7 +198,7 @@ def test_read_politician_constituencies():
 
 def test_read_politician_positions():
     def selected_values_test():
-        response = client.get("/politician/177592/positions")
+        response = client.get("/v1/politician/177592/positions")
         assert response.status_code == 200
         assert type(response.json()) is dict
         assert response.json()["positions"].__contains__(
@@ -217,7 +217,7 @@ def test_read_politician_positions():
 
 def test_read_politician_sidejobs():
     def whole_values_test():
-        response = client.get("/politician/119742/sidejobs?page=1&size=50")
+        response = client.get("/v1/politician/119742/sidejobs?page=1&size=50")
         assert response.status_code == 200
         response_items = [
             {
@@ -264,7 +264,7 @@ def test_read_politician_sidejobs():
             assert item in response.json()["items"]
 
     def selected_values_test():
-        response = client.get("/politician/119742/sidejobs?page=1&size=1")
+        response = client.get("/v1/politician/119742/sidejobs?page=1&size=1")
         assert response.status_code == 200
         assert response.json()["items"][0]["sidejob_organization"] == {
             "id": 2668,
@@ -273,7 +273,7 @@ def test_read_politician_sidejobs():
         }
 
     def sidejob_not_found_test():
-        response = client.get("/politician/28881/sidejobs?page=2&size=1")
+        response = client.get("/v1/politician/28881/sidejobs?page=2&size=1")
         assert response.status_code == 200
         assert response.json() == {"items": [], "total": 0, "page": 2, "size": 1}
 
@@ -284,7 +284,7 @@ def test_read_politician_sidejobs():
 
 def test_read_politician_image_scanner():
     def label_and_id_test():
-        response = client.get("/image-scanner?text=ronald")
+        response = client.get("/v1/image-scanner?text=ronald")
         assert response.status_code == 200
         assert type(response.json()) is dict
         test_responses = [
@@ -310,7 +310,7 @@ def test_read_politician_image_scanner():
 
 def test_read_politician_search():
     def selected_values_test():
-        response = client.get("/search?text=55278")
+        response = client.get("/v1/search?text=55278")
         assert response.status_code == 200
         assert type(response.json()) is dict
         test_responses = [
@@ -335,7 +335,7 @@ def test_read_politician_search():
 
 def test_read_politician_votes():
     def no_filters_random_test():
-        response = client.get("/politician/79454/votes")
+        response = client.get("/v1/politician/79454/votes")
         test_responses = [
             {
                 "Vote": {
@@ -363,15 +363,17 @@ def test_read_politician_votes():
             assert item in response.json()["items"]
 
     def response_size_by_filters_test():
-        complete_response_total = client.get("/politician/119742/votes").json()["total"]
+        complete_response_total = client.get("/v1/politician/119742/votes").json()[
+            "total"
+        ]
         single_filter_response_total = client.get(
-            "/politician/119742/votes?filters=2"
+            "/v1/politician/119742/votes?filters=2"
         ).json()["total"]
         double_filter_response_total = client.get(
-            "/politician/119742/votes?filters=2&filters=1"
+            "/v1/politician/119742/votes?filters=2&filters=1"
         ).json()["total"]
         triple_filter_response_total = client.get(
-            "/politician/119742/votes?filters=2&filters=1&filters=6"
+            "/v1/politician/119742/votes?filters=2&filters=1&filters=6"
         ).json()["total"]
 
         assert complete_response_total >= triple_filter_response_total
@@ -384,7 +386,7 @@ def test_read_politician_votes():
 
 def test_read_latest_polls():
     def whole_values_test():
-        response = client.get("/bundestag-latest-polls?page=1&size=1")
+        response = client.get("/v1/bundestag-latest-polls?page=1&size=1")
         assert response.status_code == 200
         response_items = [
             {
@@ -399,7 +401,7 @@ def test_read_latest_polls():
             assert item in response.json()["items"]
 
     def selected_values_test():
-        response = client.get("/bundestag-latest-polls?page=3&size=1")
+        response = client.get("/v1/bundestag-latest-polls?page=3&size=1")
         assert response.status_code == 200
         assert response.json()["items"][0]["result"] == {
             "yes": 538,
@@ -409,7 +411,7 @@ def test_read_latest_polls():
         }
 
     def polls_not_found_test():
-        response = client.get("/bundestag-latest-polls?page=100&size=10")
+        response = client.get("/v1/bundestag-latest-polls?page=100&size=10")
         assert response.status_code == 200
         assert response.json() == {"items": [], "total": 176, "page": 100, "size": 10}
 
@@ -420,7 +422,7 @@ def test_read_latest_polls():
 
 def test_read_poll_details():
     def random_test():
-        response = client.get("/poll/4217/details")
+        response = client.get("/v1/poll/4217/details")
         assert response.status_code == 200
         response_items = [
             {
@@ -456,7 +458,7 @@ def test_read_poll_details():
             assert item in response.json()
 
     def test_unique_fractions_in_response():
-        response = client.get("/poll/4174/details")
+        response = client.get("/v1/poll/4174/details")
         fraction_ids = []
         for item in response.json():
             fraction_id = item["fraction"]["id"]
@@ -467,7 +469,7 @@ def test_read_poll_details():
 
     def test_same_poll_id_in_response():
         poll_id = 713
-        response = client.get(f"/poll/{poll_id}/details")
+        response = client.get(f"/v1/poll/{poll_id}/details")
 
         for item in response.json():
             assert (
