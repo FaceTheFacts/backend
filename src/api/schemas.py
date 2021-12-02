@@ -190,6 +190,23 @@ class PollResult(FTFBaseModel):
     total_no_show: int
 
 
+class Fraction(FTFBaseModel):
+    id: int
+    full_name: str
+    short_name: str
+    label: str
+
+
+class PollResult(FTFBaseModel):
+    id: int
+    poll_id: int
+    fraction: Fraction
+    total_yes: int
+    total_no: int
+    total_abstain: int
+    total_no_show: int
+
+
 class PoliticianMedia(BaseModel):
     videoFileURI: Optional[str]
     creator: str
