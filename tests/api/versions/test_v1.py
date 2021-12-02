@@ -479,3 +479,46 @@ def test_read_poll_details():
     random_test()
     test_unique_fractions_in_response()
     test_same_poll_id_in_response()
+
+
+def test_read_politician_media():
+    def selected_values_test():
+        response = client.get("/v1/politician/79454/media")
+        response_items = [
+            {
+                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7395037/7395037_h264_720_400_2000kb_baseline_de_2192.mp4",
+                "creator": "Deutscher Bundestag",
+                "timestamp": 1571292678,
+                "dateStart": "2019-10-17T08:11:18",
+                "dateEnd": "2019-10-17T08:19:33",
+            },
+            {
+                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7322370/7322370_h264_720_400_2000kb_baseline_de_2192.mp4",
+                "creator": "Deutscher Bundestag",
+                "timestamp": 1548929771,
+                "dateStart": "2019-01-31T11:16:11",
+                "dateEnd": "2019-01-31T11:25:03",
+            },
+            {
+                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7181105/7181105_h264_720_400_2000kb_baseline_de_2192.mp4",
+                "creator": "Deutscher Bundestag",
+                "timestamp": 1513087686,
+                "dateStart": "2017-12-12T15:08:06",
+                "dateEnd": "2017-12-12T15:12:59",
+            },
+        ]
+
+        for item in response_items:
+            assert item in response.json()
+
+    def test_response_order():
+        response = client.get("/v1/politician/66924/media")
+
+        for index in range(len(response.json()) - 1):
+            assert (
+                response.json()[index]["timestamp"]
+                > response.json()[index + 1]["timestamp"]
+            )
+
+    selected_values_test()
+    test_response_order()
