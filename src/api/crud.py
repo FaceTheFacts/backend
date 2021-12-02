@@ -148,6 +148,7 @@ def get_latest_bundestag_polls(db: Session):
         .all()
     )
 
+
 # Tested with mockup
 def get_vote_result_by_poll_id(db: Session, poll_id: int):
     return (
@@ -155,6 +156,7 @@ def get_vote_result_by_poll_id(db: Session, poll_id: int):
     )
 
 
+# Tested with mockup
 def get_polls_total(db: Session):
     data_list = []
     polls = get_latest_bundestag_polls(db)
