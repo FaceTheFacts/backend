@@ -1,5 +1,6 @@
 # default
 import unittest
+from unittest.mock import patch
 import datetime
 
 # local
@@ -99,6 +100,35 @@ class TestCrudFunctions(unittest.TestCase):
         }
         self.assertEqual(actual, expected)
         self.assertNotEqual(actual, not_expected)
+
+    # @patch(
+    #     "src.api.crud.get_latest_bundestag_polls",
+    #     return_value=[
+    #         {
+    #             "id": 3,
+    #             "poll_id": 100,
+    #             "label": "CDU voting right",
+    #             "field_legislature_id": 111,
+    #             "field_poll_date": datetime.datetime(2021, 10, 1),
+    #         }
+    #     ],
+    # )
+    # @patch(
+    #     "src.api.crud.get_vote_result_by_poll_id",
+    #     return_value=[{"yes": 10, "no": 10, "abstain": 0, "no_show": 2}],
+    # )
+    # def test_get_polls_total(self, mock_get_latest_bundestag_polls, mock_get_vote_result_by_poll_id):
+    #     actual = crud.get_polls_total(self.session)
+    #     expected = [
+    #         {
+    #             "poll_field_legislature_id": 111,
+    #             "poll_id": 100,
+    #             "poll_label": "CDU voting right",
+    #             "poll_field_poll_date": datetime.datetime(2021, 10, 1),
+    #             "result": {"yes": 10, "no": 10, "abstain": 0, "no_show": 2},
+    #         }
+    #     ]
+    #     self.assertEqual(actual, expected)
 
 
 if __name__ == "__main__":
