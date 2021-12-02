@@ -3,9 +3,11 @@ import src.db.models as models
 
 # default
 from unittest import mock
+import datetime
 
 # third-party
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
+from sqlalchemy import or_
 
 mockup_session = UnifiedAlchemyMagicMock(
     data=[
@@ -104,6 +106,65 @@ mockup_session = UnifiedAlchemyMagicMock(
                 ),
             ],
             [models.Sidejob(id=2, label="Chairman", income_level="2")],
+        ),
+        # Poll
+        (
+            [
+                mock.call.query(models.Poll),
+                mock.call.filter(models.Poll.field_legislature_id == 1),
+            ],
+            [
+                models.Poll(
+                    id=1,
+                    field_legislature_id=1,
+                    label="CDU voting right",
+                    field_poll_date=datetime.datetime(2021, 10, 1),
+                ),
+                models.Poll(
+                    id=2,
+                    field_legislature_id=1,
+                    label="CDU voting right",
+                    field_poll_date=datetime.datetime(2021, 9, 1),
+                ),
+            ],
+        ),
+        (
+            [
+                mock.call.query(models.Poll),
+                mock.call.filter(
+                    or_(
+                        models.Poll.field_legislature_id == 111,
+                        models.Poll.field_legislature_id == 132,
+                    )
+                ),
+                mock.call.order_by(models.Poll.field_poll_date.desc()),
+            ],
+            [
+                models.Poll(
+                    id=3,
+                    field_legislature_id=111,
+                    label="CDU voting right",
+                    field_poll_date=datetime.datetime(2021, 10, 1),
+                ),
+                models.Poll(
+                    id=4,
+                    field_legislature_id=111,
+                    label="CDU voting right",
+                    field_poll_date=datetime.datetime(2021, 9, 27),
+                ),
+                models.Poll(
+                    id=5,
+                    field_legislature_id=132,
+                    label="Amendment to the Infection Protection Act",
+                    field_poll_date=datetime.datetime(2021, 9, 20),
+                ),
+                models.Poll(
+                    id=6,
+                    field_legislature_id=132,
+                    label="Amendment to the Infection Protection Act",
+                    field_poll_date=datetime.datetime(2021, 9, 18),
+                ),
+            ],
         ),
     ]
 )

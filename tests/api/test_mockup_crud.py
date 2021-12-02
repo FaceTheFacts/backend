@@ -1,10 +1,10 @@
 # default
 import unittest
+import datetime
 
 # local
-from src.api.crud import get_sidejobs_by_politician_id
+import src.api.crud as crud
 from tests.db.mock_up_database import mockup_session
-import src.db.models as models
 
 
 class TestCrudFunctions(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestCrudFunctions(unittest.TestCase):
 
     def test_get_sidejobs_by_politician_id(self):
         actual = []
-        results = get_sidejobs_by_politician_id(self.session, 1)
+        results = crud.get_sidejobs_by_politician_id(self.session, 1)
         for result in results:
             item = {
                 "id": result.id,
@@ -36,6 +36,40 @@ class TestCrudFunctions(unittest.TestCase):
         ]
 
         self.assertListEqual(actual, expected)
+
+    def test_get_latest_bundestag_polls(self):
+        actual = []
+        results = crud.get_latest_bundestag_polls(self.session)
+        for result in results:
+            item = {
+                "id": result.id,
+                "field_legislature_id": result.field_legislature_id,
+                "field_poll_date": result.field_poll_date,
+            }
+            actual.append(item)
+        expected = [
+            {
+                "id": 3,
+                "field_legislature_id": 111,
+                "field_poll_date": datetime.datetime(2021, 10, 1),
+            },
+            {
+                "id": 4,
+                "field_legislature_id": 111,
+                "field_poll_date": datetime.datetime(2021, 9, 27),
+            },
+            {
+                "id": 5,
+                "field_legislature_id": 132,
+                "field_poll_date": datetime.datetime(2021, 9, 20),
+            },
+            {
+                "id": 6,
+                "field_legislature_id": 132,
+                "field_poll_date": datetime.datetime(2021, 9, 18),
+            },
+        ]
+        self.assertEqual(actual, expected)
 
 
 if __name__ == "__main__":
