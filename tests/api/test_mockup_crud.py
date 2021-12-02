@@ -132,6 +132,31 @@ class TestCrudFunctions(unittest.TestCase):
         ]
         self.assertEqual(actual, expected)
 
+    def test_integration_test_get_polls_total(self):
+        results = crud.get_polls_total(self.session)
+        result_first = results[0]
+        actual = {
+            "poll_field_legislature_id": result_first["poll_field_legislature_id"],
+            "poll_id": result_first["poll_id"],
+            "poll_label": result_first["poll_label"],
+            "poll_field_poll_date": result_first["poll_field_poll_date"],
+            "result": {
+                "yes": result_first["result"].yes,
+                "no": result_first["result"].no,
+                "abstain": result_first["result"].abstain,
+                "no_show": result_first["result"].no_show,
+            },
+        }
+        expected = {
+            "poll_field_legislature_id": 111,
+            "poll_id": 3,
+            "poll_label": "CDU voting right",
+            "poll_field_poll_date": datetime.datetime(2021, 10, 1),
+            "result": {"yes": 10, "no": 10, "abstain": 0, "no_show": 2},
+        }
+
+        self.assertEqual(actual, expected)
+
 
 if __name__ == "__main__":
     unittest.main()
