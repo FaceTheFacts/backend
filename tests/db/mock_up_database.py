@@ -166,5 +166,24 @@ mockup_session = UnifiedAlchemyMagicMock(
                 ),
             ],
         ),
+        # VoteResult
+        (
+            [
+                mock.call.query(models.VoteResult),
+                mock.call.filter(models.VoteResult.poll_id == 3),
+            ],
+            [
+                models.VoteResult(id=1, yes=10, no=10, abstain=0, no_show=2, poll_id=3),
+            ],
+        ),
+        (
+            [
+                mock.call.query(models.VoteResult),
+                mock.call.filter(models.VoteResult.poll_id == 4),
+            ],
+            [
+                models.VoteResult(id=2, yes=10, no=10, abstain=0, no_show=2, poll_id=4),
+            ],
+        ),
     ]
 )

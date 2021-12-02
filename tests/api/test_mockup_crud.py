@@ -71,6 +71,35 @@ class TestCrudFunctions(unittest.TestCase):
         ]
         self.assertEqual(actual, expected)
 
+    def test_get_vote_result_by_poll_id(self):
+        result = crud.get_vote_result_by_poll_id(self.session, 3)
+        actual = {
+            "id": result.id,
+            "yes": result.yes,
+            "no": result.no,
+            "abstain": result.abstain,
+            "no_show": result.no_show,
+            "poll_id": result.poll_id,
+        }
+        expected = {
+            "id": 1,
+            "yes": 10,
+            "no": 10,
+            "abstain": 0,
+            "no_show": 2,
+            "poll_id": 3,
+        }
+        not_expected = {
+            "id": 3,
+            "yes": 10,
+            "no": 10,
+            "abstain": 0,
+            "no_show": 2,
+            "poll_id": 10,
+        }
+        self.assertEqual(actual, expected)
+        self.assertNotEqual(actual, not_expected)
+
 
 if __name__ == "__main__":
     unittest.main()

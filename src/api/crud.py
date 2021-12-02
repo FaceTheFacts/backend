@@ -148,7 +148,7 @@ def get_latest_bundestag_polls(db: Session):
         .all()
     )
 
-
+# Tested with mockup
 def get_vote_result_by_poll_id(db: Session, poll_id: int):
     return (
         db.query(models.VoteResult).filter(models.VoteResult.poll_id == poll_id).first()
