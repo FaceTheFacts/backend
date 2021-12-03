@@ -110,6 +110,32 @@ class TestV1Routes(unittest.TestCase):
             },
         ]
         self.assertEqual(response.json()["items"], expected)
+    # integration test
+    @patch(
+        "src.api.versions.v1.Session",
+        return_value=mockup_session,
+    )
+    def test_integration_test_read_latest_polls(self, session):
+        response = client.get("/v1/bundestag-latest-polls?page=1&size=2")
+        assert response.status_code == 200
+        expected = [
+            {
+                "poll_field_legislature_id": 111,
+                "poll_id": 3,
+                "poll_label": "CDU voting right",
+                "poll_field_poll_date": "2021-10-01",
+                "result": {"yes": 10, "no": 10, "abstain": 0, "no_show": 2},
+            },
+            {
+              "poll_field_legislature_id": 111,
+              "poll_field_poll_date": "2021-09-27",
+              "poll_id": 4,
+              "poll_label": "CDU voting right",
+              "result": {"abstain": 0, "no": 10, "no_show": 2, "yes": 10},
+          }
+        ]
+        self.assertEqual(response.json()["items"], expected)
+
 
 
 if __name__ == "__main__":
