@@ -68,7 +68,7 @@ class TestV1Routes(unittest.TestCase):
                 "id": 2,
                 "entity_type": "sidejob",
                 "label": "Chairman",
-                "income_level": "3.500 € bis 7.000 €",
+                "income_level": None,
                 "interval": None,
                 "data_change_date": "2021-09-10",
                 "sidejob_organization": None,
