@@ -89,9 +89,19 @@ mockup_session = UnifiedAlchemyMagicMock(
             ],
             [
                 models.Sidejob(
-                    id=1, label="Member of the County Council", income_level="1"
+                    id=1,
+                    label="Member of the County Council",
+                    income_level="1",
+                    entity_type="sidejob",
+                    data_change_date="2021-09-10",
                 ),
-                models.Sidejob(id=2, label="Chairman", income_level="2"),
+                models.Sidejob(
+                    id=2,
+                    label="Chairman",
+                    income_level="2",
+                    entity_type="sidejob",
+                    data_change_date="2021-09-10",
+                ),
             ],
         ),
         (
