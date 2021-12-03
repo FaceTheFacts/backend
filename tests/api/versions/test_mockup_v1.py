@@ -6,6 +6,7 @@ import src.db.models as models
 # default
 import unittest
 from unittest.mock import patch
+import datetime
 
 # Third-party
 from fastapi.testclient import TestClient
@@ -75,6 +76,40 @@ class TestV1Routes(unittest.TestCase):
         ]
         self.assertEqual(response.json()["items"], expected)
         self.assertEqual(page_not_found_response.json()["detail"], "Sidejobs not found")
+
+    # unittest
+    @patch(
+        "src.api.crud.get_polls_total",
+        return_value=[
+            {
+                "poll_field_legislature_id": 111,
+                "poll_id": 3,
+                "poll_label": "CDU voting right",
+                "poll_field_poll_date": datetime.datetime(2021, 10, 1),
+                "result": {"yes": 10, "no": 10, "abstain": 0, "no_show": 2},
+            },
+            {
+                "poll_field_legislature_id": 132,
+                "poll_id": 6,
+                "poll_label": "CDU voting right",
+                "poll_field_poll_date": datetime.datetime(2021, 9, 18),
+                "result": {"yes": 10, "no": 10, "abstain": 0, "no_show": 2},
+            },
+        ],
+    )
+    def test_read_latest_polls(self, crud):
+        response = client.get("/v1/bundestag-latest-polls?page=1&size=1")
+        assert response.status_code == 200
+        expected = [
+            {
+                "poll_field_legislature_id": 111,
+                "poll_id": 3,
+                "poll_label": "CDU voting right",
+                "poll_field_poll_date": "2021-10-01",
+                "result": {"yes": 10, "no": 10, "abstain": 0, "no_show": 2},
+            },
+        ]
+        self.assertEqual(response.json()["items"], expected)
 
 
 if __name__ == "__main__":
