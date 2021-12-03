@@ -286,17 +286,19 @@ def test_read_politician_image_scanner():
     def label_and_id_test():
         response = client.get("/v1/image-scanner?text=ronald")
         assert response.status_code == 200
-        assert type(response.json()) is dict
+        assert type(response.json()) is list
         test_responses = [
             {"id": 137636, "label": "Ronald Kaufmann"},
-            {"id": 124296, "label": "Ronald Maaß"},
-            {"id": 124295, "label": "Ronald Doege"},
-            {"id": 32270, "label": "Ronald Krügel"},
+            {"id": 178064, "label": "Ronald Günter Wetklo"},
+            {
+                "id": 177893,
+                "label": "Ronald Rüdiger",
+            },
         ]
 
         for item in test_responses:
             check_response = False
-            for response_item in response.json()["items"]:
+            for response_item in response.json():
                 if (
                     item["id"] == response_item["id"]
                     and item["label"] == response_item["label"]
@@ -312,7 +314,7 @@ def test_read_politician_search():
     def selected_values_test():
         response = client.get("/v1/search?text=55278")
         assert response.status_code == 200
-        assert type(response.json()) is dict
+        assert type(response.json()) is list
         test_responses = [
             {"id": 177457, "label": "Chiara Pohl"},
             {"id": 175546, "label": "Christian Engelke"},
@@ -321,7 +323,7 @@ def test_read_politician_search():
 
         for item in test_responses:
             check_response = False
-            for response_item in response.json()["items"]:
+            for response_item in response.json():
                 if (
                     item["id"] == response_item["id"]
                     and item["label"] == response_item["label"]
@@ -330,7 +332,12 @@ def test_read_politician_search():
                     break
             assert check_response, "{} item not fount in the response".format(item)
 
+    def test_response_size():
+        response = client.get("/v1/search?text=Christian")
+        assert len(response.json()) <= 10
+
     selected_values_test()
+    test_response_size()
 
 
 def test_read_politician_votes():
