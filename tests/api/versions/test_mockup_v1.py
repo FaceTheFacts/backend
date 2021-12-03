@@ -16,10 +16,6 @@ client = TestClient(app)
 class TestV1Routes(unittest.TestCase):
     # unittest
     @patch(
-        "src.db.connection.Session",
-        return_value=mockup_session,
-    )
-    @patch(
         "src.api.crud.get_sidejobs_by_politician_id",
         return_value=[
             models.Sidejob(
@@ -38,7 +34,7 @@ class TestV1Routes(unittest.TestCase):
             ),
         ],
     )
-    def test_read_politician_sidejobs(self, session, crud):
+    def test_read_politician_sidejobs(self, crud):
         response = client.get("/v1/politician/1/sidejobs?page=1&size=1")
         assert response.status_code == 200
         expected = [
@@ -53,6 +49,27 @@ class TestV1Routes(unittest.TestCase):
             }
         ]
 
+        self.assertEqual(response.json()["items"], expected)
+
+    # integration test
+    @patch(
+        "src.api.versions.v1.Session",
+        return_value=mockup_session,
+    )
+    def test_integration_test_read_politician_sidejobs(self, session):
+        response = client.get("/v1/politician/1/sidejobs?page=2&size=1")
+        assert response.status_code == 200
+        expected = [
+            {
+                "id": 2,
+                "entity_type": "sidejob",
+                "label": "Chairman",
+                "income_level": "3.500 € bis 7.000 €",
+                "interval": None,
+                "data_change_date": "2021-09-10",
+                "sidejob_organization": None,
+            }
+        ]
         self.assertEqual(response.json()["items"], expected)
 
 
