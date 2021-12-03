@@ -87,6 +87,7 @@ def read_politician_positions(id: int, db: Session = Depends(get_db)):
 @router.get("/politician/{id}/sidejobs", response_model=Page[schemas.Sidejob])
 def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)
+    check_entity_not_found(sidejobs, "Sidejobs")
     return paginate(sidejobs)
 
 

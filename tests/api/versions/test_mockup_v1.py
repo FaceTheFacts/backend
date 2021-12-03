@@ -59,6 +59,9 @@ class TestV1Routes(unittest.TestCase):
     def test_integration_test_read_politician_sidejobs(self, session):
         response = client.get("/v1/politician/1/sidejobs?page=2&size=1")
         assert response.status_code == 200
+        page_not_found_response = client.get("/v1/politician/0/sidejobs?page=2&size=1")
+        assert page_not_found_response.status_code == 404
+
         expected = [
             {
                 "id": 2,
@@ -71,6 +74,7 @@ class TestV1Routes(unittest.TestCase):
             }
         ]
         self.assertEqual(response.json()["items"], expected)
+        self.assertEqual(page_not_found_response.json()["detail"], "Sidejobs not found")
 
 
 if __name__ == "__main__":
