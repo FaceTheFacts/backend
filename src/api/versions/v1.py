@@ -92,18 +92,18 @@ def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     return paginate(sidejobs)
 
 
-@router.get("/search", response_model=Page[schemas.PoliticianSearch])
+@router.get("/search", response_model=List[schemas.PoliticianSearch])
 def read_politician_search(text: str, db: Session = Depends(get_db)):
     politicians = crud.get_politician_by_search(db, text)
     check_entity_not_found(politicians, "Politicians")
-    return paginate(politicians)
+    return politicians
 
 
-@router.get("/image-scanner", response_model=Page[schemas.PoliticianSearch])
+@router.get("/image-scanner", response_model=List[schemas.PoliticianSearch])
 def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
     politicians = crud.get_politician_by_image_scanner(db, text)
     check_entity_not_found(politicians, "Politicians")
-    return paginate(politicians)
+    return politicians
 
 
 @router.get("/politician/{id}/votes", response_model=Page[schemas.VoteAndPoll])
