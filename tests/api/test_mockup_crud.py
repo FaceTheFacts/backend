@@ -14,6 +14,7 @@ class TestCrudFunctions(unittest.TestCase):
         super(TestCrudFunctions, self).__init__(*args, **kwargs)
         self.session = mockup_session
 
+    # unittest
     def test_get_sidejobs_by_politician_id(self):
         actual = []
         results = crud.get_sidejobs_by_politician_id(self.session, 1)
@@ -39,6 +40,7 @@ class TestCrudFunctions(unittest.TestCase):
 
         self.assertListEqual(actual, expected)
 
+    # unittest
     def test_get_latest_bundestag_polls(self):
         actual = []
         results = crud.get_latest_bundestag_polls(self.session)
@@ -73,6 +75,7 @@ class TestCrudFunctions(unittest.TestCase):
         ]
         self.assertEqual(actual, expected)
 
+    # unittest
     def test_get_vote_result_by_poll_id(self):
         result = crud.get_vote_result_by_poll_id(self.session, 3)
         actual = {
@@ -102,6 +105,7 @@ class TestCrudFunctions(unittest.TestCase):
         self.assertEqual(actual, expected)
         self.assertNotEqual(actual, not_expected)
 
+    # unittest
     @patch(
         "src.api.crud.get_latest_bundestag_polls",
         return_value=[
@@ -132,6 +136,7 @@ class TestCrudFunctions(unittest.TestCase):
         ]
         self.assertEqual(actual, expected)
 
+    # integration test
     def test_integration_test_get_polls_total(self):
         results = crud.get_polls_total(self.session)
         result_first = results[0]

@@ -84,6 +84,7 @@ def read_politician_positions(id: int, db: Session = Depends(get_db)):
     return politician
 
 
+# Tested with mockup
 @router.get("/politician/{id}/sidejobs", response_model=Page[schemas.Sidejob])
 def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)
@@ -116,6 +117,7 @@ def read_politician_votes(
     return paginate(votes)
 
 
+# Tested with mockup
 @router.get("/bundestag-latest-polls", response_model=Page[schemas.BundestagPoll])
 def read_latest_polls(db: Session = Depends(get_db)):
     polls = crud.get_polls_total(db)

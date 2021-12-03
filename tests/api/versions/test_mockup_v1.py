@@ -110,6 +110,7 @@ class TestV1Routes(unittest.TestCase):
             },
         ]
         self.assertEqual(response.json()["items"], expected)
+
     # integration test
     @patch(
         "src.api.versions.v1.Session",
@@ -127,15 +128,14 @@ class TestV1Routes(unittest.TestCase):
                 "result": {"yes": 10, "no": 10, "abstain": 0, "no_show": 2},
             },
             {
-              "poll_field_legislature_id": 111,
-              "poll_field_poll_date": "2021-09-27",
-              "poll_id": 4,
-              "poll_label": "CDU voting right",
-              "result": {"abstain": 0, "no": 10, "no_show": 2, "yes": 10},
-          }
+                "poll_field_legislature_id": 111,
+                "poll_field_poll_date": "2021-09-27",
+                "poll_id": 4,
+                "poll_label": "CDU voting right",
+                "result": {"abstain": 0, "no": 10, "no_show": 2, "yes": 10},
+            },
         ]
         self.assertEqual(response.json()["items"], expected)
-
 
 
 if __name__ == "__main__":
