@@ -274,8 +274,8 @@ def test_read_politician_sidejobs():
 
     def sidejob_not_found_test():
         response = client.get("/v1/politician/28881/sidejobs?page=2&size=1")
-        assert response.status_code == 200
-        assert response.json() == {"items": [], "total": 0, "page": 2, "size": 1}
+        assert response.status_code == 404
+        assert response.json() == {"detail": "Sidejobs not found"}
 
     whole_values_test()
     selected_values_test()
