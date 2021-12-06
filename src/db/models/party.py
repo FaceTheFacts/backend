@@ -15,5 +15,8 @@ class Party(Base):
     short_name = Column(String)
     party_style_id = Column(Integer, ForeignKey("party_style.id"))
 
+    # One to One
+    party_style = relationship("PartyStyle", back_populates="party")
+
     # One to Many
     candidacy_mandates = relationship("CandidacyMandate", back_populates="party")
