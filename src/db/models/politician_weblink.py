@@ -13,5 +13,6 @@ class PoliticianWeblink(Base):
     # Many to one
     politician = relationship("Politician", back_populates="weblinks")
 
+
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
