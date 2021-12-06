@@ -50,6 +50,7 @@ from src.cron_jobs.utils.parser import (
     gen_party_styles_map,
     PERIOD_POSITION_TABLE,
 )
+from src.cron_jobs.utils.truncate_table import truncate_table
 
 # third-party
 from sqlalchemy.dialects.postgresql import insert
@@ -808,14 +809,17 @@ def populate_cvs_and_career_paths() -> None:
 
 
 def populate_weblinks() -> None:
+    truncate_table("politician_weblink")
     weblink_data = read_json("src/data_scraper/json_data/weblinks.json")
     weblinks = []
     for item in weblink_data:
-        weblink = {
-            "politician_id": item["politician_id"],
-            "link": item["weblink"],
-        }
-        weblinks.append(weblink)
+        links = item["weblink"]
+        for link in links:
+            weblink = {
+                "politician_id": item["politician_id"],
+                "link": link,
+            }
+            weblinks.append(weblink)
     insert_and_update(PoliticianWeblink, weblinks)
 
 
@@ -879,4 +883,4 @@ def populate_poll_results_per_fraction():
 
 if __name__ == "__main__":
     # Base.metadata.create_all(engine)
-    populate_poll_results_per_fraction()
+    populate_weblinks()
