@@ -156,6 +156,7 @@ class Politician(FTFBaseModel):
     field_title: Optional[str]
     sidejobs: Optional[List[Sidejob]]
     cvs: Optional[List]
+    abgeordnetenwatch_url: Optional[str]
     weblinks: Optional[List]
     votes_and_polls: Optional[List[VoteAndPoll]]
 
