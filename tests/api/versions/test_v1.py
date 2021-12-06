@@ -17,7 +17,6 @@ def test_read_politician():
         assert response.json()["last_name"] == "Frost"
         assert response.json()["sex"] == "m"
         assert response.json()["year_of_birth"] == "1985"
-        assert response.json()["party_past"] is None
         assert response.json()["deceased"] is None
         assert response.json()["deceased_date"] is None
         assert (
@@ -32,11 +31,10 @@ def test_read_politician():
         assert response.json()["field_title"] is None
 
     def specific_elements_test1():
-        # Testing past_party, statistic_questions and statistic_questions_answered
+        # Testing statistic_questions and statistic_questions_answered
         response = client.get("/v1/politician/176101")
         assert response.status_code == 200
         assert type(response.json()) is dict
-        assert response.json()["party_past"] == "Vorher Mitglied der Freien Wähler"
         assert response.json()["statistic_questions"] == "10"
         assert response.json()["statistic_questions_answered"] == "9"
 
@@ -93,50 +91,129 @@ def test_read_top_candidates():
         {
             "id": 130072,
             "label": "Armin Laschet",
-            "party": {"id": 2, "label": "CDU"},
+            "party": {
+                "id": 2,
+                "label": "CDU",
+                "party_style": {
+                    "id": 2,
+                    "display_name": "CDU",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#636363",
+                    "border_color": None,
+                },
+            },
             "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/130072.jpg",
         },
         {
             "id": 79475,
             "label": "Annalena Baerbock",
-            "party": {"id": 5, "label": "Bündnis 90/Die Grünen"},
+            "party": {
+                "id": 5,
+                "label": "Bündnis 90/Die Grünen",
+                "party_style": {
+                    "id": 5,
+                    "display_name": "Grüne",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#61A056",
+                    "border_color": None,
+                },
+            },
             "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/79475.jpg",
         },
         {
             "id": 66924,
             "label": "Olaf Scholz",
-            "party": {"id": 1, "label": "SPD"},
+            "party": {
+                "id": 1,
+                "label": "SPD",
+                "party_style": {
+                    "id": 1,
+                    "display_name": "SPD",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#E95050",
+                    "border_color": None,
+                },
+            },
             "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/66924.jpg",
         },
         {
             "id": 119742,
             "label": "Christian Lindner",
-            "party": {"id": 4, "label": "FDP"},
+            "party": {
+                "id": 4,
+                "label": "FDP",
+                "party_style": {
+                    "id": 4,
+                    "display_name": "FDP",
+                    "foreground_color": "#333333",
+                    "background_color": "#FAED0B",
+                    "border_color": None,
+                },
+            },
             "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/119742.jpg",
         },
         {
             "id": 145755,
             "label": "Tino Chrupalla",
-            "party": {"id": 9, "label": "AfD"},
+            "party": {
+                "id": 9,
+                "label": "AfD",
+                "party_style": {
+                    "id": 9,
+                    "display_name": "AfD",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#3AA6F4",
+                    "border_color": None,
+                },
+            },
             "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/145755.jpg",
         },
         {
             "id": 108379,
             "label": "Alice Weidel",
-            "party": {"id": 9, "label": "AfD"},
-            "image_url": None
-            # TODO add images to S3 bucket and change response to --> "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/108379.jpg",
+            "party": {
+                "id": 9,
+                "label": "AfD",
+                "party_style": {
+                    "id": 9,
+                    "display_name": "AfD",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#3AA6F4",
+                    "border_color": None,
+                },
+            },
+            "image_url": None,
         },
         {
             "id": 135302,
             "label": "Janine Wissler",
-            "party": {"id": 8, "label": "DIE LINKE"},
+            "party": {
+                "id": 8,
+                "label": "DIE LINKE",
+                "party_style": {
+                    "id": 8,
+                    "display_name": "Linke",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#CD3E72",
+                    "border_color": None,
+                },
+            },
             "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/135302.jpg",
         },
         {
             "id": 79454,
             "label": "Dietmar Bartsch",
-            "party": {"id": 8, "label": "DIE LINKE"},
+            "party": {
+                "id": 8,
+                "label": "DIE LINKE",
+                "party_style": {
+                    "id": 8,
+                    "display_name": "Linke",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#CD3E72",
+                    "border_color": None,
+                },
+            },
             "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/79454.jpg",
         },
     ]
