@@ -122,6 +122,20 @@ class VoteAndPoll(FTFBaseModel):
     Poll: Poll
 
 
+class PartyStyle(FTFBaseModel):
+    id: int
+    display_name: str
+    foreground_color: str
+    background_color: str
+    border_color: Optional[str]
+
+
+class Party(FTFBaseModel):
+    id: int
+    label: str
+    party_style: PartyStyle
+
+
 class Politician(FTFBaseModel):
     id: int
     entity_type: str
@@ -130,7 +144,7 @@ class Politician(FTFBaseModel):
     last_name: str
     sex: Optional[str]
     year_of_birth: Optional[str]
-    party_past: Optional[str]
+    party: Optional[Party]
     deceased: Optional[bool]
     deceased_date: Optional[date]
     education: Optional[str]
@@ -146,15 +160,10 @@ class Politician(FTFBaseModel):
     votes_and_polls: Optional[List[VoteAndPoll]]
 
 
-class PartySearch(FTFBaseModel):
-    id: int
-    label: str
-
-
 class PoliticianSearch(FTFBaseModel):
     id: int
     label: str
-    party: Optional[PartySearch]
+    party: Optional[Party]
     image_url: Optional[str]
 
 
