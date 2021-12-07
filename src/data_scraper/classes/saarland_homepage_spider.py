@@ -32,6 +32,7 @@ class SaarlandHomepageSpider(scrapy.Spider, ABC):
                 "url": url,
             }
 
+
 process = CrawlerProcess(
     settings={
         "FEEDS": {

@@ -141,6 +141,7 @@ class SaarlandHomepageSpider(scrapy.Spider, ABC):
 
         yield {"name": politician_name, "sidejob_data": sidejob_data}
 
+
 process = CrawlerProcess(
     settings={
         "FEEDS": {
