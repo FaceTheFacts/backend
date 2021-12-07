@@ -48,10 +48,12 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
         "Funktionen in Parteiorganisationen",
     ]
 
+    root = response.css("div.table-wrapper")
+
     # The website is using table rows instead of direct <p> tags
     if not html_data:
         return (
-            response.css("div.table-wrapper")[-1]
+            root[-1]
             .css("table.table-multi")
             .css("td.value")
             .css("p::text")
@@ -62,7 +64,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
     elif len(html_data) > 1:
 
         data = (
-            response.css("div.table-wrapper")[-1]
+            root[-1]
             .css("table.table-simple")
             .css("p::text")
             .getall()
@@ -82,7 +84,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
         # ... multiple sidejobs stored in <span>, titles stored in <strong>
         if search_and_locate_element_in_text(html_data[0], "<span>")[0]:
             return (
-                response.css("div.table-wrapper")[-1]
+                root[-1]
                 .css("table.table-simple")
                 .css("span::text")
                 .getall()
@@ -91,7 +93,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
         # ... multiple sidejobs stored without <span>, titles stored in <strong>
         elif search_and_locate_element_in_text(html_data[0], "<strong>")[0]:
             return (
-                response.css("div.table-wrapper")[-1]
+                root[-1]
                 .css("table.table-simple")
                 .css("p::text")
                 .getall()
@@ -100,7 +102,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
         # ... sidejobs stored without <span>, titles stored without <strong>
         else:
             data = (
-                response.css("div.table-wrapper")[-1]
+                root[-1]
                 .css("table.table-simple")
                 .css("p::text")
                 .getall()
