@@ -99,7 +99,7 @@ class Sidejob(FTFBaseModel):
     label: str
     income_level: Optional[str]
     interval: Optional[str]
-    data_change_date: date
+    created: datetime
     sidejob_organization: Optional[SidejobOrganization]
 
 
