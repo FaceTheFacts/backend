@@ -19,7 +19,7 @@ def add_image_urls_to_politicians(politicians: List[models.Politician]):
     return politicians
 
 
-def get_occupation(occupation: Optional[str], politician_id: int) -> List[str]:
+def get_occupations(occupation: Optional[str], politician_id: int) -> List[str]:
     # if we have a custom occupation, we take it
     if (custom_occupation := OCCUPATIONS.get(politician_id)) is not None:
         return custom_occupation

@@ -149,7 +149,7 @@ class Politician(FTFBaseModel):
     deceased_date: Optional[date]
     education: Optional[str]
     residence: Optional[str]
-    occupation: Optional[str]
+    occupations: Optional[List[str]]
     statistic_questions: Optional[str]
     statistic_questions_answered: Optional[str]
     qid_wikidata: Optional[str]
