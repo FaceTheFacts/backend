@@ -1,14 +1,14 @@
 # Default
 import sys
 
-sys.path.append("src")
+sys.path.append("")
 
 # Third Party
 import scrapy
 from scrapy.crawler import CrawlerProcess
 
 # Local
-from utils.profile import generate_politician_ids, generate_politician_url
+from src.data_scraper.utils.profile import generate_politician_url
 
 
 class Profile(scrapy.Spider):
@@ -41,7 +41,7 @@ class Profile(scrapy.Spider):
 process = process = CrawlerProcess(
     settings={
         "FEEDS": {
-            "src/json/profile.json": {"format": "json"},
+            "json/profile.json": {"format": "json"},
         },
     }
 )

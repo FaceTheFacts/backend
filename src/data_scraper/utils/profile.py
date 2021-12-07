@@ -1,10 +1,3 @@
-# Default
-import sys
-
-
-sys.path.append("src")
-
-# Default
 from typing import List
 
 # Third Party
@@ -12,8 +5,8 @@ import pandas
 from pandas.core.frame import DataFrame
 
 # Local
-from utils.helper import fetch_json, generate_json
-from utils.types import ProcessedWeblink, ProfileUrl, ScrapedWeblink
+from src.data_scraper.utils.helper import fetch_json, generate_json
+from src.data_scraper.utils.types import ProcessedWeblink, ProfileUrl, ScrapedWeblink
 
 
 def generate_politician_df() -> DataFrame:
