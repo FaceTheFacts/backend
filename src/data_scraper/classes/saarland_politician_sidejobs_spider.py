@@ -49,6 +49,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
     ]
 
     root = response.css("div.table-wrapper")
+    simple = root.css("table.table-simple")
 
     # The website is using table rows instead of direct <p> tags
     if not html_data:
@@ -64,8 +65,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
     elif len(html_data) > 1:
 
         data = (
-            root[-1]
-            .css("table.table-simple")
+            simple
             .css("p::text")
             .getall()
         )
@@ -84,8 +84,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
         # ... multiple sidejobs stored in <span>, titles stored in <strong>
         if search_and_locate_element_in_text(html_data[0], "<span>")[0]:
             return (
-                root[-1]
-                .css("table.table-simple")
+                simple
                 .css("span::text")
                 .getall()
             )
@@ -93,8 +92,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
         # ... multiple sidejobs stored without <span>, titles stored in <strong>
         elif search_and_locate_element_in_text(html_data[0], "<strong>")[0]:
             return (
-                root[-1]
-                .css("table.table-simple")
+                simple
                 .css("p::text")
                 .getall()
             )
@@ -102,8 +100,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
         # ... sidejobs stored without <span>, titles stored without <strong>
         else:
             data = (
-                root[-1]
-                .css("table.table-simple")
+                simple
                 .css("p::text")
                 .getall()
             )
