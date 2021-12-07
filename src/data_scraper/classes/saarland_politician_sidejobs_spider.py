@@ -50,6 +50,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
 
     root = response.css("div.table-wrapper")
     simple = root.css("table.table-simple")
+    simple_data = simple.css("p::text").getall()
 
     # The website is using table rows instead of direct <p> tags
     if not html_data:
@@ -64,11 +65,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
     # multiple <p>'s with each sidejob as a separate element
     elif len(html_data) > 1:
 
-        data = (
-            simple
-            .css("p::text")
-            .getall()
-        )
+        data = simple_data
 
         # titles use the <strong> tag
         if search_and_locate_element_in_text(html_data[0], "<strong>")[0]:
@@ -91,19 +88,11 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
 
         # ... multiple sidejobs stored without <span>, titles stored in <strong>
         elif search_and_locate_element_in_text(html_data[0], "<strong>")[0]:
-            return (
-                simple
-                .css("p::text")
-                .getall()
-            )
+            return simple_data
 
         # ... sidejobs stored without <span>, titles stored without <strong>
         else:
-            data = (
-                simple
-                .css("p::text")
-                .getall()
-            )
+            data = simple_data
 
             # title is the first element and the sidejob is the second
             if len(data) == 2:
