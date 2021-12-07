@@ -8,6 +8,7 @@ from fastapi_pagination import Page, add_pagination, paginate
 # local
 import src.api.crud as crud
 import src.api.schemas as schemas
+from src.api.utils.politician import get_occupations
 from src.db import models
 from src.db.connection import Session
 from src.api.utils.error import check_entity_not_found
@@ -39,6 +40,10 @@ def read_politician(
 ):
     politician = crud.get_entity_by_id(db, models.Politician, id)
     check_entity_not_found(politician, "Politician")
+
+    politician.__dict__["occupations"] = get_occupations(
+        politician.__dict__["occupation"], id
+    )
 
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)[sidejobs_start:sidejobs_end]
     politician.__dict__["sidejobs"] = sidejobs

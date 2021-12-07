@@ -1,4 +1,3 @@
-
 # Map `politician_id` to corrected occupations for some politicians.
 OCCUPATIONS = {
     # Olaf Scholz
