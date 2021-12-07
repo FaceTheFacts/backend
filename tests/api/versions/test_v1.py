@@ -20,11 +20,10 @@ def test_read_politician():
         assert response.json()["deceased"] is None
         assert response.json()["deceased_date"] is None
         assert (
-            response.json()["education"]
-            == "Erzieher/ Kitaleiter, Werkzeugmechaniker, Waffenmechaniker"
+                response.json()["education"]
+                == "Erzieher/ Kitaleiter, Werkzeugmechaniker, Waffenmechaniker"
         )
         assert response.json()["residence"] == "Mestlin "
-        assert response.json()["occupation"] == "Flohmarkt Betreiber "
         assert response.json()["statistic_questions"] is None
         assert response.json()["statistic_questions_answered"] is None
         assert response.json()["qid_wikidata"] is None
@@ -65,8 +64,8 @@ def test_read_politician():
 
         for index in range(4):
             assert (
-                votes_and_polls[index]["Poll"]["field_poll_date"]
-                >= votes_and_polls[index + 1]["Poll"]["field_poll_date"]
+                    votes_and_polls[index]["Poll"]["field_poll_date"]
+                    >= votes_and_polls[index + 1]["Poll"]["field_poll_date"]
             )
 
     def politician_id_not_found():
@@ -75,13 +74,25 @@ def test_read_politician():
         assert type(response.json()) is dict
         assert response.json() == {"detail": "Politician not found"}
 
+    def occupations_test():
+        response = client.get("/v1/politician/130072")
+        response_items = [
+            "Kanzlerkandidat",
+            "Ministerpräsident NRW",
+            "Parteivorsitzender",
+            "MdL"
+        ]
+
+        for item in response_items:
+            assert item in response.json()["occupations"]
+
     random_test()
     specific_elements_test1()
     specific_elements_test_2()
     specific_elements_test_3()
     votes_and_polls_test()
     politician_id_not_found()
-
+    occupations_test()
 
 def test_read_top_candidates():
     response = client.get("/v1/top-candidates")
@@ -377,8 +388,8 @@ def test_read_politician_image_scanner():
             check_response = False
             for response_item in response.json():
                 if (
-                    item["id"] == response_item["id"]
-                    and item["label"] == response_item["label"]
+                        item["id"] == response_item["id"]
+                        and item["label"] == response_item["label"]
                 ):
                     check_response = True
                     break
@@ -402,8 +413,8 @@ def test_read_politician_search():
             check_response = False
             for response_item in response.json():
                 if (
-                    item["id"] == response_item["id"]
-                    and item["label"] == response_item["label"]
+                        item["id"] == response_item["id"]
+                        and item["label"] == response_item["label"]
                 ):
                     check_response = True
                     break
@@ -547,7 +558,7 @@ def test_read_poll_details():
         for item in response.json():
             fraction_id = item["fraction"]["id"]
             assert (
-                fraction_id not in fraction_ids
+                    fraction_id not in fraction_ids
             ), f"duplicate fraction of id {fraction_id} in response. All objects must have a unique fraction id"
             fraction_ids.append(fraction_id)
 
@@ -557,7 +568,7 @@ def test_read_poll_details():
 
         for item in response.json():
             assert (
-                item["poll_id"] == poll_id
+                    item["poll_id"] == poll_id
             ), f"Item of id {item['id']} is returned with poll_id {item['poll_id']}. Only items with poll_id {poll_id} should be returned"
 
     random_test()
@@ -600,8 +611,8 @@ def test_read_politician_media():
 
         for index in range(len(response.json()) - 1):
             assert (
-                response.json()[index]["timestamp"]
-                > response.json()[index + 1]["timestamp"]
+                    response.json()[index]["timestamp"]
+                    > response.json()[index + 1]["timestamp"]
             )
 
     selected_values_test()
