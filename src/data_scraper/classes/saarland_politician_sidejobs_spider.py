@@ -1,12 +1,13 @@
 import copy
-import sys
+
+from scrapy.crawler import CrawlerProcess
+
 import json
 from abc import ABC
 
 import scrapy
 
-sys.path.append("src")
-from utils.search import search_and_locate_element_in_text
+from src.data_scraper.utils.search import search_and_locate_element_in_text
 
 
 def populate_urls(data) -> list:
@@ -119,7 +120,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
 class SaarlandHomepageSpider(scrapy.Spider, ABC):
     name = "saarland-politician-sidejobs"
 
-    file = open("./src/json/saarland_homepage_data.json")
+    file = open("json/saarland_homepage_data.json")
     json_data = json.load(file)
     start_urls = populate_urls(json_data)
 
@@ -139,3 +140,15 @@ class SaarlandHomepageSpider(scrapy.Spider, ABC):
             sidejob_data = ["UNRECOGNISED STRUCTURE"] + html_data
 
         yield {"name": politician_name, "sidejob_data": sidejob_data}
+
+process = CrawlerProcess(
+    settings={
+        "FEEDS": {
+            "json/saarland_sidejob_data.json": {"format": "json"},
+        }
+    }
+)
+
+if __name__ == "__main__":
+    process.crawl(SaarlandHomepageSpider)
+    process.start()

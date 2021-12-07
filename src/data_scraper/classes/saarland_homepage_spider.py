@@ -1,6 +1,7 @@
 from abc import ABC
 
 import scrapy
+from scrapy.crawler import CrawlerProcess
 
 
 class SaarlandHomepageSpider(scrapy.Spider, ABC):
@@ -30,3 +31,15 @@ class SaarlandHomepageSpider(scrapy.Spider, ABC):
                 "party": party,
                 "url": url,
             }
+
+process = CrawlerProcess(
+    settings={
+        "FEEDS": {
+            "json/saarland_homepage_data.json": {"format": "json"},
+        }
+    }
+)
+
+if __name__ == "__main__":
+    process.crawl(SaarlandHomepageSpider)
+    process.start()
