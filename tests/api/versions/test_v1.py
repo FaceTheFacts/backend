@@ -315,7 +315,7 @@ def test_read_politician_sidejobs():
                 "label": "Vortrag (Sommergespräch)",
                 "income_level": "7.000 € bis 15.000 €",
                 "interval": None,
-                "data_change_date": "2021-09-10",
+                "created": "2021-09-10",
                 "sidejob_organization": {
                     "id": 2668,
                     "entity_type": "sidejob_organization",
@@ -328,7 +328,7 @@ def test_read_politician_sidejobs():
                 "label": "Vortrag - Executive Dinner, Donner & Reuschel AG, Hamburg",
                 "income_level": "7.000 € bis 15.000 €",
                 "interval": None,
-                "data_change_date": "2021-08-05",
+                "created": "2021-08-05",
                 "sidejob_organization": {
                     "id": 4086,
                     "entity_type": "sidejob_organization",
@@ -341,7 +341,7 @@ def test_read_politician_sidejobs():
                 "label": "Online-Vortrag - Keynote Human-Works-Kongress",
                 "income_level": "3.500 € bis 7.000 €",
                 "interval": None,
-                "data_change_date": "2021-08-05",
+                "created": "2021-08-05",
                 "sidejob_organization": {
                     "id": 4087,
                     "entity_type": "sidejob_organization",

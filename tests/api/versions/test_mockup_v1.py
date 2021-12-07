@@ -24,14 +24,14 @@ class TestV1Routes(unittest.TestCase):
                 entity_type="sidejob",
                 label="Member of the County Council",
                 income_level="1.000 € bis 3.500 €",
-                data_change_date="2021-09-10",
+                created=1611842082,
             ),
             models.Sidejob(
                 id=2,
                 entity_type="sidejob",
                 label="Chairman",
                 income_level="3.500 € bis 7.000 €",
-                data_change_date="2021-09-10",
+                created=1611842082,
             ),
         ],
     )
@@ -45,7 +45,7 @@ class TestV1Routes(unittest.TestCase):
                 "label": "Member of the County Council",
                 "income_level": "1.000 € bis 3.500 €",
                 "interval": None,
-                "data_change_date": "2021-09-10",
+                "created": "2021-01-28",
                 "sidejob_organization": None,
             }
         ]
@@ -70,10 +70,13 @@ class TestV1Routes(unittest.TestCase):
                 "label": "Chairman",
                 "income_level": None,
                 "interval": None,
-                "data_change_date": "2021-09-10",
+                "created": "2021-01-28",
                 "sidejob_organization": None,
             }
         ]
+
+        print(response.json()["items"][0])
+
         self.assertEqual(response.json()["items"], expected)
         self.assertEqual(page_not_found_response.json()["detail"], "Sidejobs not found")
 
