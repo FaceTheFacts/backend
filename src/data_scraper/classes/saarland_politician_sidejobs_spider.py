@@ -54,13 +54,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
 
     # The website is using table rows instead of direct <p> tags
     if not html_data:
-        return (
-            root[-1]
-            .css("table.table-multi")
-            .css("td.value")
-            .css("p::text")
-            .getall()
-        )
+        return root[-1].css("table.table-multi").css("td.value").css("p::text").getall()
 
     # multiple <p>'s with each sidejob as a separate element
     elif len(html_data) > 1:
@@ -80,11 +74,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
 
         # ... multiple sidejobs stored in <span>, titles stored in <strong>
         if search_and_locate_element_in_text(html_data[0], "<span>")[0]:
-            return (
-                simple
-                .css("span::text")
-                .getall()
-            )
+            return simple.css("span::text").getall()
 
         # ... multiple sidejobs stored without <span>, titles stored in <strong>
         elif search_and_locate_element_in_text(html_data[0], "<strong>")[0]:
