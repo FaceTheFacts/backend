@@ -159,6 +159,7 @@ class Politician(FTFBaseModel):
     abgeordnetenwatch_url: Optional[str]
     weblinks: Optional[List]
     votes_and_polls: Optional[List[VoteAndPoll]]
+    topic_ids_of_latest_committee: Optional[List[int]]
 
 
 class PoliticianSearch(FTFBaseModel):
