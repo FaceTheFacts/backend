@@ -13,7 +13,8 @@ from src.api.utils.read_url import load_json_from_url
 from src.api.utils.sidejob import convert_income_level
 from src.api.utils.politician import (
     add_image_urls_to_politicians,
-    transform_topics_dict_to_minimal_array, did_vote_pass,
+    transform_topics_dict_to_minimal_array,
+    did_vote_pass,
 )
 
 
@@ -67,7 +68,7 @@ def get_votes_and_polls_by_politician_id(
         )
 
     for item in votes_and_polls:
-        item[1].__dict__["poll_passed"] = (did_vote_pass(item[-1].__dict__))
+        item[1].__dict__["poll_passed"] = did_vote_pass(item[-1].__dict__)
 
     return votes_and_polls
 

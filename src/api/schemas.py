@@ -46,6 +46,7 @@ class Poll(FTFBaseModel):
     label: Optional[str]
     field_intro: Optional[str]
     field_poll_date: date
+    poll_passed: bool
 
 
 # -----------------------
