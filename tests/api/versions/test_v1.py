@@ -295,10 +295,20 @@ def test_read_politician_positions():
                 "id": 1281775921,
                 "position": "neutral",
                 "reason": "Das hohe Verkehrsaufkommen lässt eine höhere Durchschnittsgeschwindigkeit nach meinem Gefühl nicht zu. das ist rein subjketiv. ",
+                "position_statement": {
+                    "statement": "Auf den Autobahnen soll ein Tempolimit von 130km/h eingeführt werden."
+                },
             }
         )
         assert response.json()["positions"].__contains__(
-            {"id": 1281775926, "position": "neutral", "reason": None}
+            {
+                "id": 1281775926,
+                "position": "neutral",
+                "reason": None,
+                "position_statement": {
+                    "statement": "Der öffentlich-rechtliche Rundfunk soll sich auf Information und regionale Berichterstattung konzentrieren."
+                },
+            }
         )
 
     selected_values_test()
