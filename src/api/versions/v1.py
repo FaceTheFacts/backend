@@ -84,9 +84,9 @@ def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
 
 @router.get("/politician/{id}/positions", response_model=schemas.PoliticianToPosition)
 def read_politician_positions(id: int, db: Session = Depends(get_db)):
-    politician = crud.get_entity_by_id(db, models.Politician, id)
-    check_entity_not_found(politician, "Politician")
-    return politician
+    positions = crud.get_entity_by_id(db, models.Politician, id)
+    check_entity_not_found(positions, "Position")
+    return positions
 
 
 # Tested with mockup
