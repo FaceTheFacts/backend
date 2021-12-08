@@ -12,6 +12,5 @@ class PositionStatement(Base):
     statement = Column(String)
     topic_id = Column(Integer, ForeignKey("topic.id"))
     topics = relationship("Topic", back_populates="position_statements")
-    #One to Many
+    # One to Many
     positions = relationship("Position", back_populates="position_statement")
-
