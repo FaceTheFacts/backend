@@ -17,4 +17,5 @@ class Position(Base):
 
     politicians = relationship("Politician", back_populates="positions")
     parliament_periods = relationship("ParliamentPeriod", back_populates="positions")
-    position_statements = relationship("PositionStatement", back_populates="positions")
+    # Many to One
+    position_statement = relationship("PositionStatement", back_populates="positions")

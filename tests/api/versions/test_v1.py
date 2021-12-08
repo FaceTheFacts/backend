@@ -30,7 +30,7 @@ def test_read_politician():
         assert response.json()["field_title"] is None
 
     def specific_elements_test1():
-        # Testing statistic_questions and statistic_questions_answered
+        # Testing past_party, statistic_questions and statistic_questions_answered
         response = client.get("/v1/politician/176101")
         assert response.status_code == 200
         assert type(response.json()) is dict
@@ -326,10 +326,20 @@ def test_read_politician_positions():
                 "id": 1281775921,
                 "position": "neutral",
                 "reason": "Das hohe Verkehrsaufkommen lässt eine höhere Durchschnittsgeschwindigkeit nach meinem Gefühl nicht zu. das ist rein subjketiv. ",
+                "position_statement": {
+                    "statement": "Auf den Autobahnen soll ein Tempolimit von 130km/h eingeführt werden."
+                },
             }
         )
         assert response.json()["positions"].__contains__(
-            {"id": 1281775926, "position": "neutral", "reason": None}
+            {
+                "id": 1281775926,
+                "position": "neutral",
+                "reason": None,
+                "position_statement": {
+                    "statement": "Der öffentlich-rechtliche Rundfunk soll sich auf Information und regionale Berichterstattung konzentrieren."
+                },
+            }
         )
 
     selected_values_test()
