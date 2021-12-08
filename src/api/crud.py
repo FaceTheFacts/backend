@@ -13,7 +13,7 @@ from src.api.utils.read_url import load_json_from_url
 from src.api.utils.sidejob import convert_income_level
 from src.api.utils.politician import (
     add_image_urls_to_politicians,
-    transform_topics_dict_to_minimal_array,
+    transform_topics_dict_to_minimal_array, did_vote_pass,
 )
 
 
@@ -37,9 +37,10 @@ def get_votes_and_polls_by_politician_id(
 
     if topic_ids:
         votes_and_polls = (
-            db.query(models.Vote, models.Poll)
+            db.query(models.Vote, models.Poll, models.VoteResult)
             .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
             .filter(models.Vote.poll_id == models.Poll.id)
+            .filter(models.VoteResult.poll_id == models.Poll.id)
             .filter(
                 (models.Topic.id.in_(topic_ids))
                 | (models.Topic.parent_id.in_(topic_ids))
@@ -55,14 +56,18 @@ def get_votes_and_polls_by_politician_id(
         )
     else:
         votes_and_polls = (
-            db.query(models.Vote, models.Poll)
+            db.query(models.Vote, models.Poll, models.VoteResult)
             .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
             .filter(models.Vote.poll_id == models.Poll.id)
+            .filter(models.VoteResult.poll_id == models.Poll.id)
             .filter(models.Vote.vote != "no_show")
             .order_by(models.Poll.field_poll_date.desc())[
                 range_of_votes[0] : range_of_votes[1]
             ]
         )
+
+    for item in votes_and_polls:
+        item[1].__dict__["poll_passed"] = (did_vote_pass(item[-1].__dict__))
 
     return votes_and_polls
 

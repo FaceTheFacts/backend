@@ -124,3 +124,10 @@ def transform_topics_dict_to_minimal_array(data: List[Dict[str, int or None]]) -
                 data_list.append(id)
 
     return data_list
+
+
+def did_vote_pass(vote_result: Dict):
+    vote_types = ["yes", "no", "no_show", "abstain"]
+    total = sum(vote_result[vote_type] for vote_type in vote_types)
+
+    return vote_result["yes"] / total > 0.5
