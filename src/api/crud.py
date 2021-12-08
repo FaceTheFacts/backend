@@ -11,7 +11,10 @@ from sqlalchemy import text, or_
 import src.db.models as models
 from src.api.utils.read_url import load_json_from_url
 from src.api.utils.sidejob import convert_income_level
-from src.api.utils.politician import add_image_urls_to_politicians, transform_topics_dict_to_minimal_array
+from src.api.utils.politician import (
+    add_image_urls_to_politicians,
+    transform_topics_dict_to_minimal_array,
+)
 
 
 def get_entity_by_id(db: Session, model, id: int):

@@ -53,7 +53,9 @@ def read_politician(
     )
     politician.__dict__["votes_and_polls"] = votes_and_polls
 
-    politician.__dict__["topic_ids_of_latest_committee"] = crud.get_latest_committee_topics_by_politician_id(db, id)
+    politician.__dict__[
+        "topic_ids_of_latest_committee"
+    ] = crud.get_latest_committee_topics_by_politician_id(db, id)
 
     return politician
 

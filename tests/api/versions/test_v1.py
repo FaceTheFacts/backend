@@ -86,6 +86,36 @@ def test_read_politician():
         for item in response_items:
             assert item in response.json()["occupations"]
 
+    def test_topic_ids_of_latest_committee():
+        response = client.get("/v1/politician/79475")
+        expected_ids = [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            28,
+        ]
+        assert expected_ids == response.json()["topic_ids_of_latest_committee"]
+
     random_test()
     specific_elements_test1()
     specific_elements_test_2()
@@ -93,6 +123,7 @@ def test_read_politician():
     votes_and_polls_test()
     politician_id_not_found()
     occupations_test()
+    test_topic_ids_of_latest_committee()
 
 
 def test_read_top_candidates():
