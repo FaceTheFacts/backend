@@ -5,13 +5,17 @@ from typing import List
 # third-party
 from sqlalchemy.orm import Session
 
-from sqlalchemy import text, or_
+from sqlalchemy import text, or_, and_
 
 # local
 import src.db.models as models
 from src.api.utils.read_url import load_json_from_url
 from src.api.utils.sidejob import convert_income_level
-from src.api.utils.politician import add_image_urls_to_politicians
+from src.api.utils.politician import (
+    add_image_urls_to_politicians,
+    transform_topics_dict_to_minimal_array,
+    did_vote_pass,
+)
 
 
 def get_entity_by_id(db: Session, model, id: int):
@@ -34,9 +38,10 @@ def get_votes_and_polls_by_politician_id(
 
     if topic_ids:
         votes_and_polls = (
-            db.query(models.Vote, models.Poll)
+            db.query(models.Vote, models.Poll, models.VoteResult)
             .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
             .filter(models.Vote.poll_id == models.Poll.id)
+            .filter(models.VoteResult.poll_id == models.Poll.id)
             .filter(
                 (models.Topic.id.in_(topic_ids))
                 | (models.Topic.parent_id.in_(topic_ids))
@@ -52,14 +57,18 @@ def get_votes_and_polls_by_politician_id(
         )
     else:
         votes_and_polls = (
-            db.query(models.Vote, models.Poll)
+            db.query(models.Vote, models.Poll, models.VoteResult)
             .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
             .filter(models.Vote.poll_id == models.Poll.id)
+            .filter(models.VoteResult.poll_id == models.Poll.id)
             .filter(models.Vote.vote != "no_show")
             .order_by(models.Poll.field_poll_date.desc())[
                 range_of_votes[0] : range_of_votes[1]
             ]
         )
+
+    for item in votes_and_polls:
+        item[1].__dict__["poll_passed"] = did_vote_pass(item[-1].__dict__)
 
     return votes_and_polls
 
@@ -203,3 +212,53 @@ def get_politician_media(abgeordnetenwatch_id: int):
     sorted_media_list = sorted(media_list, key=lambda d: d["timestamp"], reverse=True)
 
     return sorted_media_list
+
+
+def for_committee_topics__get_latest_parlament_period_id(db: Session, id: int):
+    try:
+        return (
+            db.query(models.ParliamentPeriod.id)
+            .filter(models.CandidacyMandate.politician_id == id)
+            .filter(
+                models.CandidacyMandate.parliament_period_id
+                == models.ParliamentPeriod.id
+            )
+            .order_by(models.ParliamentPeriod.start_date_period.desc())
+            .filter(models.ParliamentPeriod.id == models.Committee.field_legislature_id)
+            .first()["id"]
+        )
+    except TypeError:
+        return None
+
+
+def get_topic_ids_by_field_legislature_id(
+    db: Session, politician_id: int, field_legislature_id: int
+):
+    return (
+        db.query(models.Topic.id, models.Topic.parent_id)
+        .filter(models.CandidacyMandate.politician_id == politician_id)
+        .filter(
+            models.CommitteeMembership.candidacy_mandate_id
+            == models.CandidacyMandate.id
+        )
+        .filter(models.CommitteeMembership.committee_id == models.Committee.id)
+        .filter(models.Committee.field_legislature_id == field_legislature_id)
+        .filter(models.Committee.id == models.CommitteeHasTopic.committee_id)
+        .filter(models.CommitteeHasTopic.topic_id == models.Topic.id)
+        .distinct(models.Topic.id)
+        .all()
+    )
+
+
+def get_latest_committee_topics_by_politician_id(db: Session, id: int) -> List:
+    latest_parlament_period_id = for_committee_topics__get_latest_parlament_period_id(
+        db, id
+    )
+    if latest_parlament_period_id:
+        raw_topic_data = get_topic_ids_by_field_legislature_id(
+            db, id, latest_parlament_period_id
+        )
+        if raw_topic_data:
+            return transform_topics_dict_to_minimal_array(raw_topic_data)
+
+    return []
