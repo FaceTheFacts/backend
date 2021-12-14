@@ -30,7 +30,7 @@ def get_politicians_by_ids(db: Session, ids: List[int]):
 
 
 def get_votes_and_polls_by_politician_id(
-        db: Session, politician_id: int, range_of_votes: tuple, topic_ids: List[int] = None
+    db: Session, politician_id: int, range_of_votes: tuple, topic_ids: List[int] = None
 ):
     candidacy_mandate_ids = get_candidacy_mandate_ids_by_politician_id(
         db, politician_id
@@ -39,31 +39,31 @@ def get_votes_and_polls_by_politician_id(
     if topic_ids:
         votes_and_polls = (
             db.query(models.Vote, models.Poll, models.VoteResult)
-                .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
-                .filter(models.Vote.poll_id == models.Poll.id)
-                .filter(models.VoteResult.poll_id == models.Poll.id)
-                .filter(
+            .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
+            .filter(models.Vote.poll_id == models.Poll.id)
+            .filter(models.VoteResult.poll_id == models.Poll.id)
+            .filter(
                 (models.Topic.id.in_(topic_ids))
                 | (models.Topic.parent_id.in_(topic_ids))
             )
-                .filter(
+            .filter(
                 (models.PollHasTopic.topic_id == models.Topic.id)
                 & (models.Poll.id == models.PollHasTopic.poll_id)
             )
-                .filter(models.Vote.vote != "no_show")
-                .order_by(models.Poll.field_poll_date.desc())[
-            range_of_votes[0]: range_of_votes[1]
+            .filter(models.Vote.vote != "no_show")
+            .order_by(models.Poll.field_poll_date.desc())[
+                range_of_votes[0] : range_of_votes[1]
             ]
         )
     else:
         votes_and_polls = (
             db.query(models.Vote, models.Poll, models.VoteResult)
-                .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
-                .filter(models.Vote.poll_id == models.Poll.id)
-                .filter(models.VoteResult.poll_id == models.Poll.id)
-                .filter(models.Vote.vote != "no_show")
-                .order_by(models.Poll.field_poll_date.desc())[
-            range_of_votes[0]: range_of_votes[1]
+            .filter(models.Vote.mandate_id.in_(candidacy_mandate_ids))
+            .filter(models.Vote.poll_id == models.Poll.id)
+            .filter(models.VoteResult.poll_id == models.Poll.id)
+            .filter(models.Vote.vote != "no_show")
+            .order_by(models.Poll.field_poll_date.desc())[
+                range_of_votes[0] : range_of_votes[1]
             ]
         )
 
@@ -77,8 +77,8 @@ def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int
     data_list = []
     data = (
         db.query(models.CandidacyMandate.id)
-            .filter(models.CandidacyMandate.politician_id == id)
-            .all()
+        .filter(models.CandidacyMandate.politician_id == id)
+        .all()
     )
     for datum in data:
         data_list.append(datum["id"])
@@ -89,13 +89,13 @@ def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int
 def get_sidejobs_by_politician_id(db: Session, id: int):
     sidejobs = (
         db.query(models.Sidejob)
-            .filter(models.Politician.id == id)
-            .filter(models.Politician.id == models.CandidacyMandate.politician_id)
-            .filter(
+        .filter(models.Politician.id == id)
+        .filter(models.Politician.id == models.CandidacyMandate.politician_id)
+        .filter(
             models.CandidacyMandate.id == models.SidejobHasMandate.candidacy_mandate_id
         )
-            .filter(models.SidejobHasMandate.sidejob_id == models.Sidejob.id)
-            .all()
+        .filter(models.SidejobHasMandate.sidejob_id == models.Sidejob.id)
+        .all()
     )
 
     for item in sidejobs:
@@ -109,19 +109,19 @@ def get_sidejobs_by_politician_id(db: Session, id: int):
 def get_politicians_by_partial_name(db: Session, partial_name: str):
     return (
         db.query(models.Politician)
-            .where(models.Politician.label.ilike(f"%{partial_name}%"))
-            .all()[:10]
+        .where(models.Politician.label.ilike(f"%{partial_name}%"))
+        .all()[:10]
     )
 
 
 def get_politicians_by_zipcode(db: Session, zipcode: int):
     politicians = (
         db.query(models.Politician)
-            .filter(models.ZipCode.zip_code == str(zipcode))
-            .filter(models.ElectoralData.constituency_id == models.ZipCode.constituency_id)
-            .filter(models.CandidacyMandate.electoral_data_id == models.ElectoralData.id)
-            .filter(models.Politician.id == models.CandidacyMandate.politician_id)
-            .all()[:10]
+        .filter(models.ZipCode.zip_code == str(zipcode))
+        .filter(models.ElectoralData.constituency_id == models.ZipCode.constituency_id)
+        .filter(models.CandidacyMandate.electoral_data_id == models.ElectoralData.id)
+        .filter(models.Politician.id == models.CandidacyMandate.politician_id)
+        .all()[:10]
     )
 
     return politicians
@@ -147,14 +147,14 @@ def get_politician_by_image_scanner(db: Session, search_text: str):
 def get_latest_bundestag_polls(db: Session):
     return (
         db.query(models.Poll)
-            .filter(
+        .filter(
             or_(
                 models.Poll.field_legislature_id == 111,
                 models.Poll.field_legislature_id == 132,
             )
         )
-            .order_by(models.Poll.field_poll_date.desc())
-            .all()
+        .order_by(models.Poll.field_poll_date.desc())
+        .all()
     )
 
 
@@ -184,8 +184,8 @@ def get_polls_total(db: Session):
 def get_poll_results_by_poll_id(db: Session, poll_id: int) -> list:
     return (
         db.query(models.PollResultPerFraction)
-            .filter(models.PollResultPerFraction.poll_id == poll_id)
-            .all()
+        .filter(models.PollResultPerFraction.poll_id == poll_id)
+        .all()
     )
 
 
@@ -218,24 +218,29 @@ def for_committee_topics__get_latest_parlament_period_id(db: Session, id: int):
     try:
         return (
             db.query(models.ParliamentPeriod.id)
-                .filter(models.CandidacyMandate.politician_id == id)
-                .filter(
+            .filter(models.CandidacyMandate.politician_id == id)
+            .filter(
                 models.CandidacyMandate.parliament_period_id
                 == models.ParliamentPeriod.id
             )
-                .order_by(models.ParliamentPeriod.start_date_period.desc())
-                .filter(models.ParliamentPeriod.id == models.Committee.field_legislature_id)
-                .first()["id"]
+            .order_by(models.ParliamentPeriod.start_date_period.desc())
+            .filter(models.ParliamentPeriod.id == models.Committee.field_legislature_id)
+            .first()["id"]
         )
     except TypeError:
         return None
 
 
-def get_topic_ids_by_field_legislature_id(db: Session, politician_id: int, field_legislature_id: int):
+def get_topic_ids_by_field_legislature_id(
+    db: Session, politician_id: int, field_legislature_id: int
+):
     return (
         db.query(models.Topic.id, models.Topic.parent_id)
         .filter(models.CandidacyMandate.politician_id == politician_id)
-        .filter(models.CommitteeMembership.candidacy_mandate_id == models.CandidacyMandate.id)
+        .filter(
+            models.CommitteeMembership.candidacy_mandate_id
+            == models.CandidacyMandate.id
+        )
         .filter(models.CommitteeMembership.committee_id == models.Committee.id)
         .filter(models.Committee.field_legislature_id == field_legislature_id)
         .filter(models.Committee.id == models.CommitteeHasTopic.committee_id)

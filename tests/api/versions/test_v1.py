@@ -88,32 +88,11 @@ def test_read_politician():
 
     def test_topic_ids_of_latest_committee():
         response = client.get("/v1/politician/79475")
-        expected_ids = [
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16,
-            17,
-            18,
-            19,
-            20,
-            21,
-            22,
-            23,
-            28,
-        ]
+        expected_ids = [11, 16, 19, 20]
+        assert expected_ids == response.json()["topic_ids_of_latest_committee"]
+
+        response = client.get("/v1/politician/119742")
+        expected_ids = []
         assert expected_ids == response.json()["topic_ids_of_latest_committee"]
 
     random_test()
