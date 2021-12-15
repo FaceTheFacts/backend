@@ -33,6 +33,9 @@ jobs:
           DATABASE_USER: ${{ secrets.DATABASE_USER}}
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD}}
           DATABASE_NAME: ${{ secrets.DATABASE_NAME}}
+          POLITRACK_API_URL: ${{ secrets.POLITRACK_API_URL}}
+          POLITRACK_USERNAME: ${{ secrets.POLITRACK_USERNAME}}
+          POLITRACK_SECRET_PASSWORD: ${{ secrets.POLITRACK_SECRET_PASSWORD}}
         run: poetry run pytest
 
   cd:
