@@ -1,6 +1,6 @@
 import urllib.request
 from urllib.error import HTTPError
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from src.api.utils.exceptions import OCCUPATIONS
 from src.db import models
@@ -103,3 +103,31 @@ def _shorten_occupation(o: str):
     # ---
     else:
         return o
+
+
+# Converts a list of items containing "id" and "parent_id" to a single list of id's
+# If an item in the dict has a parent_id, return the parent_id to the list, instead of the item's id.
+def transform_topics_dict_to_minimal_array(data: List[Dict[str, int or None]]) -> List:
+    data_list = []
+    if data:
+        for item in data:
+            id = item["id"]
+            parent_id = item["parent_id"]
+
+            if parent_id:
+                if parent_id not in data_list:
+                    data_list.append(parent_id)
+                else:
+                    continue
+
+            if id not in data_list:
+                data_list.append(id)
+
+    return data_list
+
+
+def did_vote_pass(vote_result: Dict):
+    vote_types = ["yes", "no", "no_show", "abstain"]
+    total = sum(vote_result[vote_type] for vote_type in vote_types)
+
+    return vote_result["yes"] / total > 0.5

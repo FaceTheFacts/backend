@@ -30,7 +30,7 @@ def test_read_politician():
         assert response.json()["field_title"] is None
 
     def specific_elements_test1():
-        # Testing statistic_questions and statistic_questions_answered
+        # Testing past_party, statistic_questions and statistic_questions_answered
         response = client.get("/v1/politician/176101")
         assert response.status_code == 200
         assert type(response.json()) is dict
@@ -86,6 +86,15 @@ def test_read_politician():
         for item in response_items:
             assert item in response.json()["occupations"]
 
+    def test_topic_ids_of_latest_committee():
+        response = client.get("/v1/politician/79475")
+        expected_ids = [11, 16, 19, 20]
+        assert expected_ids == response.json()["topic_ids_of_latest_committee"]
+
+        response = client.get("/v1/politician/119742")
+        expected_ids = []
+        assert expected_ids == response.json()["topic_ids_of_latest_committee"]
+
     random_test()
     specific_elements_test1()
     specific_elements_test_2()
@@ -93,6 +102,8 @@ def test_read_politician():
     votes_and_polls_test()
     politician_id_not_found()
     occupations_test()
+    test_topic_ids_of_latest_committee()
+
 
 
 def test_read_top_candidates():
@@ -295,10 +306,20 @@ def test_read_politician_positions():
                 "id": 1281775921,
                 "position": "neutral",
                 "reason": "Das hohe Verkehrsaufkommen lässt eine höhere Durchschnittsgeschwindigkeit nach meinem Gefühl nicht zu. das ist rein subjketiv. ",
+                "position_statement": {
+                    "statement": "Auf den Autobahnen soll ein Tempolimit von 130km/h eingeführt werden."
+                },
             }
         )
         assert response.json()["positions"].__contains__(
-            {"id": 1281775926, "position": "neutral", "reason": None}
+            {
+                "id": 1281775926,
+                "position": "neutral",
+                "reason": None,
+                "position_statement": {
+                    "statement": "Der öffentlich-rechtliche Rundfunk soll sich auf Information und regionale Berichterstattung konzentrieren."
+                },
+            }
         )
 
     selected_values_test()
@@ -315,7 +336,7 @@ def test_read_politician_sidejobs():
                 "label": "Vortrag (Sommergespräch)",
                 "income_level": "7.000 € bis 15.000 €",
                 "interval": None,
-                "data_change_date": "2021-09-10",
+                "created": "2021-09-10",
                 "sidejob_organization": {
                     "id": 2668,
                     "entity_type": "sidejob_organization",
@@ -328,7 +349,7 @@ def test_read_politician_sidejobs():
                 "label": "Vortrag - Executive Dinner, Donner & Reuschel AG, Hamburg",
                 "income_level": "7.000 € bis 15.000 €",
                 "interval": None,
-                "data_change_date": "2021-08-05",
+                "created": "2021-08-05",
                 "sidejob_organization": {
                     "id": 4086,
                     "entity_type": "sidejob_organization",
@@ -341,7 +362,7 @@ def test_read_politician_sidejobs():
                 "label": "Online-Vortrag - Keynote Human-Works-Kongress",
                 "income_level": "3.500 € bis 7.000 €",
                 "interval": None,
-                "data_change_date": "2021-08-05",
+                "created": "2021-08-05",
                 "sidejob_organization": {
                     "id": 4087,
                     "entity_type": "sidejob_organization",
@@ -451,6 +472,7 @@ def test_read_politician_votes():
                     "label": "Unternehmerische Sorgfaltspflichten in Lieferketten",
                     "field_intro": '<p>Der Gesetzentwurf der Bundesregierung soll die Sicherung von Menschenrechten und Umweltstandards für deutsche Unternehmen im internationalen Handel bedeuten. Lieferketten sollen nachweislich fair sein.</p>\r\n\r\n<p>Der Gesetzentwurf wurde mit den Stimmen der Fraktionen CDU/CSU, SPD und B90/DIE GRÜNEN angenommen. Ablehnung erhielt der Entwurf von den Fraktionen AfD und FDP. Entgegen des Fraktionsdrucks stimmten auch 10 Abgeordnete der CDU mit NEIN, darunter <a href="https://www.abgeordnetenwatch.de/profile/axel-eduard-fischer">Axel Eduard Fischer</a>, <a href="https://www.abgeordnetenwatch.de/profile/hans-juergen-irmer">Hans-Jürgen Irmer</a> und <a href="https://www.abgeordnetenwatch.de/profile/andreas-laemmel">Andreas Lämmel</a>. Die Fraktion DIE LINKE enthielt sich, mit Ausnahme von <a href="https://www.abgeordnetenwatch.de/profile/ulla-jelpke">Ulla Jelpke</a>, die mit JA stimmte. Insgesamt stimmten 412 Abgeordnete für den Antrag und 159 Abgeordnete dagegen.</p>\r\n\r\n<p>&nbsp;</p>\r\n',
                     "field_poll_date": "2021-06-11",
+                    "poll_passed": True,
                 },
             },
         ]

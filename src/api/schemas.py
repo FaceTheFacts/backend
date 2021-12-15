@@ -46,6 +46,7 @@ class Poll(FTFBaseModel):
     label: Optional[str]
     field_intro: Optional[str]
     field_poll_date: date
+    poll_passed: bool
 
 
 # -----------------------
@@ -74,10 +75,15 @@ class PoliticianToConstituencies(FTFBaseModel):
 
 
 # -----------------------
+class PositionStateMent(FTFBaseModel):
+    statement: str
+
+
 class Position(FTFBaseModel):
     id: int
     position: str
     reason: Optional[str]
+    position_statement: PositionStateMent
 
 
 class PoliticianToPosition(FTFBaseModel):
@@ -99,7 +105,7 @@ class Sidejob(FTFBaseModel):
     label: str
     income_level: Optional[str]
     interval: Optional[str]
-    data_change_date: date
+    created: date
     sidejob_organization: Optional[SidejobOrganization]
 
 
@@ -159,6 +165,7 @@ class Politician(FTFBaseModel):
     abgeordnetenwatch_url: Optional[str]
     weblinks: Optional[List]
     votes_and_polls: Optional[List[VoteAndPoll]]
+    topic_ids_of_latest_committee: Optional[List[int]]
 
 
 class PoliticianSearch(FTFBaseModel):
