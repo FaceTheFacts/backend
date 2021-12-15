@@ -223,3 +223,20 @@ class PoliticianMedia(BaseModel):
     timestamp: int
     dateStart: datetime
     dateEnd: datetime
+
+
+class PolitrackImage(FTFBaseModel):
+    url: str
+    title: Optional[str]
+    height: Optional[int]
+    width: Optional[int]
+
+
+class PolitrackNewsArticle(FTFBaseModel):
+    id: str
+    highlight: Optional[str]
+    images: Optional[List[PolitrackImage]]
+    published: datetime
+    source: Optional[str]
+    title: str
+    url: str
