@@ -6,7 +6,7 @@ import requests
 def generate_authenticated_header():
     def authenticate():
         resp = requests.post(
-            os.environ["API_URL"] + "/auth",
+            os.environ["POLITRACK_API_URL"] + "/auth",
             json={
                 "username": os.environ["POLITRACK_USERNAME"],
                 "password": os.environ["POLITRACK_SECRET_PASSWORD"],

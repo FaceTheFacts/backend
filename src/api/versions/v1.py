@@ -1,13 +1,16 @@
 # std
+import os
 from typing import List
 
 # third-party
-from fastapi import Depends, Query, APIRouter
+import requests
+from fastapi import Depends, Query, APIRouter, HTTPException
 from fastapi_pagination import Page, add_pagination, paginate
 
 # local
 import src.api.crud as crud
 import src.api.schemas as schemas
+from src.api.utils import politrack
 from src.api.utils.politician import get_occupations
 from src.db import models
 from src.db.connection import Session
@@ -150,10 +153,20 @@ def read_politician_media(id: int):
 
 
 @router.get("/politician/{id}/news")
-def read_politician_media(id: int):
-    politician_media = crud.get_politician_media(id)
-    check_entity_not_found(politician_media, "Politician Media")
-    return politician_media
+def read_politician_news(id: int):
+    header = politrack.generate_authenticated_header()
+    response = requests.get(
+        os.environ["POLITRACK_API_URL"] + f"/v1/articles/{id}", headers=header
+    )
+    if response.status_code == 200:
+        articles = response.json()["articles"]
+        check_entity_not_found(articles, "Politrack News Articles")
+        return articles
+    else:
+        detail = "Unknown External API Error"
+        if response.text:
+            detail = response.text
+        raise HTTPException(status_code=response.status_code, detail=detail)
 
 
 # https://uriyyo-fastapi-pagination.netlify.app/
