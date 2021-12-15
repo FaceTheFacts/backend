@@ -147,7 +147,7 @@ def read_politician_media(id: int):
     return politician_media
 
 
-@router.get("/politician/{id}/news")
+@router.get("/politician/{id}/news", response_model=Page[schemas.PolitrackNewsArticle])
 def read_politician_news(id: int):
     header = politrack.generate_authenticated_header()
     response = requests.get(
@@ -156,7 +156,7 @@ def read_politician_news(id: int):
     if response.status_code == 200:
         articles = response.json()["articles"]
         check_entity_not_found(articles, "Politrack News Articles")
-        return articles
+        return paginate(articles)
     else:
         detail = "Unknown External API Error"
         if response.text:
