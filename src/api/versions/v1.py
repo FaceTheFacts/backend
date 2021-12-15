@@ -144,5 +144,12 @@ def read_politician_media(id: int):
     return politician_media
 
 
+@router.get("/politician/{id}/news")
+def read_politician_media(id: int):
+    politician_media = crud.get_politician_media(id)
+    check_entity_not_found(politician_media, "Politician Media")
+    return politician_media
+
+
 # https://uriyyo-fastapi-pagination.netlify.app/
 add_pagination(router)
