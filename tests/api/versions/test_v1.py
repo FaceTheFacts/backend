@@ -618,3 +618,66 @@ def test_read_politician_media():
 
     selected_values_test()
     test_response_order()
+
+
+def test_read_politician_news():
+    def values_test():
+        response = client.get("/v1/politician/145862/news")
+        expected_items = [
+            {
+                "id": "024810dce7f23322cef7801e4e13402cc8956af7d2d9c2b77260a7723c2bb89b",
+                "highlight": None,
+                "images": [],
+                "published": "2021-08-13T12:58:54.705000",
+                "source": "tagesschau",
+                "title": "Wahlrechtsreform: Viel Lärm um wenig",
+                "url": "https://www.tagesschau.de/inland/btw21/eilantrag-wahlrechtsreform-103.html",
+            },
+            {
+                "id": "06f776204f16e52e90aafbe6553c5782acdd494a00c0c5f4dbb20dffd016ede5",
+                "highlight": None,
+                "images": [
+                    {
+                        "url": "https://bilder.bild.de/fotos-skaliert/von-der-polizei-erwischt-gruenen-politikerin-beschaedigt-wahlplakate-von-fdp-und-cdu-b5084ae811c14489a90a0fbef6ac9718-77564960/20,c=0,h=720.bild.jpg",
+                        "title": None,
+                        "height": 720,
+                        "width": 1280,
+                    },
+                    {
+                        "url": "https://bilder.bild.de/fotos-skaliert/von-der-polizei-erwischt-gruenen-politikerin-beschaedigt-wahlplakate-von-fdp-und-cdu-b5084ae811c14489a90a0fbef6ac9718-77564998/20,c=0,h=658.bild.jpg",
+                        "title": None,
+                        "height": 658,
+                        "width": 658,
+                    },
+                    {
+                        "url": "https://bilder.bild.de/fotos-skaliert/von-der-polizei-erwischt-gruenen-politikerin-beschaedigt-wahlplakate-von-fdp-und-cdu-b5084ae811c14489a90a0fbef6ac9718-77565032/20,c=0,h=1026.bild.jpg",
+                        "title": None,
+                        "height": 1026,
+                        "width": 864,
+                    },
+                ],
+                "published": "2021-09-02T16:38:20",
+                "source": "bild",
+                "title": "Von der Polizei erwischt: Grünen-Politikerin beschädigt Wahlplakate von FDP und CDU",
+                "url": "https://www.bild.de/politik/inland/politik/gruenen-politikerin-soll-wahlplakate-von-fdp-und-cdu-beschmiert-haben-77563930.bild.html",
+            },
+        ]
+
+        for item in expected_items:
+            assert item in response.json()["items"]
+
+    def wrong_input_test():
+        response = client.get("/v1/politician/z/news")
+        assert response.status_code == 422
+        assert response.json() == {
+            "detail": [
+                {
+                    "loc": ["path", "id"],
+                    "msg": "value is not a valid integer",
+                    "type": "type_error.integer",
+                }
+            ]
+        }
+
+    wrong_input_test()
+    values_test()
