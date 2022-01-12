@@ -109,6 +109,7 @@ def _shorten_occupation(o: str):
 # If an item in the dict has a parent_id, return the parent_id to the list, instead of the item's id.
 def transform_topics_dict_to_minimal_array(data: List[Dict[str, int or None]]) -> List:
     data_list = []
+
     if data:
         for item in data:
             id = item["id"]
@@ -120,9 +121,8 @@ def transform_topics_dict_to_minimal_array(data: List[Dict[str, int or None]]) -
                 else:
                     continue
 
-            if id not in data_list:
+            if id not in data_list and not parent_id:
                 data_list.append(id)
-
     return data_list
 
 
