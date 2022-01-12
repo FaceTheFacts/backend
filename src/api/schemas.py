@@ -224,12 +224,10 @@ class PollResult(FTFBaseModel):
     total_no_show: int
 
 
-class PoliticianMedia(BaseModel):
+class PoliticianSpeech(BaseModel):
     videoFileURI: Optional[str]
-    creator: str
-    timestamp: int
-    dateStart: datetime
-    dateEnd: datetime
+    title: str
+    date: str
 
 
 class PolitrackImage(FTFBaseModel):
