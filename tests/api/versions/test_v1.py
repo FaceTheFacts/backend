@@ -204,7 +204,7 @@ def test_read_top_candidates():
                     "border_color": None,
                 },
             },
-            "image_url": None,
+            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/108379.jpg",
         },
         {
             "id": 135302,
@@ -600,45 +600,29 @@ def test_read_poll_details():
 
 def test_read_politician_media():
     def selected_values_test():
-        response = client.get("/v1/politician/79454/media")
+        response = client.get("/v1/politician/119742/speeches")
         response_items = [
             {
-                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7395037/7395037_h264_720_400_2000kb_baseline_de_2192.mp4",
-                "creator": "Deutscher Bundestag",
-                "timestamp": 1571292678,
-                "dateStart": "2019-10-17T08:11:18",
-                "dateEnd": "2019-10-17T08:19:33",
+                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7531965/7531965_h264_720_400_2000kb_baseline_de_2192.mp4",
+                "title": "Vereinbarte Debatte zur Situation in Deutschland",
+                "date": "2021-09-07T08:24:16",
             },
             {
-                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7322370/7322370_h264_720_400_2000kb_baseline_de_2192.mp4",
-                "creator": "Deutscher Bundestag",
-                "timestamp": 1548929771,
-                "dateStart": "2019-01-31T11:16:11",
-                "dateEnd": "2019-01-31T11:25:03",
+                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7531848/7531848_h264_720_400_2000kb_baseline_de_2192.mp4",
+                "title": "Regierungserklärung der BKn zur Lage in Afghanistan, Bundeswehreinsatz zur Evakuierung aus Afghanistan",
+                "date": "2021-08-25T10:54:47",
             },
             {
-                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7181105/7181105_h264_720_400_2000kb_baseline_de_2192.mp4",
-                "creator": "Deutscher Bundestag",
-                "timestamp": 1513087686,
-                "dateStart": "2017-12-12T15:08:06",
-                "dateEnd": "2017-12-12T15:12:59",
+                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7530596/7530596_h264_720_400_2000kb_baseline_de_2192.mp4",
+                "title": "Regierungserklärung zum Europäischen Rat",
+                "date": "2021-06-24T07:37:40",
             },
         ]
 
         for item in response_items:
             assert item in response.json()
 
-    def test_response_order():
-        response = client.get("/v1/politician/66924/media")
-
-        for index in range(len(response.json()) - 1):
-            assert (
-                response.json()[index]["timestamp"]
-                > response.json()[index + 1]["timestamp"]
-            )
-
     selected_values_test()
-    test_response_order()
 
 
 def test_read_politician_news():
