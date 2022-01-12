@@ -189,29 +189,25 @@ def get_poll_results_by_poll_id(db: Session, poll_id: int) -> list:
     )
 
 
-def get_politician_media(abgeordnetenwatch_id: int):
+def get_politician_speech(abgeordnetenwatch_id: int):
     raw_data = load_json_from_url(
-        f"https://de.openparliament.tv/api/v1/search/media?abgeordnetenwatchID={abgeordnetenwatch_id}"
+        f"https://de.openparliament.tv/api/v1/search/media?abgeordnetenwatchID={abgeordnetenwatch_id}&sort=date-desc"
     )
 
     if raw_data["meta"]["results"]["total"] == 0:
         return None
 
-    media_list = []
+    speech_list = []
     for item in raw_data["data"]:
         attributes = item["attributes"]
-        media_item = {
+        speech_item = {
             "videoFileURI": attributes["videoFileURI"],
-            "creator": attributes["creator"],
-            "timestamp": attributes["timestamp"],
-            "dateStart": attributes["dateStart"],
-            "dateEnd": attributes["dateEnd"],
+            "title": item["relationships"]["agendaItem"]["data"]["attributes"]["title"],
+            "date": attributes["dateStart"],
         }
-        media_list.append(media_item)
+        speech_list.append(speech_item)
 
-    sorted_media_list = sorted(media_list, key=lambda d: d["timestamp"], reverse=True)
-
-    return sorted_media_list
+    return speech_list
 
 
 def for_committee_topics__get_latest_parlament_period_id(db: Session, id: int):
