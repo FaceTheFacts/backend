@@ -64,6 +64,47 @@ def read_politician(
     return politician
 
 
+@router.get("/politicians/", response_model=List[schemas.Politician])
+def read_politicians(
+    ids: List[int] = Query(None),
+    db: Session = Depends(get_db),
+    sidejobs_start: int = None,
+    sidejobs_end: int = None,
+    votes_start: int = None,
+    votes_end: int = 5,
+):
+    politicians = [None] * len(ids)
+    listIndex = 0
+    for id in ids:
+        politician = crud.get_entity_by_id(db, models.Politician, id)
+        check_entity_not_found(politician, "Politician")
+
+        politician.__dict__["occupations"] = get_occupations(
+            politician.__dict__["occupation"], id
+        )
+
+        sidejobs = crud.get_sidejobs_by_politician_id(db, id)[
+            sidejobs_start:sidejobs_end
+        ]
+        politician.__dict__["sidejobs"] = sidejobs
+
+        votes_and_polls = crud.get_votes_and_polls_by_politician_id(
+            db, id, (votes_start, votes_end)
+        )
+        politician.__dict__["votes_and_polls"] = votes_and_polls
+
+        topic_ids_of_latest_committee = (
+            crud.get_latest_committee_topics_by_politician_id(db, id)
+        )
+        politician.__dict__[
+            "topic_ids_of_latest_committee"
+        ] = topic_ids_of_latest_committee
+        politicians[listIndex] = politician
+        listIndex += 1
+
+    return politicians
+
+
 @router.get("/top-candidates", response_model=List[schemas.PoliticianSearch])
 def read_top_candidates(db: Session = Depends(get_db)):
     top_candidates_ids = [
