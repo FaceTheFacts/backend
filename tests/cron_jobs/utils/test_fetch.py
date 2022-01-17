@@ -54,10 +54,10 @@ def test_fetch_entity_count():
     count_constituency()
 
 
-def test_fetch_missing_entity():
-    def test_sidejob_table():
-        assert fetch_missing_entity("sidejobs", Sidejob) == print(
-            "Table already updated"
-        )
+# def test_fetch_missing_entity():
+#     def test_sidejob_table():
+#         assert fetch_missing_entity("sidejobs", Sidejob) == print(
+#             "Table already updated"
+#         )
 
-    test_sidejob_table()
+#     test_sidejob_table()
