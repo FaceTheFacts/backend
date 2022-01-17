@@ -600,7 +600,7 @@ def test_read_poll_details():
 
 def test_read_politician_media():
     def selected_values_test():
-        response = client.get("/v1/politician/119742/speeches")
+        response = client.get("/v1/politician/119742/speeches?page=1&size=3")
         response_items = [
             {
                 "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7531965/7531965_h264_720_400_2000kb_baseline_de_2192.mp4",
@@ -620,7 +620,7 @@ def test_read_politician_media():
         ]
 
         for item in response_items:
-            assert item in response.json()
+            assert item in response.json()["items"]
 
     selected_values_test()
 
