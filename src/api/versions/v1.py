@@ -145,11 +145,11 @@ def read_poll_details(id: int, db: Session = Depends(get_db)):
     return poll_results
 
 
-@router.get("/politician/{id}/speeches", response_model=List[schemas.PoliticianSpeech])
+@router.get("/politician/{id}/speeches", response_model=Page[schemas.PoliticianSpeech])
 def read_politician_speech(id: int):
     politician_speech = crud.get_politician_speech(id)
     check_entity_not_found(politician_speech, "Politician Speech")
-    return politician_speech
+    return paginate(politician_speech)
 
 
 @router.get("/politician/{id}/news", response_model=Page[schemas.PolitrackNewsArticle])
