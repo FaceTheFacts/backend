@@ -56,13 +56,13 @@ def read_politicians(
     votes_end: int = 5,
 ):
     politicians = [None] * len(ids)
-    listIndex = 0
+    list_index = 0
     for id in ids:
         politician = get_politician_info(
             id, db, sidejobs_start, sidejobs_end, votes_start, votes_end
         )
-        politicians[listIndex] = politician
-        listIndex += 1
+        politicians[list_index] = politician
+        list_index += 1
     return politicians
 
 
