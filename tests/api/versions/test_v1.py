@@ -600,29 +600,31 @@ def test_read_poll_details():
 
 def test_read_politician_media():
     def selected_values_test():
-        response = client.get("/v1/politician/119742/speeches")
+        response = client.get("/v1/politician/119742/speeches?page=5")
         response_items = [
             {
-                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7531965/7531965_h264_720_400_2000kb_baseline_de_2192.mp4",
-                "title": "Vereinbarte Debatte zur Situation in Deutschland",
-                "date": "2021-09-07T08:24:16",
+                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7227221/7227221_h264_720_400_2000kb_baseline_de_2192.mp4",
+                "title": "Bundeskanzlerin und Bundeskanzleramt",
+                "date": "2018-05-16T07:56:56",
             },
             {
-                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7531848/7531848_h264_720_400_2000kb_baseline_de_2192.mp4",
-                "title": "Regierungserklärung der BKn zur Lage in Afghanistan, Bundeswehreinsatz zur Evakuierung aus Afghanistan",
-                "date": "2021-08-25T10:54:47",
-            },
-            {
-                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7530596/7530596_h264_720_400_2000kb_baseline_de_2192.mp4",
-                "title": "Regierungserklärung zum Europäischen Rat",
-                "date": "2021-06-24T07:37:40",
+                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7211358/7211358_h264_720_400_2000kb_baseline_de_2192.mp4",
+                "title": "Generalaussprache (einschl. Kultur sowie Digitales)",
+                "date": "2018-03-21T13:31:50",
             },
         ]
 
         for item in response_items:
-            assert item in response.json()
+            assert item in response.json()["items"]
+        assert response.json()["is_last_page"] is True
+
+    def selected_invalid_values_test():
+        response = client.get("/v1/politician/119742/speeches?page=6")
+        expected = {"detail": "Politician Speech not found"}
+        assert response.json() == expected
 
     selected_values_test()
+    selected_invalid_values_test()
 
 
 def test_read_politician_news():

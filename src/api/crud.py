@@ -1,11 +1,10 @@
-import json
-import urllib.request
 from typing import List
+import math
 
 # third-party
 from sqlalchemy.orm import Session
 
-from sqlalchemy import text, or_, and_
+from sqlalchemy import or_
 
 # local
 import src.db.models as models
@@ -189,12 +188,17 @@ def get_poll_results_by_poll_id(db: Session, poll_id: int) -> list:
     )
 
 
-def get_politician_speech(abgeordnetenwatch_id: int):
+def get_politician_speech(abgeordnetenwatch_id: int, page: int):
     raw_data = load_json_from_url(
-        f"https://de.openparliament.tv/api/v1/search/media?abgeordnetenwatchID={abgeordnetenwatch_id}&sort=date-desc"
+        f"https://de.openparliament.tv/api/v1/search/media?abgeordnetenwatchID={abgeordnetenwatch_id}&page={page}&sort=date-desc"
     )
 
-    if raw_data["meta"]["results"]["total"] == 0:
+    total = raw_data["meta"]["results"]["total"]
+    if total == 0:
+        return None
+    # openparliament.tv/api retrieves 10 data per a request
+    last_page = math.ceil(total / 10)
+    if last_page < page:
         return None
 
     speech_list = []
@@ -207,7 +211,17 @@ def get_politician_speech(abgeordnetenwatch_id: int):
         }
         speech_list.append(speech_item)
 
-    return speech_list
+    size = raw_data["meta"]["results"]["count"]
+    is_last_page = last_page == page
+
+    fetched_speeches = {
+        "items": speech_list,
+        "total": total,
+        "page": page,
+        "size": size,
+        "is_last_page": is_last_page,
+    }
+    return fetched_speeches
 
 
 def for_committee_topics__get_latest_parlament_period_id(db: Session, id: int):

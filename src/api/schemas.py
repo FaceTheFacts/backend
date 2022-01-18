@@ -230,6 +230,14 @@ class PoliticianSpeech(BaseModel):
     date: str
 
 
+class PoliticianSpeechData(BaseModel):
+    items: Optional[List[PoliticianSpeech]]
+    total: int
+    page: int
+    size: int
+    is_last_page: bool
+
+
 class PolitrackImage(FTFBaseModel):
     url: str
     title: Optional[str]
