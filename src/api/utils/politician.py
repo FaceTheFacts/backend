@@ -1,9 +1,23 @@
 import urllib.request
 from urllib.error import HTTPError
 from typing import List, Optional, Dict
+from fastapi import Depends
 
+# local
 from src.api.utils.exceptions import OCCUPATIONS
 from src.db import models
+import src.api.crud as crud
+from src.db import models
+from src.db.connection import Session
+from src.api.utils.error import check_entity_not_found
+
+# Dependency
+def get_db():
+    db = Session()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 def add_image_urls_to_politicians(politicians: List[models.Politician]):
@@ -131,3 +145,33 @@ def did_vote_pass(vote_result: Dict):
     total = sum(vote_result[vote_type] for vote_type in vote_types)
 
     return vote_result["yes"] / total > 0.5
+
+
+def get_politician_info(
+    id: int,
+    db: Session = Depends(get_db),
+    sidejobs_start: int = None,
+    sidejobs_end: int = None,
+    votes_start: int = None,
+    votes_end: int = 5,
+):
+    politician = crud.get_entity_by_id(db, models.Politician, id)
+    check_entity_not_found(politician, "Politician")
+
+    politician.__dict__["occupations"] = get_occupations(
+        politician.__dict__["occupation"], id
+    )
+
+    sidejobs = crud.get_sidejobs_by_politician_id(db, id)[sidejobs_start:sidejobs_end]
+    politician.__dict__["sidejobs"] = sidejobs
+
+    votes_and_polls = crud.get_votes_and_polls_by_politician_id(
+        db, id, (votes_start, votes_end)
+    )
+    politician.__dict__["votes_and_polls"] = votes_and_polls
+
+    topic_ids_of_latest_committee = crud.get_latest_committee_topics_by_politician_id(
+        db, id
+    )
+    politician.__dict__["topic_ids_of_latest_committee"] = topic_ids_of_latest_committee
+    return politician

@@ -11,7 +11,7 @@ from fastapi_pagination import Page, add_pagination, paginate
 import src.api.crud as crud
 import src.api.schemas as schemas
 from src.api.utils import politrack
-from src.api.utils.politician import get_occupations
+from src.api.utils.politician import get_politician_info
 from src.db import models
 from src.db.connection import Session
 from src.api.utils.error import check_entity_not_found
@@ -41,27 +41,29 @@ def read_politician(
     votes_start: int = None,
     votes_end: int = 5,
 ):
-    politician = crud.get_entity_by_id(db, models.Politician, id)
-    check_entity_not_found(politician, "Politician")
-
-    politician.__dict__["occupations"] = get_occupations(
-        politician.__dict__["occupation"], id
+    return get_politician_info(
+        id, db, sidejobs_start, sidejobs_end, votes_start, votes_end
     )
 
-    sidejobs = crud.get_sidejobs_by_politician_id(db, id)[sidejobs_start:sidejobs_end]
-    politician.__dict__["sidejobs"] = sidejobs
 
-    votes_and_polls = crud.get_votes_and_polls_by_politician_id(
-        db, id, (votes_start, votes_end)
-    )
-    politician.__dict__["votes_and_polls"] = votes_and_polls
-
-    topic_ids_of_latest_committee = crud.get_latest_committee_topics_by_politician_id(
-        db, id
-    )
-    politician.__dict__["topic_ids_of_latest_committee"] = topic_ids_of_latest_committee
-
-    return politician
+@router.get("/politicians/", response_model=List[schemas.Politician])
+def read_politicians(
+    ids: List[int] = Query(None),
+    db: Session = Depends(get_db),
+    sidejobs_start: int = None,
+    sidejobs_end: int = None,
+    votes_start: int = None,
+    votes_end: int = 5,
+):
+    politicians = [None] * len(ids)
+    list_index = 0
+    for id in ids:
+        politician = get_politician_info(
+            id, db, sidejobs_start, sidejobs_end, votes_start, votes_end
+        )
+        politicians[list_index] = politician
+        list_index += 1
+    return politicians
 
 
 @router.get("/top-candidates", response_model=List[schemas.PoliticianSearch])
