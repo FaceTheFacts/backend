@@ -162,6 +162,43 @@ class TestCrudFunctions(unittest.TestCase):
 
         self.assertEqual(actual, expected)
 
+    # unittest
+    @patch(
+        "src.api.crud.load_json_from_url",
+        return_value={"meta": {"results": {"count": 0, "total": 0}}},
+    )
+    def test_get_politician_speech_empty(self, empty_data):
+        actual = crud.get_politician_speech(119742, 1)
+        expected = None
+        self.assertEqual(actual, expected)
+
+    @patch(
+        "src.api.crud.load_json_from_url",
+        return_value={
+            "meta": {"results": {"count": 1, "total": 10}},
+            "data": [
+                {
+                    "attributes": {"videoFileURI": "url_1", "dateStart": "2022-01-01"},
+                    "relationships": {
+                        "agendaItem": {"data": {"attributes": {"title": "title_1"}}}
+                    },
+                }
+            ],
+        },
+    )
+    def test_get_politician_speech(self, data):
+        actual = crud.get_politician_speech(119742, 1)
+        expected = {
+            "items": [
+                {"videoFileURI": "url_1", "title": "title_1", "date": "2022-01-01"}
+            ],
+            "total": 10,
+            "page": 1,
+            "size": 1,
+            "is_last_page": True,
+        }
+        self.assertEqual(actual, expected)
+
 
 if __name__ == "__main__":
     unittest.main()
