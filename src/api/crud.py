@@ -189,9 +189,9 @@ def get_poll_results_by_poll_id(db: Session, poll_id: int) -> list:
     )
 
 
-def get_politician_speech(abgeordnetenwatch_id: int):
+def get_politician_speech(abgeordnetenwatch_id: int, page: int):
     raw_data = load_json_from_url(
-        f"https://de.openparliament.tv/api/v1/search/media?abgeordnetenwatchID={abgeordnetenwatch_id}&sort=date-desc"
+        f"https://de.openparliament.tv/api/v1/search/media?abgeordnetenwatchID={abgeordnetenwatch_id}&page={page}&sort=date-desc"
     )
 
     if raw_data["meta"]["results"]["total"] == 0:
