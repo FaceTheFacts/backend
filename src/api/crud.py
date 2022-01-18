@@ -192,18 +192,16 @@ def get_politician_speech(abgeordnetenwatch_id: int, page: int):
     raw_data = load_json_from_url(
         f"https://de.openparliament.tv/api/v1/search/media?abgeordnetenwatchID={abgeordnetenwatch_id}&page={page}&sort=date-desc"
     )
-    count = raw_data["meta"]["results"]["count"]
-    total = raw_data["meta"]["results"]["total"]
 
+    total = raw_data["meta"]["results"]["total"]
     if total == 0:
         return None
-    speech_list = []
-    last_page_num = math.ceil(total / 10)
-    is_last_page = last_page_num == page
-
-    if last_page_num < page:
+    # openparliament.tv/api retrieves 10 data per a request
+    last_page = math.ceil(total / 10)
+    if last_page < page:
         return None
 
+    speech_list = []
     for item in raw_data["data"]:
         attributes = item["attributes"]
         speech_item = {
@@ -212,11 +210,15 @@ def get_politician_speech(abgeordnetenwatch_id: int, page: int):
             "date": attributes["dateStart"],
         }
         speech_list.append(speech_item)
+
+    size = raw_data["meta"]["results"]["count"]
+    is_last_page = last_page == page
+
     fetchedSpeeches = {
         "items": speech_list,
         "total": total,
         "page": page,
-        "size": count,
+        "size": size,
         "is_last_page": is_last_page,
     }
     return fetchedSpeeches
