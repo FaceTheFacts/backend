@@ -214,14 +214,14 @@ def get_politician_speech(abgeordnetenwatch_id: int, page: int):
     size = raw_data["meta"]["results"]["count"]
     is_last_page = last_page == page
 
-    fetchedSpeeches = {
+    fetched_speeches = {
         "items": speech_list,
         "total": total,
         "page": page,
         "size": size,
         "is_last_page": is_last_page,
     }
-    return fetchedSpeeches
+    return fetched_speeches
 
 
 def for_committee_topics__get_latest_parlament_period_id(db: Session, id: int):
