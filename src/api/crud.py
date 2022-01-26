@@ -272,3 +272,29 @@ def get_latest_committee_topics_by_politician_id(db: Session, id: int) -> List:
             return transform_topics_dict_to_minimal_array(raw_topic_data)
 
     return []
+
+
+def get_politician_by_constituency(db: Session, id: int) -> List:
+    resultList = []
+    raw_data = (
+        db.query(models.CandidacyMandate)
+        .filter(models.CandidacyMandate.politician_id == id)
+        .filter(models.CandidacyMandate.type == "candidacy")
+        .order_by(models.CandidacyMandate.id.desc())
+        .first()
+    )
+    constituency = raw_data.electoral_data.constituency_id
+    electoralData = (
+        db.query(models.ElectoralData)
+        .filter(models.ElectoralData.constituency_id == constituency)
+        .all()
+    )
+    for item in electoralData:
+        name = item.label.split("(")[0][:-1]
+        result = (
+            db.query(models.Politician)
+            .where(models.Politician.label.ilike(f"%{name}%"))
+            .first()
+        )
+        resultList.append(result)
+    return add_image_urls_to_politicians(resultList)

@@ -84,12 +84,12 @@ def read_top_candidates(db: Session = Depends(get_db)):
 
 
 @router.get(
-    "/politician/{id}/constituencies", response_model=schemas.PoliticianToConstituencies
+    "/politician/{id}/constituencies", response_model=List[schemas.PoliticianSearch]
 )
 def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
-    politician = crud.get_entity_by_id(db, models.Politician, id)
-    check_entity_not_found(politician, "Politician")
-    return politician
+    politicians = crud.get_politician_by_constituency(db, id)
+    check_entity_not_found(politicians, "Politician")
+    return politicians
 
 
 @router.get("/politician/{id}/positions", response_model=schemas.PoliticianToPosition)
