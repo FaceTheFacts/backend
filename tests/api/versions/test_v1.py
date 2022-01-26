@@ -245,51 +245,368 @@ def test_read_politician_constituencies():
     def all_elements_have_values():
         response = client.get("/v1/politician/138540/constituencies")
         assert response.status_code == 200
-        assert type(response.json()) is dict
-        assert response.json()["candidacy_mandates"].__contains__(
+        assert type(response.json()) is list
+        assert response.json() == [
             {
-                "id": 54370,
-                "electoral_data": {
-                    "id": 55294,
-                    "constituency": {
-                        "id": 11039,
-                        "entity_type": "constituency",
-                        "label": "299 - Homburg (Bundestag 2021 - 2025)",
-                        "api_url": "https://www.abgeordnetenwatch.de/api/v2/constituencies/11039",
-                        "name": "Homburg",
-                        "number": 299,
+                "id": 177853,
+                "label": "Ute Elisabeth Weisang",
+                "party": {
+                    "id": 201,
+                    "label": "dieBasis",
+                    "party_style": {
+                        "id": 201,
+                        "display_name": "dieBasis",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#333333",
+                        "border_color": None,
                     },
                 },
+                "image_url": None,
             },
-        )
+            {
+                "id": 138292,
+                "label": "Maria Luise Herber",
+                "party": {
+                    "id": 5,
+                    "label": "Bündnis 90/Die Grünen",
+                    "party_style": {
+                        "id": 5,
+                        "display_name": "Grüne",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#61A056",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/138292.jpg",
+            },
+            {
+                "id": 177232,
+                "label": "Florian Spaniol",
+                "party": {
+                    "id": 8,
+                    "label": "DIE LINKE",
+                    "party_style": {
+                        "id": 8,
+                        "display_name": "Linke",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#CD3E72",
+                        "border_color": None,
+                    },
+                },
+                "image_url": None,
+            },
+            {
+                "id": 176099,
+                "label": "Evelyne Görlinger",
+                "party": {
+                    "id": 16,
+                    "label": "Die PARTEI",
+                    "party_style": {
+                        "id": 16,
+                        "display_name": "Die PARTEI",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#722B2B",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/176099.jpg",
+            },
+            {
+                "id": 176057,
+                "label": "Claus Jacob",
+                "party": {
+                    "id": 12,
+                    "label": "ÖDP",
+                    "party_style": {
+                        "id": 12,
+                        "display_name": "ÖDP",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#FD820B",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/176057.jpg",
+            },
+            {
+                "id": 147500,
+                "label": "Axel Kammerer",
+                "party": {
+                    "id": 7,
+                    "label": "FREIE WÄHLER",
+                    "party_style": {
+                        "id": 7,
+                        "display_name": "FREIE WÄHLER",
+                        "foreground_color": "#2F5997",
+                        "background_color": "#F8F8F8",
+                        "border_color": "#FD820B",
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/147500.jpg",
+            },
+            {
+                "id": 150296,
+                "label": "Christian-Friedrich Wirth",
+                "party": {
+                    "id": 9,
+                    "label": "AfD",
+                    "party_style": {
+                        "id": 9,
+                        "display_name": "AfD",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#3AA6F4",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/150296.jpg",
+            },
+            {
+                "id": 138540,
+                "label": "Markus Uhl",
+                "party": {
+                    "id": 2,
+                    "label": "CDU",
+                    "party_style": {
+                        "id": 2,
+                        "display_name": "CDU",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#636363",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/138540.jpg",
+            },
+            {
+                "id": 175796,
+                "label": "Ralf Armbrüster",
+                "party": {
+                    "id": 4,
+                    "label": "FDP",
+                    "party_style": {
+                        "id": 4,
+                        "display_name": "FDP",
+                        "foreground_color": "#333333",
+                        "background_color": "#FAED0B",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/175796.jpg",
+            },
+            {
+                "id": 138463,
+                "label": "Esra Limbacher",
+                "party": {
+                    "id": 1,
+                    "label": "SPD",
+                    "party_style": {
+                        "id": 1,
+                        "display_name": "SPD",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#E95050",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/138463.jpg",
+            },
+        ]
 
     def null_constituencies_exist():
         response = client.get("/v1/politician/138124/constituencies")
         assert response.status_code == 200
-        assert type(response.json()) is dict
-        assert response.json() == {
-            "id": 138124,
-            "candidacy_mandates": [
-                {"id": 54372, "electoral_data": {"id": 55296, "constituency": None}},
-                {
-                    "id": 49849,
-                    "electoral_data": {
-                        "id": 50771,
-                        "constituency": {
-                            "id": 10353,
-                            "entity_type": "constituency",
-                            "label": "296 - Saarbrücken (Bundestag Wahl 2021)",
-                            "api_url": "https://www.abgeordnetenwatch.de/api/v2/constituencies/10353",
-                            "name": "Saarbrücken",
-                            "number": 296,
-                        },
+        assert type(response.json()) is list
+        assert response.json() == [
+            {
+                "id": 177845,
+                "label": "Steffi Richter",
+                "party": {
+                    "id": 201,
+                    "label": "dieBasis",
+                    "party_style": {
+                        "id": 201,
+                        "display_name": "dieBasis",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#333333",
+                        "border_color": None,
                     },
                 },
-                {"id": 43613, "electoral_data": {"id": 43613, "constituency": None}},
-                {"id": 27911, "electoral_data": {"id": 27911, "constituency": None}},
-                {"id": 27910, "electoral_data": {"id": 27910, "constituency": None}},
-            ],
-        }
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/177845.jpg",
+            },
+            {
+                "id": 177566,
+                "label": "Boris Huebner",
+                "party": {
+                    "id": 9,
+                    "label": "AfD",
+                    "party_style": {
+                        "id": 9,
+                        "display_name": "AfD",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#3AA6F4",
+                        "border_color": None,
+                    },
+                },
+                "image_url": None,
+            },
+            {
+                "id": 148443,
+                "label": "Rolf Tickert",
+                "party": {
+                    "id": 15,
+                    "label": "MLPD",
+                    "party_style": {
+                        "id": 15,
+                        "display_name": "MLPD",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#333333",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/148443.jpg",
+            },
+            {
+                "id": 164999,
+                "label": "Gerhard Wenz",
+                "party": {
+                    "id": 5,
+                    "label": "Bündnis 90/Die Grünen",
+                    "party_style": {
+                        "id": 5,
+                        "display_name": "Grüne",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#61A056",
+                        "border_color": None,
+                    },
+                },
+                "image_url": None,
+            },
+            {
+                "id": 177290,
+                "label": "Stephan Poss",
+                "party": {
+                    "id": 185,
+                    "label": "parteilos",
+                    "party_style": {
+                        "id": 185,
+                        "display_name": "parteilos",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#333333",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/177290.jpg",
+            },
+            {
+                "id": 177230,
+                "label": "Mark Baumeister",
+                "party": {
+                    "id": 8,
+                    "label": "DIE LINKE",
+                    "party_style": {
+                        "id": 8,
+                        "display_name": "Linke",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#CD3E72",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/177230.jpg",
+            },
+            {
+                "id": 176255,
+                "label": "Nico Herrmann",
+                "party": {
+                    "id": 12,
+                    "label": "ÖDP",
+                    "party_style": {
+                        "id": 12,
+                        "display_name": "ÖDP",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#FD820B",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/176255.jpg",
+            },
+            {
+                "id": 176204,
+                "label": "Luman Matheis Lukas",
+                "party": {
+                    "id": 16,
+                    "label": "Die PARTEI",
+                    "party_style": {
+                        "id": 16,
+                        "display_name": "Die PARTEI",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#722B2B",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/176204.jpg",
+            },
+            {
+                "id": 176123,
+                "label": "Hans-Peter Pflug",
+                "party": {
+                    "id": 7,
+                    "label": "FREIE WÄHLER",
+                    "party_style": {
+                        "id": 7,
+                        "display_name": "FREIE WÄHLER",
+                        "foreground_color": "#2F5997",
+                        "background_color": "#F8F8F8",
+                        "border_color": "#FD820B",
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/176123.jpg",
+            },
+            {
+                "id": 138124,
+                "label": "Annegret Kramp-Karrenbauer",
+                "party": {
+                    "id": 2,
+                    "label": "CDU",
+                    "party_style": {
+                        "id": 2,
+                        "display_name": "CDU",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#636363",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/138124.jpg",
+            },
+            {
+                "id": 175734,
+                "label": "Helmut Isringhaus",
+                "party": {
+                    "id": 4,
+                    "label": "FDP",
+                    "party_style": {
+                        "id": 4,
+                        "display_name": "FDP",
+                        "foreground_color": "#333333",
+                        "background_color": "#FAED0B",
+                        "border_color": None,
+                    },
+                },
+                "image_url": None,
+            },
+            {
+                "id": 146867,
+                "label": "Josephine Ortleb",
+                "party": {
+                    "id": 1,
+                    "label": "SPD",
+                    "party_style": {
+                        "id": 1,
+                        "display_name": "SPD",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#E95050",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/146867.jpg",
+            },
+        ]
 
     all_elements_have_values()
     null_constituencies_exist()
