@@ -275,7 +275,7 @@ def get_latest_committee_topics_by_politician_id(db: Session, id: int) -> List:
 
 
 def get_politician_by_constituency(db: Session, id: int) -> List:
-    resultList = []
+    result_list = []
     raw_data = (
         db.query(models.CandidacyMandate)
         .filter(models.CandidacyMandate.politician_id == id)
@@ -284,17 +284,17 @@ def get_politician_by_constituency(db: Session, id: int) -> List:
         .first()
     )
     constituency = raw_data.electoral_data.constituency_id
-    electoralData = (
+    electoral_data = (
         db.query(models.ElectoralData)
         .filter(models.ElectoralData.constituency_id == constituency)
         .all()
     )
-    for item in electoralData:
+    for item in electoral_data:
         name = item.label.split("(")[0][:-1]
         result = (
             db.query(models.Politician)
             .where(models.Politician.label.ilike(f"%{name}%"))
             .first()
         )
-        resultList.append(result)
-    return add_image_urls_to_politicians(resultList)
+        result_list.append(result)
+    return add_image_urls_to_politicians(result_list)
