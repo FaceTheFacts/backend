@@ -66,6 +66,23 @@ def read_politicians(
     return politicians
 
 
+@router.get("/politicianshistory/", response_model=List[schemas.PoliticianSearch])
+def read_politicians(
+    ids: List[int] = Query(None),
+    db: Session = Depends(get_db),
+):
+    politicians = [None] * len(ids)
+    list_index = 0
+    for id in ids:
+        politician = get_politician_info(
+            id,
+            db,
+        )
+        politicians[list_index] = politician
+        list_index += 1
+    return politicians
+
+
 @router.get("/top-candidates", response_model=List[schemas.PoliticianSearch])
 def read_top_candidates(db: Session = Depends(get_db)):
     top_candidates_ids = [

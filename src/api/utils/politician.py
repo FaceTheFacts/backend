@@ -175,3 +175,7 @@ def get_politician_info(
     )
     politician.__dict__["topic_ids_of_latest_committee"] = topic_ids_of_latest_committee
     return politician
+
+
+def get_politicianhistory(id: int, db: Session = Depends(get_db)):
+    return db.query(models.Politician).where(models.Politician.id == id).first()
