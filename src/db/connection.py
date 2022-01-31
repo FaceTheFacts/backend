@@ -18,6 +18,6 @@ connection_uri = sa.engine.URL.create(
     database=os.environ["DATABASE_NAME"],
 )
 
-engine = create_engine(connection_uri)
+engine = create_engine(connection_uri, pool_size=50, max_overflow=50)
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
