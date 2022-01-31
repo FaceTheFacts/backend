@@ -274,7 +274,7 @@ def get_latest_committee_topics_by_politician_id(db: Session, id: int) -> List:
     return []
 
 
-def get_politician_by_constituency(db: Session, id: int) -> List:
+def get_politician_by_constituency(db: Session, id: int) -> list or None:
     result_list = []
     raw_data = (
         db.query(models.CandidacyMandate)
