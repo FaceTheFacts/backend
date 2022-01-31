@@ -283,18 +283,20 @@ def get_politician_by_constituency(db: Session, id: int) -> List:
         .order_by(models.CandidacyMandate.id.desc())
         .first()
     )
-    constituency = raw_data.electoral_data.constituency_id
-    electoral_data = (
-        db.query(models.ElectoralData)
-        .filter(models.ElectoralData.constituency_id == constituency)
-        .all()
-    )
-    for item in electoral_data:
-        name = item.label.split("(")[0][:-1]
-        result = (
-            db.query(models.Politician)
-            .where(models.Politician.label.ilike(f"%{name}%"))
-            .first()
+    if raw_data:
+        constituency = raw_data.electoral_data.constituency_id
+        electoral_data = (
+            db.query(models.ElectoralData)
+            .filter(models.ElectoralData.constituency_id == constituency)
+            .all()
         )
-        result_list.append(result)
-    return add_image_urls_to_politicians(result_list)
+        for item in electoral_data:
+            name = item.label.split("(")[0][:-1]
+            result = (
+                db.query(models.Politician)
+                .where(models.Politician.label.ilike(f"%{name}%"))
+                .first()
+            )
+            result_list.append(result)
+        return add_image_urls_to_politicians(result_list)
+    return None
