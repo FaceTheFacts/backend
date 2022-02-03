@@ -818,42 +818,6 @@ def test_read_politician_votes():
     response_size_by_filters_test()
 
 
-def test_read_latest_polls():
-    def whole_values_test():
-        response = client.get("/v1/bundestag-latest-polls?page=1&size=1")
-        assert response.status_code == 200
-        response_items = [
-            {
-                "poll_field_legislature_id": 111,
-                "poll_id": 4293,
-                "poll_label": "Änderung des Infektionsschutzgesetzes und Grundrechtseinschränkungen",
-                "poll_field_poll_date": "2021-09-07",
-                "result": {"yes": 344, "no": 280, "abstain": 1, "no_show": 84},
-            }
-        ]
-        for item in response_items:
-            assert item in response.json()["items"]
-
-    def selected_values_test():
-        response = client.get("/v1/bundestag-latest-polls?page=3&size=1")
-        assert response.status_code == 200
-        assert response.json()["items"][0]["result"] == {
-            "yes": 538,
-            "no": 9,
-            "abstain": 89,
-            "no_show": 73,
-        }
-
-    def polls_not_found_test():
-        response = client.get("/v1/bundestag-latest-polls?page=100&size=10")
-        assert response.status_code == 200
-        assert response.json() == {"items": [], "total": 176, "page": 100, "size": 10}
-
-    whole_values_test()
-    selected_values_test()
-    polls_not_found_test()
-
-
 def test_read_poll_details():
     def random_test():
         response = client.get("/v1/poll/4217/details")
