@@ -88,7 +88,7 @@ def test_read_politician():
 
     def test_topic_ids_of_latest_committee():
         response = client.get("/v1/politician/79475")
-        expected_ids = [11, 16, 19, 20]
+        expected_ids = []
         assert expected_ids == response.json()["topic_ids_of_latest_committee"]
 
         response = client.get("/v1/politician/119742")
