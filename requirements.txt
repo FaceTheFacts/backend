@@ -540,6 +540,9 @@ queuelib==1.6.2; python_version >= "3.6" \
 requests==2.26.0; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.6.0") \
     --hash=sha256:6c1246513ecd5ecd4528a0906f910e8f0f9c6b8ec72030dc9fd154dc1a6efd24 \
     --hash=sha256:b8aa58f8cf793ffd8782d3d8cb19e66ef36f7aba4353eec859e74678b01b07a7
+schedule==1.1.0; python_version >= "3.6" \
+    --hash=sha256:617adce8b4bf38c360b781297d59918fbebfb2878f1671d189f4f4af5d0567a4 \
+    --hash=sha256:e6ca13585e62c810e13a08682e0a6a8ad245372e376ba2b8679294f377dfc8e4
 scrapy==2.5.1; python_version >= "3.6" \
     --hash=sha256:1a9a36970004950ee3c519a14c4db945f9d9a63fecb3d593dddcda477331dde9 \
     --hash=sha256:13af6032476ab4256158220e530411290b3b934dd602bb6dacacbf6d16141f49
