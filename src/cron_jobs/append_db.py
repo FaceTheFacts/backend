@@ -1,3 +1,6 @@
+# std
+from typing import List
+
 # local
 from src.cron_jobs.utils.insert_and_update import insert_and_update
 from src.cron_jobs.utils.fetch import fetch_missing_entity, load_entity
@@ -5,7 +8,29 @@ from src.db.connection import engine, Base
 import src.db.models as models
 
 
-def append_sidejobs() -> None:
+def append_committees() -> List:
+    missing_committees = fetch_missing_entity("committees", models.Committee)
+    if missing_committees:
+        committees = [
+            {
+                "id": api_committees["id"],
+                "entity_type": api_committees["entity_type"],
+                "label": api_committees["label"],
+                "api_url": api_committees["api_url"],
+                "field_legislature_id": api_committees["field_legislature"]["id"]
+                if api_committees["field_legislature"]
+                else None,
+            }
+            for api_committees in missing_committees
+        ]
+        insert_and_update(models.Committee, committees)
+        print("Successfully retrieved")
+        return committees
+    else:
+        print("Nothing fetched")
+
+
+def append_sidejobs() -> List:
     missing_sidejobs = fetch_missing_entity("sidejobs", models.Sidejob)
     if missing_sidejobs:
         sidejobs = [
@@ -34,12 +59,13 @@ def append_sidejobs() -> None:
             for api_sidejob in missing_sidejobs
         ]
         insert_and_update(models.Sidejob, sidejobs)
+        print("Successfully retrieved")
         return sidejobs
     else:
         print("Nothing fetched")
 
 
-def append_polls() -> None:
+def append_polls() -> List:
     missing_polls = fetch_missing_entity("polls", models.Poll)
     if missing_polls:
         polls = [
@@ -60,12 +86,13 @@ def append_polls() -> None:
             for api_polls in missing_polls
         ]
         insert_and_update(models.Poll, polls)
+        print("Successfully retrieved")
         return polls
     else:
         print("Nothing fetched")
 
 
-def append_votes() -> None:
+def append_votes() -> List:
     missing_votes = fetch_missing_entity("votes", models.Vote)
     if missing_votes:
         api_polls = load_entity("polls")
@@ -92,6 +119,7 @@ def append_votes() -> None:
                 }
                 votes.append(vote)
             insert_and_update(models.Vote, votes)
+        print("Successfully retrieved")
         return votes
     else:
         print("Nothing fetched")
@@ -99,4 +127,3 @@ def append_votes() -> None:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    append_polls()
