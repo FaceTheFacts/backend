@@ -1,3 +1,6 @@
+# std
+from typing import List
+
 # local
 from src.cron_jobs.utils.insert_and_update import insert_and_update
 from src.cron_jobs.utils.fetch import fetch_missing_entity, load_entity
@@ -5,7 +8,7 @@ from src.db.connection import engine, Base
 import src.db.models as models
 
 
-def append_committees() -> None:
+def append_committees() -> List:
     missing_committees = fetch_missing_entity("committees", models.Committee)
     if missing_committees:
         committees = [
@@ -27,7 +30,7 @@ def append_committees() -> None:
         print("Nothing fetched")
 
 
-def append_sidejobs() -> None:
+def append_sidejobs() -> List:
     missing_sidejobs = fetch_missing_entity("sidejobs", models.Sidejob)
     if missing_sidejobs:
         sidejobs = [
@@ -62,7 +65,7 @@ def append_sidejobs() -> None:
         print("Nothing fetched")
 
 
-def append_polls() -> None:
+def append_polls() -> List:
     missing_polls = fetch_missing_entity("polls", models.Poll)
     if missing_polls:
         polls = [
@@ -89,7 +92,7 @@ def append_polls() -> None:
         print("Nothing fetched")
 
 
-def append_votes() -> None:
+def append_votes() -> List:
     missing_votes = fetch_missing_entity("votes", models.Vote)
     if missing_votes:
         api_polls = load_entity("polls")
