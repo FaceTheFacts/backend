@@ -1,6 +1,7 @@
 # std
 from typing import Optional, List
 import time
+from datetime import timedelta
 
 # third-party
 import uvicorn
@@ -11,6 +12,7 @@ import schedule
 # local
 from src.api.versions import v1
 import src.cron_jobs.append_db as cron_jobs
+from src.cron_test import cron_test
 
 app = FastAPI()
 
@@ -47,11 +49,12 @@ def read_root(name: Optional[str] = "World"):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
     schedule.every().monday.at("00:00").do(cron_jobs.append_committees)
     schedule.every().monday.at("00:20").do(cron_jobs.append_polls)
     schedule.every().monday.at("00:30").do(cron_jobs.append_sidejobs)
     schedule.every().monday.at("00:40").do(cron_jobs.append_votes)
+    schedule.every(1).hours.until(timedelta(hours=6)).do(cron_test)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
     while True:
         schedule.run_pending()
