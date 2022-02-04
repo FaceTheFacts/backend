@@ -140,7 +140,9 @@ def append_politicians() -> List:
                 "birth_name": api_politician["birth_name"],
                 "sex": api_politician["sex"],
                 "year_of_birth": api_politician["year_of_birth"],
-                "party_id": api_politician["party"]["id"] if api_politician["party"] else None,
+                "party_id": api_politician["party"]["id"]
+                if api_politician["party"]
+                else None,
                 "party_past": api_politician["party_past"],
                 "deceased": api_politician["deceased"],
                 "deceased_date": api_politician["deceased_date"],

@@ -1,7 +1,7 @@
 # std
-from typing import Optional, List
+from typing import Optional
 import time
-from datetime import timedelta
+import threading
 
 # third-party
 import uvicorn
@@ -48,14 +48,18 @@ def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
 
 
-if __name__ == "__main__":
+def scheduled_task():
     schedule.every().monday.at("00:00").do(cron_jobs.append_committees)
     schedule.every().monday.at("00:20").do(cron_jobs.append_polls)
     schedule.every().monday.at("00:30").do(cron_jobs.append_sidejobs)
     schedule.every().monday.at("00:40").do(cron_jobs.append_votes)
-    schedule.every(1).hours.until(timedelta(hours=6)).do(cron_test)
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-
+    print("Cronjob executed!")
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+
+if __name__ == "__main__":
+    t1 = threading.Thread(target=scheduled_task, daemon=True)
+    t1.start()
+    uvicorn.run(app, host="0.0.0.0", port=8000)
