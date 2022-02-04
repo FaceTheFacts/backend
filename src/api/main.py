@@ -12,7 +12,6 @@ import schedule
 # local
 from src.api.versions import v1
 import src.cron_jobs.append_db as cron_jobs
-from src.cron_test import cron_test
 
 app = FastAPI()
 
