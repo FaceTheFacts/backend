@@ -107,7 +107,8 @@ def read_top_candidates(db: Session = Depends(get_db)):
 def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
     politicians = crud.get_politician_by_constituency(db, id)
     check_entity_not_found(politicians, "Politician")
-    return politicians
+    sorted_politicians = party_sort(politicians)
+    return sorted_politicians
 
 
 @router.get("/politician/{id}/positions", response_model=schemas.PoliticianToPosition)

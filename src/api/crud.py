@@ -110,7 +110,7 @@ def get_politicians_by_partial_name(db: Session, partial_name: str):
     return (
         db.query(models.Politician)
         .where(models.Politician.label.ilike(f"%{partial_name}%"))
-        .all()[:10]
+        .all()[:20]
     )
 
 
@@ -121,7 +121,7 @@ def get_politicians_by_zipcode(db: Session, zipcode: int):
         .filter(models.ElectoralData.constituency_id == models.ZipCode.constituency_id)
         .filter(models.CandidacyMandate.electoral_data_id == models.ElectoralData.id)
         .filter(models.Politician.id == models.CandidacyMandate.politician_id)
-        .all()[:10]
+        .all()[:20]
     )
 
     return politicians
