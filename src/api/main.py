@@ -52,7 +52,9 @@ def scheduled_task():
     schedule.every().monday.at("00:00").do(cron_jobs.append_committees)
     schedule.every().monday.at("00:20").do(cron_jobs.append_polls)
     schedule.every().monday.at("00:30").do(cron_jobs.append_sidejobs)
-    schedule.every().monday.at("00:40").do(cron_jobs.append_votes)
+    schedule.every(2).weeks.do(cron_jobs.append_votes)
+    schedule.every(25).weeks.do(cron_jobs.append_politicians)
+
     print("Cronjob executed!")
     while True:
         schedule.run_pending()
