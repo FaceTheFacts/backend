@@ -15,6 +15,7 @@ from src.api.utils.politician import (
     transform_topics_dict_to_minimal_array,
     did_vote_pass,
 )
+from src.api.utils.topic_ids_converter import convert_into_topic_id
 
 
 def get_entity_by_id(db: Session, model, id: int):
@@ -261,6 +262,9 @@ def get_topic_ids_by_field_legislature_id(
 
 
 def get_latest_committee_topics_by_politician_id(db: Session, id: int) -> List:
+    hardcoded_topic_id = convert_into_topic_id(id)
+    if hardcoded_topic_id:
+        return hardcoded_topic_id
     latest_parlament_period_id = for_committee_topics__get_latest_parlament_period_id(
         db, id
     )
