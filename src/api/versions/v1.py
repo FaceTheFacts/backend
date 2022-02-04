@@ -15,6 +15,7 @@ from src.api.utils.politician import get_politician_info
 from src.db import models
 from src.db.connection import Session
 from src.api.utils.error import check_entity_not_found
+from src.api.utils.party_sort import party_sort
 
 router = APIRouter(
     prefix="/v1",
@@ -128,7 +129,8 @@ def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
 def read_politician_search(text: str, db: Session = Depends(get_db)):
     politicians = crud.get_politician_by_search(db, text)
     check_entity_not_found(politicians, "Politicians")
-    return politicians
+    sorted_politicians = party_sort(politicians)
+    return sorted_politicians
 
 
 @router.get("/image-scanner", response_model=List[schemas.PoliticianSearch])

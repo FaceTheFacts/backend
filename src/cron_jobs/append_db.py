@@ -125,5 +125,46 @@ def append_votes() -> List:
         print("Nothing fetched")
 
 
+def append_politicians() -> List:
+    missing_politicians = fetch_missing_entity("politicians", models.Politician)
+    if missing_politicians:
+        politicians = [
+            {
+                "id": api_politician["id"],
+                "entity_type": api_politician["entity_type"],
+                "label": api_politician["label"],
+                "api_url": api_politician["api_url"],
+                "abgeordnetenwatch_url": api_politician["abgeordnetenwatch_url"],
+                "first_name": api_politician["first_name"],
+                "last_name": api_politician["last_name"],
+                "birth_name": api_politician["birth_name"],
+                "sex": api_politician["sex"],
+                "year_of_birth": api_politician["year_of_birth"],
+                "party_id": api_politician["party"]["id"]
+                if api_politician["party"]
+                else None,
+                "party_past": api_politician["party_past"],
+                "deceased": api_politician["deceased"],
+                "deceased_date": api_politician["deceased_date"],
+                "education": api_politician["education"],
+                "residence": api_politician["residence"],
+                "occupation": api_politician["occupation"],
+                "statistic_questions": api_politician["statistic_questions"],
+                "statistic_questions_answered": api_politician[
+                    "statistic_questions_answered"
+                ],
+                "qid_wikidata": api_politician["qid_wikidata"],
+                "field_title": api_politician["field_title"],
+            }
+            for api_politician in missing_politicians
+        ]
+        insert_and_update(models.Politician, politicians)
+        print("Successfully retrieved")
+        return politicians
+    else:
+        print("Nothing fetched")
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
+    append_politicians()
