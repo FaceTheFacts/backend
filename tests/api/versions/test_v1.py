@@ -605,7 +605,7 @@ def test_read_politician_constituencies():
                     },
                 },
                 "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/176123.jpg",
-            }   
+            },
         ]
 
     all_elements_have_values()
@@ -824,7 +824,7 @@ def test_read_poll_details():
         assert response.status_code == 200
         response_items = [
             {
-                "id": 7585,
+                "id": 421714,
                 "poll_id": 4217,
                 "fraction": {
                     "id": 14,
@@ -838,7 +838,7 @@ def test_read_poll_details():
                 "total_no_show": 9,
             },
             {
-                "id": 7590,
+                "id": 4217153,
                 "poll_id": 4217,
                 "fraction": {
                     "id": 153,
