@@ -12,6 +12,7 @@ import schedule
 # local
 from src.api.versions import v1
 import src.cron_jobs.append_db as cron_jobs
+import src.cron_jobs.crud_db as db_cron_jobs
 
 app = FastAPI()
 
@@ -48,10 +49,16 @@ def read_root(name: Optional[str] = "World"):
 
 
 def scheduled_task():
-    schedule.every().monday.at("00:00").do(cron_jobs.append_committees)
-    schedule.every().monday.at("00:20").do(cron_jobs.append_polls)
-    schedule.every().monday.at("00:30").do(cron_jobs.append_sidejobs)
-    schedule.every(2).weeks.do(cron_jobs.append_votes)
+    schedule.every().monday.at("03:00").do(cron_jobs.append_committees)
+    schedule.every().monday.at("03:20").do(cron_jobs.append_polls)
+    # candidacy_mandates and related tables still missing
+    schedule.every().monday.at("03:30").do(cron_jobs.append_sidejobs)
+    # sidejobs related tables are still missing
+    schedule.every().monday.at("03:40").do(cron_jobs.append_votes)
+    schedule.every().monday.at("03:50").do(db_cron_jobs.populate_poll_has_topic)
+    schedule.every().monday.at("03:55").do(
+        db_cron_jobs.populate_poll_results_per_fraction
+    )
     schedule.every(25).weeks.do(cron_jobs.append_politicians)
 
     print("Cronjob executed!")
