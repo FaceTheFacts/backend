@@ -1,9 +1,13 @@
 # std
 from typing import List
+from src.cron_jobs.utils.file import read_json
 
 # local
 from src.cron_jobs.utils.insert_and_update import insert_and_update
-from src.cron_jobs.utils.fetch import fetch_missing_entity, load_entity
+from src.cron_jobs.utils.fetch import (
+    fetch_missing_entity,
+    load_entity,
+)
 from src.db.connection import engine, Base
 import src.db.models as models
 
@@ -118,7 +122,7 @@ def append_votes() -> List:
                     "reason_no_show_other": missing_vote["reason_no_show_other"],
                 }
                 votes.append(vote)
-            insert_and_update(models.Vote, votes)
+        insert_and_update(models.Vote, votes)
         print("Successfully retrieved")
         return votes
     else:
@@ -167,4 +171,4 @@ def append_politicians() -> List:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    append_politicians()
+    # append_votes()
