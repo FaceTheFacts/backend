@@ -37,6 +37,7 @@ from src.db.models.cv import CV
 from src.db.models.career_path import CareerPath
 from src.db.models.position import Position
 from src.db.models.politician_weblink import PoliticianWeblink
+from src.db.models.poll_result_per_party import PollResultPerFraction
 
 import src.db.models as models
 from src.cron_jobs.utils.vote_result import (
@@ -539,7 +540,9 @@ def populate_polls() -> None:
             "field_committees_id": api_polls["field_committees"][0]["id"]
             if api_polls["field_committees"]
             else None,
-            "field_intro": api_polls["field_intro"],
+            "field_intro": api_polls["field_intro"]
+            if api_polls["field_intro"]
+            else None,
             "field_legislature_id": api_polls["field_legislature"]["id"]
             if api_polls["field_legislature"]
             else None,
@@ -833,42 +836,51 @@ def populate_poll_results_per_fraction():
     begin_time = time.time()
 
     polls = session.query(Poll.id).all()
+    poll_results = session.query(PollResultPerFraction.poll_id).all()
+    poll_results_ids = [poll_results_id[0] for poll_results_id in poll_results]
     poll_ids = [poll_id[0] for poll_id in polls]
 
-    poll_result_id = 1
     poll_results_per_fraction = []
     for poll_id in poll_ids:
-        print(f"    Creating items when poll_id is {poll_id}")
-        fractions = (
-            session.query(Vote.fraction_id)
-            .filter(Vote.poll_id == poll_id)
-            .distinct()
-            .all()
-        )
-        fraction_ids = [fraction_id[0] for fraction_id in fractions]
-        for fraction_id in fraction_ids:
-            total_yes = get_total_votes_of_type("yes", poll_id, fraction_id, session)
-            total_no = get_total_votes_of_type("no", poll_id, fraction_id, session)
-            total_abstain = get_total_votes_of_type(
-                "abstain", poll_id, fraction_id, session
+        if poll_id not in poll_results_ids:
+            print(f"    Poll_id {poll_id} is NOT in here")
+            print(f"    Creating items when poll_id is {poll_id}")
+            fractions = (
+                session.query(Vote.fraction_id)
+                .filter(Vote.poll_id == poll_id)
+                .distinct()
+                .all()
             )
-            total_no_show = get_total_votes_of_type(
-                "no_show", poll_id, fraction_id, session
-            )
-
-            poll_result = {
-                "id": poll_result_id,
-                "entity_type": "poll_result",
-                "poll_id": poll_id,
-                "fraction_id": fraction_id,
-                "total_yes": total_yes,
-                "total_no": total_no,
-                "total_abstain": total_abstain,
-                "total_no_show": total_no_show,
-            }
-            print(f"        -> Item of fraction_id {fraction_id} created")
-            poll_results_per_fraction.append(poll_result)
-            poll_result_id += 1
+            alternate_fraction_id = 1
+            fraction_ids = [fraction_id[0] for fraction_id in fractions]
+            for fraction_id in fraction_ids:
+                total_yes = get_total_votes_of_type(
+                    "yes", poll_id, fraction_id, session
+                )
+                total_no = get_total_votes_of_type("no", poll_id, fraction_id, session)
+                total_abstain = get_total_votes_of_type(
+                    "abstain", poll_id, fraction_id, session
+                )
+                total_no_show = get_total_votes_of_type(
+                    "no_show", poll_id, fraction_id, session
+                )
+                if fraction_id:
+                    poll_result_id = int(str(poll_id) + str(fraction_id))
+                else:
+                    poll_result_id = int(str(alternate_fraction_id) + str(poll_id))
+                    alternate_fraction_id += 1
+                poll_result = {
+                    "id": poll_result_id,
+                    "entity_type": "poll_result",
+                    "poll_id": poll_id,
+                    "fraction_id": fraction_id,
+                    "total_yes": total_yes,
+                    "total_no": total_no,
+                    "total_abstain": total_abstain,
+                    "total_no_show": total_no_show,
+                }
+                print(f"        -> Item of fraction_id {fraction_id} created")
+                poll_results_per_fraction.append(poll_result)
 
     print(
         f"Inserting {len(poll_results_per_fraction)} items into poll_results_per_fraction table"
@@ -882,5 +894,5 @@ def populate_poll_results_per_fraction():
 
 
 if __name__ == "__main__":
-    # Base.metadata.create_all(engine)
-    populate_weblinks()
+    Base.metadata.create_all(engine)
+    populate_field_related_link()
