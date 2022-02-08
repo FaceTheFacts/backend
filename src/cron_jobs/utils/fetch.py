@@ -66,10 +66,14 @@ def fetch_missing_entity(entity: str, model: Any):
     diff = total_entity - database_rows
     if diff:
         last_id = session.query(model).order_by(model.id.desc()).first().id
-        page_count = math.ceil(last_id / PAGE_SIZE)
+        result = fetch_json(
+            f"https://www.abgeordnetenwatch.de/api/v2/{entity}?id[gt]={last_id}range_end=0"
+        )
+        total = result["meta"]["result"]["total"]
+        page_count = math.ceil(total / PAGE_SIZE)
         for page_num in range(page_count):
             fetched_data = fetch_json(
-                f"https://www.abgeordnetenwatch.de/api/v2/{entity}?id[gt]={last_id}&page={page_num}&pager_limit={PAGE_SIZE}"
+                f"https://www.abgeordnetenwatch.de/api/v2/{entity}?id[gt]={last_id}&page={page_num}&range_end={PAGE_SIZE}"
             )
             data = fetched_data["data"]
             for item in data:
@@ -90,3 +94,36 @@ def load_entity(entity: str) -> List[Any]:
 
     data: List[Any] = read_json(file_path)
     return data
+
+
+def load_entity_from_db(model: Any) -> List[Any]:
+    session = Session()
+    ids = session.query(model).order_by(model.id.desc()).all()
+    return ids
+
+
+def check_for_missing_votes_data(model: Any) -> List[Any]:
+    file_path = f"src/cron_jobs/data/votes.json"
+    data: List[Any] = read_json(file_path)
+    session = Session()
+    ids = session.query(model).order_by(model.id.desc()).all()
+    poll_ids = set([vote.id for vote in ids])
+    missing_votes = []
+    for vote in data:
+        if vote["poll"]["id"] not in poll_ids:
+            if vote["poll"]["id"] not in missing_votes:
+                missing_votes.append(vote["poll"]["id"])
+    write_json("src/cron_jobs/data/missing_votes.json", missing_votes)
+
+
+def fetch_missing_entity_from_json(entity: str) -> List[Any]:
+    file_path = f"src/cron_jobs/data/missing_{entity}.json"
+    data: List[Any] = read_json(file_path)
+    data_list = []
+    for item in data:
+        fetched_data = fetch_json(
+            f"https://www.abgeordnetenwatch.de/api/v2/{entity}/{item}"
+        )
+        data = fetched_data["data"]
+        data_list.append(data)
+    return data_list
