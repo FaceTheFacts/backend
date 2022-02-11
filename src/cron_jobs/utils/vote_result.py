@@ -29,30 +29,67 @@ def is_exist_vote_result(df: DataFrame, poll_id: int, vote: str) -> bool:
         return False
 
 
-def get_vote_result(df: DataFrame, poll_id: int, vote: str) -> any:
-    is_exist_result = is_exist_vote_result(df, poll_id, vote)
-    if is_exist_result == False:
-        return 0
-    else:
-        return df[(df.poll_id == poll_id) & (df.vote == vote)]["count"].values[0].item()
+def get_vote_result(session: Session, poll_id: int) -> any:
+    votes_per_fraction = (
+        session.query(PollResultPerFraction)
+        .filter(PollResultPerFraction.poll_id == poll_id)
+        .first()
+    )
+    if votes_per_fraction:
+        yes_results = (
+            session.query(PollResultPerFraction.total_yes)
+            .filter(PollResultPerFraction.poll_id == poll_id)
+            .all()
+        )
+        yes_results_arr = [yes_result[0] for yes_result in yes_results]
+        no_results = (
+            session.query(PollResultPerFraction.total_no)
+            .filter(PollResultPerFraction.poll_id == poll_id)
+            .all()
+        )
+        no_results_arr = [no_result[0] for no_result in no_results]
+        abstain_results = (
+            session.query(PollResultPerFraction.total_abstain)
+            .filter(PollResultPerFraction.poll_id == poll_id)
+            .all()
+        )
+        abstain_results_arr = [abstain_result[0] for abstain_result in abstain_results]
+        no_show_results = (
+            session.query(PollResultPerFraction.total_no_show)
+            .filter(PollResultPerFraction.poll_id == poll_id)
+            .all()
+        )
+        no_show_results_arr = [no_show_result[0] for no_show_result in no_show_results]
+        vote_results = {
+            "yes": sum(yes_results_arr),
+            "no": sum(no_results_arr),
+            "abstain": sum(abstain_results_arr),
+            "no_show": sum(no_show_results_arr),
+        }
+        return vote_results
+    return None
 
 
-def generate_vote_results():
+def generate_vote_results(session: Session):
     data_list = []
-    df = read_poll_vote_result_df()
-    poll_ids = set(df.poll_id.values)
-    poll_id_list = generate_poll_id_list()
+    polls = session.query(Poll.id).order_by(Poll.id.asc()).all()
+    poll_ids = [poll_id[0] for poll_id in polls]
+    vote_results = session.query(VoteResult.poll_id).all()
+    vote_results_poll_ids = [
+        vote_results_poll_id[0] for vote_results_poll_id in vote_results
+    ]
     for poll_id in poll_ids:
-        is_exist_poll_id = poll_id in poll_id_list
-        if is_exist_poll_id:
-            new_dict = {
-                "yes": get_vote_result(df, poll_id, "yes"),
-                "no": get_vote_result(df, poll_id, "no"),
-                "abstain": get_vote_result(df, poll_id, "abstain"),
-                "no_show": get_vote_result(df, poll_id, "no_show"),
-                "poll_id": poll_id.item(),
-            }
-        data_list.append(new_dict)
+        if poll_id not in vote_results_poll_ids:
+            new_item = get_vote_result(session, poll_id)
+            if new_item:
+                new_dict = {
+                    "yes": new_item["yes"],
+                    "no": new_item["no"],
+                    "abstain": new_item["abstain"],
+                    "no_show": new_item["no_show"],
+                    "poll_id": poll_id,
+                }
+                data_list.append(new_dict)
     return data_list
 
 
