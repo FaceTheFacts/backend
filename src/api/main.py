@@ -59,6 +59,7 @@ def scheduled_task():
     schedule.every().monday.at("03:55").do(
         db_cron_jobs.populate_poll_results_per_fraction
     )
+    schedule.every().monday.at("04:00").do(db_cron_jobs.populate_vote_result)
     schedule.every(25).weeks.do(cron_jobs.append_politicians)
 
     print("Cronjob executed!")

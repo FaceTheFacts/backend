@@ -827,7 +827,7 @@ def populate_weblinks() -> None:
 
 
 def populate_vote_result() -> None:
-    vote_results = generate_vote_results()
+    vote_results = generate_vote_results(session)
     insert_and_update(models.VoteResult, vote_results)
 
 
@@ -895,4 +895,4 @@ def populate_poll_results_per_fraction():
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    populate_field_related_link()
+    populate_vote_result()
