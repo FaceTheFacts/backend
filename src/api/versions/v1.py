@@ -1,6 +1,8 @@
 # std
 import os
+from pickle import TRUE
 from typing import List
+from xmlrpc.client import boolean
 
 # third-party
 import requests
@@ -37,31 +39,23 @@ def get_db():
 def read_politician(
     id: int,
     db: Session = Depends(get_db),
-    sidejobs_start: int = None,
-    sidejobs_end: int = None,
     votes_start: int = None,
-    votes_end: int = 5,
+    votes_end: int = 6,
 ):
-    return get_politician_info(
-        id, db, sidejobs_start, sidejobs_end, votes_start, votes_end
-    )
+    return get_politician_info(id, db, votes_start, votes_end)
 
 
 @router.get("/politicians/", response_model=List[schemas.Politician])
 def read_politicians(
     ids: List[int] = Query(None),
     db: Session = Depends(get_db),
-    sidejobs_start: int = None,
-    sidejobs_end: int = None,
     votes_start: int = None,
-    votes_end: int = 5,
+    votes_end: int = 6,
 ):
     politicians = [None] * len(ids)
     list_index = 0
     for id in ids:
-        politician = get_politician_info(
-            id, db, sidejobs_start, sidejobs_end, votes_start, votes_end
-        )
+        politician = get_politician_info(id, db, votes_start, votes_end)
         politicians[list_index] = politician
         list_index += 1
     return politicians
@@ -81,23 +75,6 @@ def read_politicians(
         )
         politicians[list_index] = politician
         list_index += 1
-    return politicians
-
-
-@router.get("/top-candidates", response_model=List[schemas.PoliticianSearch])
-def read_top_candidates(db: Session = Depends(get_db)):
-    top_candidates_ids = [
-        "130072",
-        "79475",
-        "66924",
-        "119742",
-        "145755",
-        "108379",
-        "135302",
-        "79454",
-    ]
-    politicians = crud.get_politicians_by_ids(db, top_candidates_ids)
-    check_entity_not_found(politicians, "Politicians")
     return politicians
 
 
@@ -135,10 +112,10 @@ def read_politician_search(text: str, db: Session = Depends(get_db)):
 
 
 @router.get("/image-scanner", response_model=List[schemas.PoliticianSearch])
-def read_politician_image_scanner(text: str, db: Session = Depends(get_db)):
-    politicians = crud.get_politician_by_image_scanner(db, text)
-    check_entity_not_found(politicians, "Politicians")
-    return politicians
+def read_politician_image_scanner(id: int, db: Session = Depends(get_db)):
+    politician = crud.get_politicians_by_ids(db, [id])
+    check_entity_not_found(politician, "Politicians")
+    return politician
 
 
 @router.get("/politician/{id}/votes", response_model=Page[schemas.VoteAndPoll])

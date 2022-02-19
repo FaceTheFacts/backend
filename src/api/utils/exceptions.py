@@ -1,41 +1,48 @@
 # Map `politician_id` to corrected occupations for some politicians.
 OCCUPATIONS = {
+    # Federal Parliament
+    # Government
+    # SPD
     # Olaf Scholz
-    66924: ["Finanzminister", "Kanzlerkandidat"],
-    # Peter Altmaier
-    78815: ["MdB", "Bundeswirtschaftsminister"],
-    # Gerd Müller
-    79121: ["MdB", "Bundesentwicklungsminister"],
+    66924: ["Kanzler", "MdB"],
+    # Nancy Faeser
+    135391: ["Bundesinnenministerin"],
     # Christine Lambrecht
-    79208: ["MdB", "Bundesjustizministerin", "Bundesfamilienministerin"],
+    79208: ["Bundesverteidigungsministerin", "MdB"],
     # Karl Lauterbach
-    79215: ["MdB"],
-    # Anja Karliczek
-    79249: ["MdB", "Bundesbildungsministerin"],
+    79215: ["Bundesgesundheitsminister", "MdB"],
     # Hubertus Heil
-    79316: ["Bundesarbeitsminister", "stellv. Fraktionsvorsitzender"],
-    # Helge Braun
-    79432: ["MdB", "Bundeskanzleramtschef"],
-    # Annaena Baerbock
-    79475: ["MdB", "Parteivorsitzende"],
-    # Julia Klöckner
-    110066: ["Bundesernährungsministerin"],
-    # Michael Müller
-    117519: ["MdA", "Landesvorsitzender", "Regierender Bürgermeister"],
-    # Friedrich Merz
-    118559: [],
-    # Horst Seehofer
-    118761: ["Bundesinnenminister"],
-    # Christian Lindner
-    119742: ["MdB", "Fraktionsvorsitzender", "Parteivorsitzender"],
-    # Armin Laschet
-    130072: ["Kanzlerkandidat", "Ministerpräsident NRW", "Parteivorsitzender", "MdL"],
+    79316: ["Bundesarbeitsminister", "MdB"],
     # Svenja Schulze
-    131019: ["Bundesumweltministerin"],
-    # Kramp-Karrenbauer
-    138124: ["Bundesverteidigungsministerin", "Ministerpräsidentin a.D."],
-    # Heiko Maas
-    138233: ["MdB", "Bundesaußenminister"],
+    131019: ["Bundesentwicklungsministerin", "MdB"],
+    # Klara Geywitz
+    30803: ["Bundesbauministerin"],
+    # Grünen
+    # Annaena Baerbock
+    79475: ["Bundesaußenministerin", "MdB"],
     # Robert Habeck
-    139064: ["Parteivorsitzender", "Schriftstelller"],
+    139064: ["Bundeswirtschaftsminister", "MdB"],
+    # Cem Özdemir
+    79102: ["Bundeslandwirtschaftsminister", "MdB"],
+    # Anne Spiegel
+    109930: ["Bundesfamilienministerin"],
+    # Steffi Lemke
+    79199: ["Bundesumweltministerin", "MdB"],
+    # FDP
+    # Christian Lindner
+    119742: ["Bundesfinanzminister", "Parteivorsitzender", "MdB"],
+    # Marco Buschmann
+    118987: ["Bundesjustizminister", "MdB"],
+    # Volker Wissing
+    110052: ["Bundesverkehrsminister", "Generalsekretär", "MdB"],
+    # Bettina Stark-Watzinger
+    119708: ["Bundesbildungsministerin", "MdB"],
+    # Oppisition
+    # CDU
+    # Friedrich Merz
+    118559: ["Parteivorsitzender", "MdB"],
+    # Ralph Brinkhaus
+    79434: ["Fraktionsvorsitzender", "MdB"],
+    # Alexander Dobrindt
+    79412: ["stellv. Fraktionsvorsitzender", "CSU-Landesgruppenchef", "MdB"],
 }

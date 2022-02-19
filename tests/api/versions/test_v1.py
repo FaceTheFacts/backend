@@ -60,7 +60,7 @@ def test_read_politician():
 
         votes_and_polls = response.json()["votes_and_polls"]
         assert type(votes_and_polls) is list
-        assert len(votes_and_polls) == 5
+        assert len(votes_and_polls) == 6
 
         for index in range(4):
             assert (
@@ -76,12 +76,7 @@ def test_read_politician():
 
     def occupations_test():
         response = client.get("/v1/politician/130072")
-        response_items = [
-            "Kanzlerkandidat",
-            "Ministerpräsident NRW",
-            "Parteivorsitzender",
-            "MdL",
-        ]
+        response_items = ["MdB"]
 
         for item in response_items:
             assert item in response.json()["occupations"]
@@ -103,142 +98,6 @@ def test_read_politician():
     politician_id_not_found()
     occupations_test()
     test_topic_ids_of_latest_committee()
-
-
-def test_read_top_candidates():
-    response = client.get("/v1/top-candidates")
-    assert response.status_code == 200
-    assert type(response.json()) is list
-    assert response.json() == [
-        {
-            "id": 130072,
-            "label": "Armin Laschet",
-            "party": {
-                "id": 2,
-                "label": "CDU",
-                "party_style": {
-                    "id": 2,
-                    "display_name": "CDU",
-                    "foreground_color": "#FFFFFF",
-                    "background_color": "#636363",
-                    "border_color": None,
-                },
-            },
-            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/130072.jpg",
-        },
-        {
-            "id": 79475,
-            "label": "Annalena Baerbock",
-            "party": {
-                "id": 5,
-                "label": "Bündnis 90/Die Grünen",
-                "party_style": {
-                    "id": 5,
-                    "display_name": "Grüne",
-                    "foreground_color": "#FFFFFF",
-                    "background_color": "#61A056",
-                    "border_color": None,
-                },
-            },
-            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/79475.jpg",
-        },
-        {
-            "id": 66924,
-            "label": "Olaf Scholz",
-            "party": {
-                "id": 1,
-                "label": "SPD",
-                "party_style": {
-                    "id": 1,
-                    "display_name": "SPD",
-                    "foreground_color": "#FFFFFF",
-                    "background_color": "#E95050",
-                    "border_color": None,
-                },
-            },
-            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/66924.jpg",
-        },
-        {
-            "id": 119742,
-            "label": "Christian Lindner",
-            "party": {
-                "id": 4,
-                "label": "FDP",
-                "party_style": {
-                    "id": 4,
-                    "display_name": "FDP",
-                    "foreground_color": "#333333",
-                    "background_color": "#FAED0B",
-                    "border_color": None,
-                },
-            },
-            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/119742.jpg",
-        },
-        {
-            "id": 145755,
-            "label": "Tino Chrupalla",
-            "party": {
-                "id": 9,
-                "label": "AfD",
-                "party_style": {
-                    "id": 9,
-                    "display_name": "AfD",
-                    "foreground_color": "#FFFFFF",
-                    "background_color": "#3AA6F4",
-                    "border_color": None,
-                },
-            },
-            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/145755.jpg",
-        },
-        {
-            "id": 108379,
-            "label": "Alice Weidel",
-            "party": {
-                "id": 9,
-                "label": "AfD",
-                "party_style": {
-                    "id": 9,
-                    "display_name": "AfD",
-                    "foreground_color": "#FFFFFF",
-                    "background_color": "#3AA6F4",
-                    "border_color": None,
-                },
-            },
-            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/108379.jpg",
-        },
-        {
-            "id": 135302,
-            "label": "Janine Wissler",
-            "party": {
-                "id": 8,
-                "label": "DIE LINKE",
-                "party_style": {
-                    "id": 8,
-                    "display_name": "Linke",
-                    "foreground_color": "#FFFFFF",
-                    "background_color": "#CD3E72",
-                    "border_color": None,
-                },
-            },
-            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/135302.jpg",
-        },
-        {
-            "id": 79454,
-            "label": "Dietmar Bartsch",
-            "party": {
-                "id": 8,
-                "label": "DIE LINKE",
-                "party_style": {
-                    "id": 8,
-                    "display_name": "Linke",
-                    "foreground_color": "#FFFFFF",
-                    "background_color": "#CD3E72",
-                    "border_color": None,
-                },
-            },
-            "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/79454.jpg",
-        },
-    ]
 
 
 def test_read_politician_constituencies():
@@ -710,16 +569,26 @@ def test_read_politician_sidejobs():
 
 def test_read_politician_image_scanner():
     def label_and_id_test():
-        response = client.get("/v1/image-scanner?text=ronald")
+        response = client.get("/v1/image-scanner?id=79334")
         assert response.status_code == 200
         assert type(response.json()) is list
         test_responses = [
-            {"id": 137636, "label": "Ronald Kaufmann"},
-            {"id": 178064, "label": "Ronald Günter Wetklo"},
             {
-                "id": 177893,
-                "label": "Ronald Rüdiger",
-            },
+                "id": 79334,
+                "label": "Gregor Gysi",
+                "party": {
+                    "id": 8,
+                    "label": "DIE LINKE",
+                    "party_style": {
+                        "id": 8,
+                        "display_name": "Linke",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#CD3E72",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/79334.jpg",
+            }
         ]
 
         for item in test_responses:
