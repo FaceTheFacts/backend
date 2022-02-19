@@ -150,10 +150,8 @@ def did_vote_pass(vote_result: Dict):
 def get_politician_info(
     id: int,
     db: Session = Depends(get_db),
-    sidejobs_start: int = None,
-    sidejobs_end: int = None,
     votes_start: int = None,
-    votes_end: int = 5,
+    votes_end: int = 6,
 ):
     politician = crud.get_entity_by_id(db, models.Politician, id)
     check_entity_not_found(politician, "Politician")
@@ -162,7 +160,7 @@ def get_politician_info(
         politician.__dict__["occupation"], id
     )
 
-    sidejobs = crud.get_sidejobs_by_politician_id(db, id)[sidejobs_start:sidejobs_end]
+    sidejobs = crud.get_sidejobs_by_politician_id(db, id)
     politician.__dict__["sidejobs"] = sidejobs
 
     votes_and_polls = crud.get_votes_and_polls_by_politician_id(
