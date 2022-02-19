@@ -77,6 +77,7 @@ def read_politicians(
         list_index += 1
     return politicians
 
+
 @router.get(
     "/politician/{id}/constituencies", response_model=List[schemas.PoliticianSearch]
 )
