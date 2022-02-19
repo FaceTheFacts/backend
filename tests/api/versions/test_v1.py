@@ -99,6 +99,7 @@ def test_read_politician():
     occupations_test()
     test_topic_ids_of_latest_committee()
 
+
 def test_read_politician_constituencies():
     def all_elements_have_values():
         response = client.get("/v1/politician/138540/constituencies")
