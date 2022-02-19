@@ -2,8 +2,8 @@
 import time
 
 # local
-from src.cron_jobs.utils.file import read_json
-from src.cron_jobs.utils.fetch import fetch_json, load_entity
+from src.cron_jobs.utils.file import has_valid_file, read_json, write_json
+from src.cron_jobs.utils.fetch import fetch_entity, fetch_json, load_entity
 from src.db.connection import engine, Session, Base
 from src.db.models.country import Country
 from src.db.models.city import City
@@ -893,6 +893,27 @@ def populate_poll_results_per_fraction():
     )
 
 
+def update_politicians_occupation() -> None:
+    begin_time = time.time()
+    session = Session()
+    file_path = "src/cron_jobs/data/politicians.json"
+    """has_file = has_valid_file(file_path)
+     if not has_file:
+        politicians_data = fetch_entity("politicians")
+        write_json(file_path, politicians_data) """
+    politicians = read_json(file_path)
+    for politician in politicians:
+        id = politician["id"]
+        occupation = politician["occupation"]
+        if occupation:
+            session.query(Politician).filter(Politician.id == id).update(
+                {Politician.occupation: occupation}
+            )
+            session.commit()
+    end_time = time.time()
+    print(f"Total runtime to update data is {end_time - begin_time}")
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    populate_vote_result()
+    update_politicians_occupation()
