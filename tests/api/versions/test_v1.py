@@ -60,7 +60,7 @@ def test_read_politician():
 
         votes_and_polls = response.json()["votes_and_polls"]
         assert type(votes_and_polls) is list
-        assert len(votes_and_polls) == 5
+        assert len(votes_and_polls) == 6
 
         for index in range(4):
             assert (
@@ -76,12 +76,7 @@ def test_read_politician():
 
     def occupations_test():
         response = client.get("/v1/politician/130072")
-        response_items = [
-            "Kanzlerkandidat",
-            "Ministerpräsident NRW",
-            "Parteivorsitzender",
-            "MdL",
-        ]
+        response_items = ["MdB"]
 
         for item in response_items:
             assert item in response.json()["occupations"]
@@ -710,16 +705,26 @@ def test_read_politician_sidejobs():
 
 def test_read_politician_image_scanner():
     def label_and_id_test():
-        response = client.get("/v1/image-scanner?text=ronald")
+        response = client.get("/v1/image-scanner?id=79334")
         assert response.status_code == 200
         assert type(response.json()) is list
         test_responses = [
-            {"id": 137636, "label": "Ronald Kaufmann"},
-            {"id": 178064, "label": "Ronald Günter Wetklo"},
             {
-                "id": 177893,
-                "label": "Ronald Rüdiger",
-            },
+                "id": 79334,
+                "label": "Gregor Gysi",
+                "party": {
+                    "id": 8,
+                    "label": "DIE LINKE",
+                    "party_style": {
+                        "id": 8,
+                        "display_name": "Linke",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#CD3E72",
+                        "border_color": None,
+                    },
+                },
+                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/79334.jpg",
+            }
         ]
 
         for item in test_responses:
