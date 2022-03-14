@@ -144,22 +144,9 @@ class Party(FTFBaseModel):
 
 class Politician(FTFBaseModel):
     id: int
-    entity_type: str
     label: str
-    first_name: str
-    last_name: str
-    sex: Optional[str]
-    year_of_birth: Optional[str]
     party: Optional[Party]
-    deceased: Optional[bool]
-    deceased_date: Optional[date]
-    education: Optional[str]
-    residence: Optional[str]
     occupations: Optional[List[str]]
-    statistic_questions: Optional[str]
-    statistic_questions_answered: Optional[str]
-    qid_wikidata: Optional[str]
-    field_title: Optional[str]
     sidejobs: Optional[List[Sidejob]]
     cvs: Optional[List]
     abgeordnetenwatch_url: Optional[str]
@@ -168,11 +155,10 @@ class Politician(FTFBaseModel):
     topic_ids_of_latest_committee: Optional[List[int]]
 
 
-class PoliticianSearch(FTFBaseModel):
+class PoliticianHeader(FTFBaseModel):
     id: int
     label: str
     party: Optional[Party]
-    image_url: Optional[str]
 
 
 class VoteResult(FTFBaseModel):
@@ -229,9 +215,21 @@ class PoliticianSpeech(BaseModel):
     title: str
     date: str
 
+class ParliamentSpeech(BaseModel):
+    videoFileURI: Optional[str]
+    title: str
+    date: str
+    speaker: PoliticianHeader
 
 class PoliticianSpeechData(BaseModel):
     items: Optional[List[PoliticianSpeech]]
+    total: int
+    page: int
+    size: int
+    is_last_page: bool
+
+class ParliamentSpeechData(BaseModel):
+    items: Optional[List[ParliamentSpeech]]
     total: int
     page: int
     size: int
