@@ -748,7 +748,7 @@ def test_read_poll_details():
     test_same_poll_id_in_response()
 
 
-def test_read_politician_media():
+def test_read_politician_speech():
     def selected_values_test():
         response = client.get("/v1/politician/119742/speeches?page=5")
         response_items = [
