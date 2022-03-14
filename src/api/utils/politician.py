@@ -1,3 +1,4 @@
+import time
 import urllib.request
 from urllib.error import HTTPError
 from typing import List, Optional, Dict
@@ -147,7 +148,7 @@ def did_vote_pass(vote_result: Dict):
     return vote_result["yes"] / total > 0.5
 
 
-def get_politician_info(
+def get_politician_profile(
     id: int,
     db: Session = Depends(get_db),
     votes_start: int = None,
@@ -173,7 +174,3 @@ def get_politician_info(
     )
     politician.__dict__["topic_ids_of_latest_committee"] = topic_ids_of_latest_committee
     return politician
-
-
-def get_politicianhistory(id: int, db: Session = Depends(get_db)):
-    return db.query(models.Politician).where(models.Politician.id == id).first()
