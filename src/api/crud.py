@@ -224,6 +224,42 @@ def get_politician_speech(abgeordnetenwatch_id: int, page: int):
     }
     return fetched_speeches
 
+def get_bundestag_speech(db: Session, page: int):
+    raw_data = load_json_from_url(
+        f"https://de.openparliament.tv/api/v1/search/media?parliament=DE&sort=date-desc"
+    )
+
+    total = raw_data["meta"]["results"]["total"]
+    if total == 0:
+        return None
+    # openparliament.tv/api retrieves 10 data per a request
+    last_page = math.ceil(total / 10)
+    if last_page < page:
+        return None
+
+    speech_list = []
+    for item in raw_data["data"]:
+        attributes = item["attributes"]
+        id = item["relationships"]["people"]["data"][0]["attributes"]["additionalInformation"]["abgeordnetenwatchID"]
+        speech_item = {
+            "videoFileURI": attributes["videoFileURI"],
+            "title": item["relationships"]["agendaItem"]["data"]["attributes"]["title"],
+            "date": attributes["dateStart"],
+            "speaker": get_entity_by_id(db, models.Politician, int(id))
+        }
+        speech_list.append(speech_item)
+
+    size = raw_data["meta"]["results"]["count"]
+    is_last_page = last_page == page
+
+    fetched_speeches = {
+        "items": speech_list,
+        "total": total,
+        "page": page,
+        "size": size,
+        "is_last_page": is_last_page,
+    }
+    return fetched_speeches
 
 def for_committee_topics__get_latest_parlament_period_id(db: Session, id: int):
     try:
