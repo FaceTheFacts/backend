@@ -13,7 +13,7 @@ from fastapi_pagination import Page, add_pagination, paginate
 import src.api.crud as crud
 import src.api.schemas as schemas
 from src.api.utils import politrack
-from src.api.utils.politician import get_politician_info
+from src.api.utils.politician import get_politician_profile
 from src.db import models
 from src.db.connection import Session
 from src.api.utils.error import check_entity_not_found
@@ -42,7 +42,7 @@ def read_politician(
     votes_start: int = None,
     votes_end: int = 6,
 ):
-    return get_politician_info(id, db, votes_start, votes_end)
+    return get_politician_profile(id, db, votes_start, votes_end)
 
 
 @router.get("/politicians/", response_model=List[schemas.Politician])
@@ -55,13 +55,13 @@ def read_politicians(
     politicians = [None] * len(ids)
     list_index = 0
     for id in ids:
-        politician = get_politician_info(id, db, votes_start, votes_end)
+        politician = get_politician_profile(id, db, votes_start, votes_end)
         politicians[list_index] = politician
         list_index += 1
     return politicians
 
 
-@router.get("/politicianshistory/", response_model=List[schemas.PoliticianSearch])
+@router.get("/politicianshistory/", response_model=List[schemas.PoliticianHeader])
 def read_politicians(
     ids: List[int] = Query(None),
     db: Session = Depends(get_db),
@@ -69,17 +69,14 @@ def read_politicians(
     politicians = [None] * len(ids)
     list_index = 0
     for id in ids:
-        politician = get_politician_info(
-            id,
-            db,
-        )
+        politician = crud.get_entity_by_id(db, models.Politician, id)
         politicians[list_index] = politician
         list_index += 1
     return politicians
 
 
 @router.get(
-    "/politician/{id}/constituencies", response_model=List[schemas.PoliticianSearch]
+    "/politician/{id}/constituencies", response_model=List[schemas.PoliticianHeader]
 )
 def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
     politicians = crud.get_politician_by_constituency(db, id)
@@ -103,7 +100,7 @@ def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     return paginate(sidejobs)
 
 
-@router.get("/search", response_model=List[schemas.PoliticianSearch])
+@router.get("/search", response_model=List[schemas.PoliticianHeader])
 def read_politician_search(text: str, db: Session = Depends(get_db)):
     politicians = crud.get_politician_by_search(db, text)
     check_entity_not_found(politicians, "Politicians")
@@ -111,7 +108,7 @@ def read_politician_search(text: str, db: Session = Depends(get_db)):
     return sorted_politicians
 
 
-@router.get("/image-scanner", response_model=List[schemas.PoliticianSearch])
+@router.get("/image-scanner", response_model=List[schemas.PoliticianHeader])
 def read_politician_image_scanner(id: int, db: Session = Depends(get_db)):
     politician = crud.get_politicians_by_ids(db, [id])
     check_entity_not_found(politician, "Politicians")
@@ -156,6 +153,12 @@ def read_polls(
 @router.get("/politician/{id}/speeches", response_model=schemas.PoliticianSpeechData)
 def read_politician_speech(id: int, page: int):
     politician_speech = crud.get_politician_speech(id, page)
+    check_entity_not_found(politician_speech, "Politician Speech")
+    return politician_speech
+
+@router.get("/bundestag/speeches", response_model=schemas.ParliamentSpeechData)
+def read_bundestag_speech(page: int, db: Session = Depends(get_db)):
+    politician_speech = crud.get_bundestag_speech(db, page)
     check_entity_not_found(politician_speech, "Politician Speech")
     return politician_speech
 
