@@ -145,15 +145,14 @@ def get_politician_by_image_scanner(db: Session, search_text: str):
 # Tested with mockup
 # SELECT * FROM public.poll WHERE field_legislature_id = 111 or WHERE field_legislature_id = 132 ORDER by field_poll_date DESC
 def get_latest_bundestag_polls(db: Session):
+    current_legislature_period = 132
     return (
         db.query(models.Poll)
         .filter(
-            or_(
-                models.Poll.field_legislature_id == 111,
-                models.Poll.field_legislature_id == 132,
-            )
+            models.Poll.field_legislature_id == current_legislature_period,
         )
         .order_by(models.Poll.field_poll_date.desc())
+        .limit(3)
         .all()
     )
 
@@ -224,6 +223,7 @@ def get_politician_speech(abgeordnetenwatch_id: int, page: int):
     }
     return fetched_speeches
 
+
 def get_bundestag_speech(db: Session, page: int):
     raw_data = load_json_from_url(
         f"https://de.openparliament.tv/api/v1/search/media?parliament=DE&sort=date-desc"
@@ -240,12 +240,14 @@ def get_bundestag_speech(db: Session, page: int):
     speech_list = []
     for item in raw_data["data"]:
         attributes = item["attributes"]
-        id = item["relationships"]["people"]["data"][0]["attributes"]["additionalInformation"]["abgeordnetenwatchID"]
+        id = item["relationships"]["people"]["data"][0]["attributes"][
+            "additionalInformation"
+        ]["abgeordnetenwatchID"]
         speech_item = {
             "videoFileURI": attributes["videoFileURI"],
             "title": item["relationships"]["agendaItem"]["data"]["attributes"]["title"],
             "date": attributes["dateStart"],
-            "speaker": get_entity_by_id(db, models.Politician, int(id))
+            "speaker": get_entity_by_id(db, models.Politician, int(id)),
         }
         speech_list.append(speech_item)
 
@@ -260,6 +262,7 @@ def get_bundestag_speech(db: Session, page: int):
         "is_last_page": is_last_page,
     }
     return fetched_speeches
+
 
 def for_committee_topics__get_latest_parlament_period_id(db: Session, id: int):
     try:
