@@ -169,11 +169,12 @@ class VoteResult(FTFBaseModel):
 
 
 class BundestagPoll(FTFBaseModel):
-    poll_field_legislature_id: int
     poll_id: int
     poll_label: str
     poll_field_poll_date: date
     result: VoteResult
+    politicians: List[int]
+    last_politician: str
 
 
 class Fraction(FTFBaseModel):
@@ -215,11 +216,13 @@ class PoliticianSpeech(BaseModel):
     title: str
     date: str
 
+
 class ParliamentSpeech(BaseModel):
     videoFileURI: Optional[str]
     title: str
     date: str
     speaker: PoliticianHeader
+
 
 class PoliticianSpeechData(BaseModel):
     items: Optional[List[PoliticianSpeech]]
@@ -227,6 +230,7 @@ class PoliticianSpeechData(BaseModel):
     page: int
     size: int
     is_last_page: bool
+
 
 class ParliamentSpeechData(BaseModel):
     items: Optional[List[ParliamentSpeech]]
