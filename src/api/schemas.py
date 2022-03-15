@@ -168,6 +168,13 @@ class VoteResult(FTFBaseModel):
     no_show: int
 
 
+class BundestagPollData(FTFBaseModel):
+    poll_id: int
+    poll_label: str
+    poll_field_poll_date: date
+    result: VoteResult
+
+
 class BundestagPoll(FTFBaseModel):
     poll_id: int
     poll_label: str
