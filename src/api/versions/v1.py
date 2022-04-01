@@ -1,11 +1,10 @@
 # std
 import os
-from pickle import TRUE
 from typing import List
-from xmlrpc.client import boolean
 
 # third-party
 import requests
+
 from fastapi import Depends, Query, APIRouter, HTTPException
 from fastapi_pagination import Page, add_pagination, paginate
 
@@ -18,6 +17,7 @@ from src.db import models
 from src.db.connection import Session
 from src.api.utils.error import check_entity_not_found
 from src.api.utils.party_sort import party_sort
+from src.api.utils.polls import get_politcianIds_by_BundestagPollData_and_followIds
 
 router = APIRouter(
     prefix="/v1",
@@ -76,13 +76,12 @@ def read_politicians(
 
 
 @router.get(
-    "/politician/{id}/constituencies", response_model=List[schemas.PoliticianHeader]
+    "/politician/{id}/constituencies", response_model=schemas.ConstituencyPoliticians
 )
 def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
-    politicians = crud.get_politician_by_constituency(db, id)
-    check_entity_not_found(politicians, "Politician")
-    sorted_politicians = party_sort(politicians)
-    return sorted_politicians
+    constituency_politicians = crud.get_politician_by_constituency(db, id)
+    check_entity_not_found(constituency_politicians, "ConstituencyPolitician")
+    return constituency_politicians
 
 
 @router.get("/politician/{id}/positions", response_model=schemas.PoliticianToPosition)
@@ -127,18 +126,22 @@ def read_politician_votes(
 
 
 # Tested with mockup
-@router.get("/bundestag-latest-polls", response_model=Page[schemas.BundestagPoll])
-def read_latest_polls(db: Session = Depends(get_db)):
-    polls = crud.get_polls_total(db)
-    check_entity_not_found(polls, "Polls")
-    return paginate(polls)
 
 
-@router.get("/poll/{id}/details", response_model=List[schemas.PollResult])
+@router.get("/poll/{id}/details", response_model=schemas.PollDetails)
 def read_poll_details(id: int, db: Session = Depends(get_db)):
     poll_results = crud.get_poll_results_by_poll_id(db, id)
-    check_entity_not_found(poll_results, "Poll Results")
-    return poll_results
+    poll_links = crud.get_poll_links_by_poll_id(db, id)
+    poll_details = {"poll_results": poll_results, "poll_links": poll_links}
+    check_entity_not_found(poll_details, "PollDetails")
+    return poll_details
+
+
+@router.get("/poll/{id}/votes", response_model=schemas.PollVotes)
+def read_poll_votes(id: int, db: Session = Depends(get_db)):
+    vote_results = crud.get_votes_by_poll_id(db, id)
+    check_entity_not_found(vote_results, "Poll Results")
+    return vote_results
 
 
 @router.get("/polls/{id}", response_model=List[schemas.VoteAndPoll])
@@ -156,11 +159,60 @@ def read_politician_speech(id: int, page: int):
     check_entity_not_found(politician_speech, "Politician Speech")
     return politician_speech
 
+
 @router.get("/bundestag/speeches", response_model=schemas.ParliamentSpeechData)
 def read_bundestag_speech(page: int, db: Session = Depends(get_db)):
     politician_speech = crud.get_bundestag_speech(db, page)
     check_entity_not_found(politician_speech, "Politician Speech")
     return politician_speech
+
+
+@router.get("/bundestag/sidejobs", response_model=List[schemas.SidejobBundestag])
+def read_politician_sidejobs(db: Session = Depends(get_db)):
+    sidejobs = crud.get_latest_sidejobs(db)
+    check_entity_not_found(sidejobs, "Sidejobs")
+    return sidejobs
+
+
+@router.get("/bundestag/allsidejobs", response_model=Page[schemas.SidejobBundestag])
+def read_politician_sidejobs(db: Session = Depends(get_db)):
+    sidejobs = crud.get_all_sidejobs(db)
+    check_entity_not_found(sidejobs, "Sidejobs")
+    return paginate(sidejobs)
+
+
+@router.get(
+    "/bundestag/polls", response_model=List[schemas.BundestagPollDataWithPoliticians]
+)
+def read_latest_polls(
+    followIds: List[int] = Query(None), db: Session = Depends(get_db)
+):
+    polls = crud.get_polls_total(db)
+    latest_polls = get_politcianIds_by_BundestagPollData_and_followIds(
+        polls, db, followIds
+    )
+    check_entity_not_found(latest_polls, "Polls")
+    return latest_polls
+
+
+@router.get("/bundestag/allpolls", response_model=schemas.BundestagPoll)
+def read_latest_polls(
+    filters: List[int] = Query(None),
+    db: Session = Depends(get_db),
+    page: int = Query(1),
+):
+    size = page * 10
+    filtered_polls = crud.get_all_polls_total(db, size, filters)
+    polls = {}
+    polls["data"] = get_politcianIds_by_BundestagPollData_and_followIds(
+        filtered_polls, db
+    )
+    if len(polls["data"]) < 10:
+        polls["last_page"] = True
+    else:
+        polls["last_page"] = False
+    check_entity_not_found(polls, "Polls")
+    return polls
 
 
 @router.get("/politician/{id}/news", response_model=Page[schemas.PolitrackNewsArticle])
