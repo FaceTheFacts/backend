@@ -53,16 +53,6 @@ class TestCrudFunctions(unittest.TestCase):
             actual.append(item)
         expected = [
             {
-                "id": 3,
-                "field_legislature_id": 111,
-                "field_poll_date": datetime.datetime(2021, 10, 1),
-            },
-            {
-                "id": 4,
-                "field_legislature_id": 111,
-                "field_poll_date": datetime.datetime(2021, 9, 27),
-            },
-            {
                 "id": 5,
                 "field_legislature_id": 132,
                 "field_poll_date": datetime.datetime(2021, 9, 20),
@@ -77,7 +67,7 @@ class TestCrudFunctions(unittest.TestCase):
 
     # unittest
     def test_get_vote_result_by_poll_id(self):
-        result = crud.get_vote_result_by_poll_id(self.session, 3)
+        result = crud.get_vote_result_by_poll_id(self.session, 5)
         actual = {
             "id": result.id,
             "yes": result.yes,
@@ -92,7 +82,7 @@ class TestCrudFunctions(unittest.TestCase):
             "no": 10,
             "abstain": 0,
             "no_show": 2,
-            "poll_id": 3,
+            "poll_id": 5,
         }
         not_expected = {
             "id": 3,
@@ -110,9 +100,9 @@ class TestCrudFunctions(unittest.TestCase):
         "src.api.crud.get_latest_bundestag_polls",
         return_value=[
             models.Poll(
-                id=3,
+                id=5,
                 label="CDU voting right",
-                field_legislature_id=111,
+                field_legislature_id=132,
                 field_poll_date=datetime.datetime(2021, 10, 1),
             )
         ],
@@ -127,8 +117,8 @@ class TestCrudFunctions(unittest.TestCase):
         actual = crud.get_polls_total(self.session)
         expected = [
             {
-                "poll_field_legislature_id": 111,
-                "poll_id": 3,
+                "poll_field_legislature_id": 132,
+                "poll_id": 5,
                 "poll_label": "CDU voting right",
                 "poll_field_poll_date": datetime.datetime(2021, 10, 1),
                 "result": {"yes": 10, "no": 10, "abstain": 0, "no_show": 2},
@@ -153,10 +143,10 @@ class TestCrudFunctions(unittest.TestCase):
             },
         }
         expected = {
-            "poll_field_legislature_id": 111,
-            "poll_id": 3,
-            "poll_label": "CDU voting right",
-            "poll_field_poll_date": datetime.datetime(2021, 10, 1),
+            "poll_field_legislature_id": 132,
+            "poll_id": 5,
+            "poll_label": "Amendment to the Infection Protection Act",
+            "poll_field_poll_date": datetime.datetime(2021, 9, 20),
             "result": {"yes": 10, "no": 10, "abstain": 0, "no_show": 2},
         }
 

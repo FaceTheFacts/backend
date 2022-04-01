@@ -11,47 +11,85 @@ def test_read_politician():
         assert type(response.json()) is dict
         assert response.status_code == 200
         assert response.json()["id"] == 178104
-        assert response.json()["entity_type"] == "politician"
         assert response.json()["label"] == "Thomas Frost"
-        assert response.json()["first_name"] == "Thomas"
-        assert response.json()["last_name"] == "Frost"
-        assert response.json()["sex"] == "m"
-        assert response.json()["year_of_birth"] == "1985"
-        assert response.json()["deceased"] is None
-        assert response.json()["deceased_date"] is None
+        assert response.json()["occupations"] == ["Flohmarkt Betreiber"]
+        assert response.json()["sidejobs"] == []
+        assert response.json()["cvs"] == []
         assert (
-            response.json()["education"]
-            == "Erzieher/ Kitaleiter, Werkzeugmechaniker, Waffenmechaniker"
+            response.json()["abgeordnetenwatch_url"]
+            == "https://www.abgeordnetenwatch.de/profile/thomas-frost"
         )
-        assert response.json()["residence"] == "Mestlin "
-        assert response.json()["statistic_questions"] is None
-        assert response.json()["statistic_questions_answered"] is None
-        assert response.json()["qid_wikidata"] is None
-        assert response.json()["field_title"] is None
+        assert response.json()["weblinks"] == [
+            {
+                "id": 31117,
+                "link": "https://www.thomasfrost.de/",
+                "politician_id": 178104,
+            },
+            {
+                "id": 31118,
+                "link": "https://www.facebook.com/familieumweltartenschutz/",
+                "politician_id": 178104,
+            },
+        ]
+        assert response.json()["votes_and_polls"] == []
+        assert response.json()["topic_ids_of_latest_committee"] == []
 
-    def specific_elements_test1():
-        # Testing past_party, statistic_questions and statistic_questions_answered
+    def weblinks_test():
+        # Testing Weblinks
         response = client.get("/v1/politician/176101")
         assert response.status_code == 200
         assert type(response.json()) is dict
-        assert response.json()["statistic_questions"] == "10"
-        assert response.json()["statistic_questions_answered"] == "9"
+        assert response.json()["weblinks"] == [
+            {
+                "id": 32294,
+                "link": "https://www.felix-locke.de",
+                "politician_id": 176101,
+            },
+            {
+                "id": 32295,
+                "link": "https://de.wikipedia.org/wiki/Felix_Locke",
+                "politician_id": 176101,
+            },
+            {
+                "id": 32296,
+                "link": "https://www.instagram.com/felix_locke_fw/",
+                "politician_id": 176101,
+            },
+            {
+                "id": 32297,
+                "link": "https://www.facebook.com/LockeFW",
+                "politician_id": 176101,
+            },
+            {
+                "id": 32298,
+                "link": "https://twitter.com/felix_locke_fw",
+                "politician_id": 176101,
+            },
+        ]
 
-    def specific_elements_test_2():
-        # Testing deceased, deceased_date and qid_wikidata
-        response = client.get("/v1/politician/79107")
-        assert response.status_code == 200
-        assert type(response.json()) is dict
-        assert response.json()["deceased"] is True
-        assert response.json()["deceased_date"] == "2020-10-25"
-        assert response.json()["qid_wikidata"] == "Q90833"
-
-    def specific_elements_test_3():
-        # Testing field_title
+    def cv_test():
+        # Testing CV
         response = client.get("/v1/politician/79109")
         assert response.status_code == 200
         assert type(response.json()) is dict
-        assert response.json()["field_title"] == "Dr."
+        assert response.json()["cvs"] == [
+            {
+                "id": 560,
+                "short_description": "Geboren am 19. März 1969; verheiratet; zwei Kinder.",
+                "raw_text": "Abitur in Siegburg; Studium der politischen Wissenschaft an der Friedrich-Wilhems-Universität in Bonn; Promotion 2004; 2000 bis 2002 und 2004 Auslandstätigkeit in der Organisation für Sicherheit und Zusammenarbeit in Europa (OSZE) im ehemaligen Jugoslawien; 2006 bis 2013 Referent für Sicherheitspolitik bei der Fraktion DIE LINKE.\xa0 ",
+                "politician_id": 79109,
+            }
+        ]
+
+    def abgeordnetenwatch_url_test():
+        # Testing abgeordnetenwatch_url
+        response = client.get("/v1/politician/79107")
+        assert response.status_code == 200
+        assert type(response.json()) is dict
+        assert (
+            response.json()["abgeordnetenwatch_url"]
+            == "https://www.abgeordnetenwatch.de/profile/thomas-oppermann"
+        )
 
     def votes_and_polls_test():
         response = client.get("/v1/politician/73426?sidejobs_end=0")
@@ -91,9 +129,9 @@ def test_read_politician():
         assert expected_ids == response.json()["topic_ids_of_latest_committee"]
 
     random_test()
-    specific_elements_test1()
-    specific_elements_test_2()
-    specific_elements_test_3()
+    weblinks_test()
+    cv_test()
+    abgeordnetenwatch_url_test()
     votes_and_polls_test()
     politician_id_not_found()
     occupations_test()
@@ -120,7 +158,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/138540.jpg",
             },
             {
                 "id": 138463,
@@ -136,7 +173,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/138463.jpg",
             },
             {
                 "id": 138292,
@@ -152,7 +188,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/138292.jpg",
             },
             {
                 "id": 175796,
@@ -168,7 +203,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/175796.jpg",
             },
             {
                 "id": 177232,
@@ -184,7 +218,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": None,
             },
             {
                 "id": 150296,
@@ -200,7 +233,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/150296.jpg",
             },
             {
                 "id": 177853,
@@ -216,7 +248,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": None,
             },
             {
                 "id": 176099,
@@ -232,7 +263,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/176099.jpg",
             },
             {
                 "id": 176057,
@@ -248,7 +278,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/176057.jpg",
             },
             {
                 "id": 147500,
@@ -264,7 +293,6 @@ def test_read_politician_constituencies():
                         "border_color": "#FD820B",
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/147500.jpg",
             },
         ]
 
@@ -287,7 +315,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/138124.jpg",
             },
             {
                 "id": 146867,
@@ -303,7 +330,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/146867.jpg",
             },
             {
                 "id": 164999,
@@ -319,7 +345,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": None,
             },
             {
                 "id": 175734,
@@ -335,7 +360,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": None,
             },
             {
                 "id": 177566,
@@ -351,7 +375,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": None,
             },
             {
                 "id": 177230,
@@ -367,7 +390,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/177230.jpg",
             },
             {
                 "id": 177845,
@@ -383,7 +405,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/177845.jpg",
             },
             {
                 "id": 148443,
@@ -399,7 +420,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/148443.jpg",
             },
             {
                 "id": 177290,
@@ -415,7 +435,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/177290.jpg",
             },
             {
                 "id": 176255,
@@ -431,7 +450,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/176255.jpg",
             },
             {
                 "id": 176204,
@@ -447,7 +465,6 @@ def test_read_politician_constituencies():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/176204.jpg",
             },
             {
                 "id": 176123,
@@ -463,7 +480,6 @@ def test_read_politician_constituencies():
                         "border_color": "#FD820B",
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/176123.jpg",
             },
         ]
 
@@ -587,7 +603,6 @@ def test_read_politician_image_scanner():
                         "border_color": None,
                     },
                 },
-                "image_url": "https://candidate-images.s3.eu-central-1.amazonaws.com/79334.jpg",
             }
         ]
 

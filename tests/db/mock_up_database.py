@@ -4,10 +4,10 @@ import src.db.models as models
 # default
 from unittest import mock
 import datetime
+from sqlalchemy import and_
 
 # third-party
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
-from sqlalchemy import or_
 
 mockup_session = UnifiedAlchemyMagicMock(
     data=[
@@ -141,27 +141,10 @@ mockup_session = UnifiedAlchemyMagicMock(
         (
             [
                 mock.call.query(models.Poll),
-                mock.call.filter(
-                    or_(
-                        models.Poll.field_legislature_id == 111,
-                        models.Poll.field_legislature_id == 132,
-                    )
-                ),
+                mock.call.filter(models.Poll.field_legislature_id == 132),
                 mock.call.order_by(models.Poll.field_poll_date.desc()),
             ],
             [
-                models.Poll(
-                    id=3,
-                    field_legislature_id=111,
-                    label="CDU voting right",
-                    field_poll_date=datetime.datetime(2021, 10, 1),
-                ),
-                models.Poll(
-                    id=4,
-                    field_legislature_id=111,
-                    label="CDU voting right",
-                    field_poll_date=datetime.datetime(2021, 9, 27),
-                ),
                 models.Poll(
                     id=5,
                     field_legislature_id=132,
@@ -180,20 +163,35 @@ mockup_session = UnifiedAlchemyMagicMock(
         (
             [
                 mock.call.query(models.VoteResult),
-                mock.call.filter(models.VoteResult.poll_id == 3),
+                mock.call.filter(models.VoteResult.poll_id == 5),
             ],
             [
-                models.VoteResult(id=1, yes=10, no=10, abstain=0, no_show=2, poll_id=3),
+                models.VoteResult(id=1, yes=10, no=10, abstain=0, no_show=2, poll_id=5),
             ],
         ),
         (
             [
                 mock.call.query(models.VoteResult),
-                mock.call.filter(models.VoteResult.poll_id == 4),
+                mock.call.filter(models.VoteResult.poll_id == 6),
             ],
             [
-                models.VoteResult(id=2, yes=10, no=10, abstain=0, no_show=2, poll_id=4),
+                models.VoteResult(id=2, yes=10, no=10, abstain=0, no_show=2, poll_id=6),
             ],
+        ),
+        # latest-polls
+        (
+            [
+                mock.call.query(models.CandidacyMandate),
+                mock.call.join(models.Vote),
+                mock.call.filter(
+                    and_(
+                        models.CandidacyMandate.parliament_period_id == 132,
+                        models.Vote.poll_id == 5,
+                        models.Vote.vote != "no_show",
+                    )
+                ),
+            ],
+            [models.CandidacyMandate()],
         ),
     ]
 )
