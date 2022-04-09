@@ -271,6 +271,7 @@ def get_polls_total(db: Session):
             )
         )
         data_list.append(item_dict)
+    print(data_list[0])
     return data_list
 
 

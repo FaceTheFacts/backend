@@ -148,14 +148,23 @@ mockup_session = UnifiedAlchemyMagicMock(
                 models.Poll(
                     id=5,
                     field_legislature_id=132,
-                    label="Amendment to the Infection Protection Act",
-                    field_poll_date=datetime.datetime(2021, 9, 20),
+                    label="Mockup Poll 5",
+                    field_intro="Intro to mockup poll 5.",
+                    field_poll_date=datetime.datetime(2021, 10, 5),
                 ),
                 models.Poll(
                     id=6,
                     field_legislature_id=132,
-                    label="Amendment to the Infection Protection Act",
-                    field_poll_date=datetime.datetime(2021, 9, 18),
+                    label="Mockup Poll 6",
+                    field_intro="Intro to mockup poll 6.",
+                    field_poll_date=datetime.datetime(2021, 10, 6),
+                ),
+                models.Poll(
+                    id=7,
+                    field_legislature_id=132,
+                    label="Mockup Poll 7",
+                    field_intro="Intro to mockup poll 7.",
+                    field_poll_date=datetime.datetime(2021, 10, 7),
                 ),
             ],
         ),
@@ -166,7 +175,7 @@ mockup_session = UnifiedAlchemyMagicMock(
                 mock.call.filter(models.VoteResult.poll_id == 5),
             ],
             [
-                models.VoteResult(id=1, yes=10, no=10, abstain=0, no_show=2, poll_id=5),
+                models.VoteResult(id=1, yes=5, no=10, abstain=10, no_show=0, poll_id=5),
             ],
         ),
         (
@@ -175,23 +184,17 @@ mockup_session = UnifiedAlchemyMagicMock(
                 mock.call.filter(models.VoteResult.poll_id == 6),
             ],
             [
-                models.VoteResult(id=2, yes=10, no=10, abstain=0, no_show=2, poll_id=6),
+                models.VoteResult(id=2, yes=0, no=5, abstain=10, no_show=10, poll_id=6),
             ],
         ),
-        # latest-polls
         (
             [
-                mock.call.query(models.CandidacyMandate),
-                mock.call.join(models.Vote),
-                mock.call.filter(
-                    and_(
-                        models.CandidacyMandate.parliament_period_id == 132,
-                        models.Vote.poll_id == 5,
-                        models.Vote.vote != "no_show",
-                    )
-                ),
+                mock.call.query(models.VoteResult),
+                mock.call.filter(models.VoteResult.poll_id == 7),
             ],
-            [models.CandidacyMandate()],
+            [
+                models.VoteResult(id=2, yes=10, no=0, abstain=5, no_show=10, poll_id=7),
+            ],
         ),
     ]
 )
