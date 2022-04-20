@@ -271,7 +271,6 @@ def get_polls_total(db: Session):
             )
         )
         data_list.append(item_dict)
-    print(data_list[0])
     return data_list
 
 
@@ -411,16 +410,18 @@ def get_bundestag_speech(db: Session, page: int):
                 "speakerstatus"
             ] != ("vice-president" or "president"):
                 attributes = item["attributes"]
-                id = item["relationships"]["people"]["data"][0]["attributes"][
-                    "additionalInformation"
-                ]["abgeordnetenwatchID"]
+                politician_id = item["relationships"]["people"]["data"][0][
+                    "attributes"
+                ]["additionalInformation"]["abgeordnetenwatchID"]
                 speech_item = {
                     "videoFileURI": attributes["videoFileURI"],
                     "title": item["relationships"]["agendaItem"]["data"]["attributes"][
                         "title"
                     ],
                     "date": attributes["dateStart"],
-                    "speaker": get_entity_by_id(db, models.Politician, int(id)),
+                    "speaker": get_entity_by_id(
+                        db, models.Politician, int(politician_id)
+                    ),
                 }
                 speech_list.append(speech_item)
 

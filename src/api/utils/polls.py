@@ -8,12 +8,12 @@ from sqlalchemy import and_, func, or_
 from src.db import models
 
 
-def get_politcianIds_by_BundestagPollData_and_followIds(
-    polls: List[BundestagPollData], db: Session, followIds: List[int] = None
+def get_politcian_ids_by_bundestag_polldata_and_follow_ids(
+    polls: List[BundestagPollData], db: Session, follow_ids: List[int] = None
 ):
     for poll in polls:
         politician_list = []
-        if followIds:
+        if follow_ids:
             query_data = (
                 db.query(models.CandidacyMandate)
                 .join(models.Vote)
@@ -23,7 +23,7 @@ def get_politcianIds_by_BundestagPollData_and_followIds(
                 )
                 .filter(
                     and_(
-                        models.CandidacyMandate.politician_id.in_(followIds),
+                        models.CandidacyMandate.politician_id.in_(follow_ids),
                         models.Vote.poll_id == poll["poll"]["id"],
                         models.Vote.vote != "no_show",
                     )

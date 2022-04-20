@@ -17,7 +17,7 @@ from src.db import models
 from src.db.connection import Session
 from src.api.utils.error import check_entity_not_found
 from src.api.utils.party_sort import party_sort
-from src.api.utils.polls import get_politcianIds_by_BundestagPollData_and_followIds
+from src.api.utils.polls import get_politcian_ids_by_bundestag_polldata_and_follow_ids
 
 router = APIRouter(
     prefix="/v1",
@@ -185,11 +185,11 @@ def read_politician_sidejobs(db: Session = Depends(get_db)):
     "/bundestag/polls", response_model=List[schemas.BundestagPollDataWithPoliticians]
 )
 def read_latest_polls(
-    followIds: List[int] = Query(None), db: Session = Depends(get_db)
+    follow_ids: List[int] = Query(None), db: Session = Depends(get_db)
 ):
     polls = crud.get_polls_total(db)
-    latest_polls = get_politcianIds_by_BundestagPollData_and_followIds(
-        polls, db, followIds
+    latest_polls = get_politcian_ids_by_bundestag_polldata_and_follow_ids(
+        polls, db, follow_ids
     )
     check_entity_not_found(latest_polls, "Polls")
     return latest_polls
@@ -204,7 +204,7 @@ def read_latest_polls(
     size = page * 10
     filtered_polls = crud.get_all_polls_total(db, size, filters)
     polls = {}
-    polls["data"] = get_politcianIds_by_BundestagPollData_and_followIds(
+    polls["data"] = get_politcian_ids_by_bundestag_polldata_and_follow_ids(
         filtered_polls, db
     )
     if len(polls["data"]) < 10:
