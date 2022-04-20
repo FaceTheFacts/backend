@@ -48,36 +48,39 @@ class TestCrudFunctions(unittest.TestCase):
             item = {
                 "id": result.id,
                 "field_legislature_id": result.field_legislature_id,
+                "label": result.label,
+                "field_intro": result.field_intro,
                 "field_poll_date": result.field_poll_date,
             }
             actual.append(item)
         expected = [
             {
-                "id": 3,
-                "field_legislature_id": 111,
-                "field_poll_date": datetime.datetime(2021, 10, 1),
-            },
-            {
-                "id": 4,
-                "field_legislature_id": 111,
-                "field_poll_date": datetime.datetime(2021, 9, 27),
-            },
-            {
                 "id": 5,
                 "field_legislature_id": 132,
-                "field_poll_date": datetime.datetime(2021, 9, 20),
+                "label": "Mockup Poll 5",
+                "field_intro": "Intro to mockup poll 5.",
+                "field_poll_date": datetime.datetime(2021, 10, 5),
             },
             {
                 "id": 6,
                 "field_legislature_id": 132,
-                "field_poll_date": datetime.datetime(2021, 9, 18),
+                "label": "Mockup Poll 6",
+                "field_intro": "Intro to mockup poll 6.",
+                "field_poll_date": datetime.datetime(2021, 10, 6),
+            },
+            {
+                "id": 7,
+                "field_legislature_id": 132,
+                "label": "Mockup Poll 7",
+                "field_intro": "Intro to mockup poll 7.",
+                "field_poll_date": datetime.datetime(2021, 10, 7),
             },
         ]
         self.assertEqual(actual, expected)
 
     # unittest
     def test_get_vote_result_by_poll_id(self):
-        result = crud.get_vote_result_by_poll_id(self.session, 3)
+        result = crud.get_vote_result_by_poll_id(self.session, 5)
         actual = {
             "id": result.id,
             "yes": result.yes,
@@ -88,11 +91,11 @@ class TestCrudFunctions(unittest.TestCase):
         }
         expected = {
             "id": 1,
-            "yes": 10,
+            "yes": 5,
             "no": 10,
-            "abstain": 0,
-            "no_show": 2,
-            "poll_id": 3,
+            "abstain": 10,
+            "no_show": 0,
+            "poll_id": 5,
         }
         not_expected = {
             "id": 3,
@@ -105,46 +108,19 @@ class TestCrudFunctions(unittest.TestCase):
         self.assertEqual(actual, expected)
         self.assertNotEqual(actual, not_expected)
 
-    # unittest
-    @patch(
-        "src.api.crud.get_latest_bundestag_polls",
-        return_value=[
-            models.Poll(
-                id=3,
-                label="CDU voting right",
-                field_legislature_id=111,
-                field_poll_date=datetime.datetime(2021, 10, 1),
-            )
-        ],
-    )
-    @patch(
-        "src.api.crud.get_vote_result_by_poll_id",
-        return_value={"yes": 10, "no": 10, "abstain": 0, "no_show": 2},
-    )
-    def test_get_polls_total(
-        self, mock_get_latest_bundestag_polls, mock_get_vote_result_by_poll_id
-    ):
-        actual = crud.get_polls_total(self.session)
-        expected = [
-            {
-                "poll_field_legislature_id": 111,
-                "poll_id": 3,
-                "poll_label": "CDU voting right",
-                "poll_field_poll_date": datetime.datetime(2021, 10, 1),
-                "result": {"yes": 10, "no": 10, "abstain": 0, "no_show": 2},
-            }
-        ]
-        self.assertEqual(actual, expected)
-
     # integration test
     def test_integration_test_get_polls_total(self):
         results = crud.get_polls_total(self.session)
         result_first = results[0]
         actual = {
-            "poll_field_legislature_id": result_first["poll_field_legislature_id"],
-            "poll_id": result_first["poll_id"],
-            "poll_label": result_first["poll_label"],
-            "poll_field_poll_date": result_first["poll_field_poll_date"],
+            "poll": {
+                "field_legislature_id": result_first["poll"]["field_legislature_id"],
+                "id": result_first["poll"]["id"],
+                "label": result_first["poll"]["label"],
+                "field_intro": result_first["poll"]["field_intro"],
+                "field_poll_date": result_first["poll"]["field_poll_date"],
+                "poll_passed": result_first["poll"]["poll_passed"],
+            },
             "result": {
                 "yes": result_first["result"].yes,
                 "no": result_first["result"].no,
@@ -153,13 +129,16 @@ class TestCrudFunctions(unittest.TestCase):
             },
         }
         expected = {
-            "poll_field_legislature_id": 111,
-            "poll_id": 3,
-            "poll_label": "CDU voting right",
-            "poll_field_poll_date": datetime.datetime(2021, 10, 1),
-            "result": {"yes": 10, "no": 10, "abstain": 0, "no_show": 2},
+            "poll": {
+                "field_legislature_id": 132,
+                "id": 5,
+                "label": "Mockup Poll 5",
+                "field_intro": "Intro to mockup poll 5.",
+                "field_poll_date": datetime.datetime(2021, 10, 5),
+                "poll_passed": False,
+            },
+            "result": {"yes": 5, "no": 10, "abstain": 10, "no_show": 0},
         }
-
         self.assertEqual(actual, expected)
 
     # unittest
@@ -195,6 +174,7 @@ class TestCrudFunctions(unittest.TestCase):
             "total": 10,
             "page": 1,
             "size": 1,
+            "politician_id": 119742,
             "is_last_page": True,
         }
         self.assertEqual(actual, expected)

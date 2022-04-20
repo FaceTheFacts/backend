@@ -144,22 +144,9 @@ class Party(FTFBaseModel):
 
 class Politician(FTFBaseModel):
     id: int
-    entity_type: str
     label: str
-    first_name: str
-    last_name: str
-    sex: Optional[str]
-    year_of_birth: Optional[str]
     party: Optional[Party]
-    deceased: Optional[bool]
-    deceased_date: Optional[date]
-    education: Optional[str]
-    residence: Optional[str]
     occupations: Optional[List[str]]
-    statistic_questions: Optional[str]
-    statistic_questions_answered: Optional[str]
-    qid_wikidata: Optional[str]
-    field_title: Optional[str]
     sidejobs: Optional[List[Sidejob]]
     cvs: Optional[List]
     abgeordnetenwatch_url: Optional[str]
@@ -168,11 +155,10 @@ class Politician(FTFBaseModel):
     topic_ids_of_latest_committee: Optional[List[int]]
 
 
-class PoliticianSearch(FTFBaseModel):
+class PoliticianHeader(FTFBaseModel):
     id: int
     label: str
     party: Optional[Party]
-    image_url: Optional[str]
 
 
 class VoteResult(FTFBaseModel):
@@ -182,12 +168,34 @@ class VoteResult(FTFBaseModel):
     no_show: int
 
 
-class BundestagPoll(FTFBaseModel):
-    poll_field_legislature_id: int
-    poll_id: int
-    poll_label: str
-    poll_field_poll_date: date
+class ConstituencyPoliticians(FTFBaseModel):
+    constituency_number: int
+    constituency_name: str
+    politicians: List[PoliticianHeader]
+
+
+class PollVotes(FTFBaseModel):
+    yes: List[PoliticianHeader]
+    no: List[PoliticianHeader]
+    abstain: List[PoliticianHeader]
+    no_show: List[PoliticianHeader]
+
+
+class BundestagPollData(FTFBaseModel):
+    poll: Poll
     result: VoteResult
+
+
+class BundestagPollDataWithPoliticians(FTFBaseModel):
+    poll: Poll
+    result: VoteResult
+    politicians: List[int]
+    last_politician: str
+
+
+class BundestagPoll(FTFBaseModel):
+    data: List[BundestagPollDataWithPoliticians]
+    last_page: bool
 
 
 class Fraction(FTFBaseModel):
@@ -205,6 +213,16 @@ class PollResult(FTFBaseModel):
     total_no: int
     total_abstain: int
     total_no_show: int
+
+
+class PollLinks(FTFBaseModel):
+    uri: str
+    title: str
+
+
+class PollDetails(FTFBaseModel):
+    poll_results: List[PollResult]
+    poll_links: List[PollLinks]
 
 
 class Fraction(FTFBaseModel):
@@ -230,8 +248,24 @@ class PoliticianSpeech(BaseModel):
     date: str
 
 
+class ParliamentSpeech(BaseModel):
+    videoFileURI: Optional[str]
+    title: str
+    date: str
+    speaker: PoliticianHeader
+
+
 class PoliticianSpeechData(BaseModel):
     items: Optional[List[PoliticianSpeech]]
+    total: int
+    page: int
+    size: int
+    is_last_page: bool
+    politician_id: int
+
+
+class ParliamentSpeechData(BaseModel):
+    items: Optional[List[ParliamentSpeech]]
     total: int
     page: int
     size: int
@@ -253,3 +287,8 @@ class PolitrackNewsArticle(FTFBaseModel):
     source: Optional[str]
     title: str
     url: str
+
+
+class SidejobBundestag(FTFBaseModel):
+    sidejob: Sidejob
+    politician: PoliticianHeader

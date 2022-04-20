@@ -4,10 +4,10 @@ import src.db.models as models
 # default
 from unittest import mock
 import datetime
+from sqlalchemy import and_
 
 # third-party
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock
-from sqlalchemy import or_
 
 mockup_session = UnifiedAlchemyMagicMock(
     data=[
@@ -141,38 +141,30 @@ mockup_session = UnifiedAlchemyMagicMock(
         (
             [
                 mock.call.query(models.Poll),
-                mock.call.filter(
-                    or_(
-                        models.Poll.field_legislature_id == 111,
-                        models.Poll.field_legislature_id == 132,
-                    )
-                ),
+                mock.call.filter(models.Poll.field_legislature_id == 132),
                 mock.call.order_by(models.Poll.field_poll_date.desc()),
             ],
             [
                 models.Poll(
-                    id=3,
-                    field_legislature_id=111,
-                    label="CDU voting right",
-                    field_poll_date=datetime.datetime(2021, 10, 1),
-                ),
-                models.Poll(
-                    id=4,
-                    field_legislature_id=111,
-                    label="CDU voting right",
-                    field_poll_date=datetime.datetime(2021, 9, 27),
-                ),
-                models.Poll(
                     id=5,
                     field_legislature_id=132,
-                    label="Amendment to the Infection Protection Act",
-                    field_poll_date=datetime.datetime(2021, 9, 20),
+                    label="Mockup Poll 5",
+                    field_intro="Intro to mockup poll 5.",
+                    field_poll_date=datetime.datetime(2021, 10, 5),
                 ),
                 models.Poll(
                     id=6,
                     field_legislature_id=132,
-                    label="Amendment to the Infection Protection Act",
-                    field_poll_date=datetime.datetime(2021, 9, 18),
+                    label="Mockup Poll 6",
+                    field_intro="Intro to mockup poll 6.",
+                    field_poll_date=datetime.datetime(2021, 10, 6),
+                ),
+                models.Poll(
+                    id=7,
+                    field_legislature_id=132,
+                    label="Mockup Poll 7",
+                    field_intro="Intro to mockup poll 7.",
+                    field_poll_date=datetime.datetime(2021, 10, 7),
                 ),
             ],
         ),
@@ -180,19 +172,28 @@ mockup_session = UnifiedAlchemyMagicMock(
         (
             [
                 mock.call.query(models.VoteResult),
-                mock.call.filter(models.VoteResult.poll_id == 3),
+                mock.call.filter(models.VoteResult.poll_id == 5),
             ],
             [
-                models.VoteResult(id=1, yes=10, no=10, abstain=0, no_show=2, poll_id=3),
+                models.VoteResult(id=1, yes=5, no=10, abstain=10, no_show=0, poll_id=5),
             ],
         ),
         (
             [
                 mock.call.query(models.VoteResult),
-                mock.call.filter(models.VoteResult.poll_id == 4),
+                mock.call.filter(models.VoteResult.poll_id == 6),
             ],
             [
-                models.VoteResult(id=2, yes=10, no=10, abstain=0, no_show=2, poll_id=4),
+                models.VoteResult(id=2, yes=0, no=5, abstain=10, no_show=10, poll_id=6),
+            ],
+        ),
+        (
+            [
+                mock.call.query(models.VoteResult),
+                mock.call.filter(models.VoteResult.poll_id == 7),
+            ],
+            [
+                models.VoteResult(id=2, yes=10, no=0, abstain=5, no_show=10, poll_id=7),
             ],
         ),
     ]
