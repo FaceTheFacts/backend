@@ -129,7 +129,45 @@ def append_votes() -> List:
         print("Nothing fetched")
 
 
+def append_parties() -> List:
+    missing_parties = fetch_missing_entity("parties", models.Party)
+    if missing_parties:
+        parties = [
+            {
+                "id": api_party["id"],
+                "entity_type": api_party["entity_type"],
+                "label": api_party["label"],
+                "api_url": api_party["api_url"],
+                "full_name": api_party["full_name"],
+                "short_name": api_party["short_name"],
+                "party_style_id": api_party["id"],
+            }
+            for api_party in missing_parties
+        ]
+        party_styles = [
+            {
+                "id": api_party["id"],
+                "display_name": api_party["label"],
+                "foreground_color": "#FFFFFF",
+                "background_color": "#333333",
+                "border_color": None,
+            }
+            for api_party in parties
+        ]
+        insert_and_update(models.PartyStyle, party_styles)
+        insert_and_update(models.Party, parties)
+        print("Successfully updated party styles and parties")
+    print("Nothing to fetch for parties and party styles")
+
+
 def append_politicians() -> List:
+    # Before appending politicians we need to check if there new parties as party_id is a foreign key in politicians
+    append_parties()
+
+    # Now we can append politicians
+    # First we need to fetch the missing politicians
+    # Use command below when having already fetch the politicians
+    # missing_politicians = read_json("src/cron_jobs/data/politicians.json")
     missing_politicians = fetch_missing_entity("politicians", models.Politician)
     if missing_politicians:
         politicians = [
@@ -163,12 +201,12 @@ def append_politicians() -> List:
             for api_politician in missing_politicians
         ]
         insert_and_update(models.Politician, politicians)
-        print("Successfully retrieved")
+        print("Successfully retrieved politicians")
         return politicians
     else:
-        print("Nothing fetched")
+        print("Nothing to fetch for politicians")
 
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    # append_votes()
+    # append_politicians()
