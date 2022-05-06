@@ -1,9 +1,12 @@
 # std
 from typing import TypedDict, Optional, Any, List, Dict
 
+
 # local
-from src.cron_jobs.utils.file import read_json
+from src.cron_jobs.utils.file import read_json, write_json
 from src.cron_jobs.utils.fetch import load_entity
+import src.db.models as models
+from src.db.connection import Session
 
 LEFT = "Linke"
 GREEN = "Grüne"
@@ -111,3 +114,23 @@ def gen_positions(period_id: int) -> List[Position]:
                 }
                 positions.append(position)
     return positions
+
+
+def gen_scan_map():
+    file_path = "src/cron_jobs/data/scan_map.json"
+    session = Session()
+    politician_table = (
+        session.query(models.Politician).order_by(models.Politician.id.desc()).all()
+    )
+    if politician_table:
+        scan_map = [
+            {politician.label: str(politician.id)} for politician in politician_table
+        ]
+        write_json(file_path, scan_map)
+        print("Successfully generated scan map")
+    else:
+        print("No politician table data available")
+
+
+if __name__ == "__main__":
+    gen_scan_map()
