@@ -89,6 +89,32 @@ def fetch_missing_entity(entity: str, model: Any):
         print(f"Table {entity} already updated")
 
 
+def fetch_missing_sub_entity(entity: str, model: Any):
+    data_list = []
+    session = Session()
+    # Uncomment line below + Line 86 when you already fetch the data locally
+    # file_path = f"src/cron_jobs/data/{entity}.json"
+    last_id = session.query(model).order_by(model.id.desc()).first().id
+    print(f"The last id of {entity} is: {last_id}")
+    result = fetch_json(
+        f"https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?{entity}[gt]={last_id}&range_end=0"
+    )
+    total = result["meta"]["result"]["total"]
+    if total:
+        page_count = math.ceil(total / PAGE_SIZE)
+        for page_num in range(page_count):
+            fetched_data = fetch_json(
+                f"https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?{entity}[gt]={last_id}&page={page_num}&pager_limit={PAGE_SIZE}"
+            )
+            data = fetched_data["data"]
+            for item in data:
+                data_list.append(item)
+        print(("Fetched {} data entries").format(len(data_list)))
+        return data_list
+    else:
+        print(f"Table {entity} already updated")
+
+
 def load_entity(entity: str) -> List[Any]:
     file_path = f"src/cron_jobs/data/{entity}.json"
     has_file = has_valid_file(file_path)
@@ -132,3 +158,16 @@ def fetch_missing_entity_from_json(entity: str) -> List[Any]:
         data = fetched_data["data"]
         data_list.append(data)
     return data_list
+
+
+def match_constituency_to_parliament_periods(constituency: str) -> int:
+    # AW does not include the parliament period in the constituency data so we have to match it manually
+    # Change the constutency_map based on the latest data
+    constituency_map = {
+        "Schleswig-Holstein Wahl 2022": 135,
+        "Nordrhein-Westfalen Wahl 2022": 136,
+        "Saarland 2022 - 2027": 137,
+    }
+    for item in constituency_map:
+        if item in constituency:
+            return constituency_map[item]
