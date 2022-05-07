@@ -3,7 +3,7 @@ from typing import List
 from src.cron_jobs.utils.file import read_json, write_json
 
 # local
-from src.cron_jobs.utils.insert_and_update import insert_and_update
+from src.cron_jobs.utils.insert_and_update import insert_and_update, insert_only
 from src.cron_jobs.utils.fetch import (
     fetch_missing_entity,
     fetch_missing_sub_entity,
@@ -12,28 +12,6 @@ from src.cron_jobs.utils.fetch import (
 )
 from src.db.connection import engine, Base
 import src.db.models as models
-
-
-def append_committees() -> List:
-    missing_committees = fetch_missing_entity("committees", models.Committee)
-    if missing_committees:
-        committees = [
-            {
-                "id": api_committees["id"],
-                "entity_type": api_committees["entity_type"],
-                "label": api_committees["label"],
-                "api_url": api_committees["api_url"],
-                "field_legislature_id": api_committees["field_legislature"]["id"]
-                if api_committees["field_legislature"]
-                else None,
-            }
-            for api_committees in missing_committees
-        ]
-        insert_and_update(models.Committee, committees)
-        print("Successfully retrieved")
-        return committees
-    else:
-        print("Nothing fetched")
 
 
 def append_parliament_periods() -> List:
@@ -193,6 +171,63 @@ def append_candidacies() -> List:
         insert_and_update(models.CandidacyMandate, candidacies_mandates)
 
 
+def append_committees() -> List:
+    missing_committees = fetch_missing_entity("committees", models.Committee)
+    if missing_committees:
+        committees = [
+            {
+                "id": api_committee["id"],
+                "entity_type": api_committee["entity_type"],
+                "label": api_committee["label"],
+                "api_url": api_committee["api_url"],
+                "field_legislature_id": api_committee["field_legislature"]["id"],
+            }
+            for api_committee in missing_committees
+        ]
+        committee_topics = []
+        for api_committee in missing_committees:
+            for topic in api_committee["field_topics"]:
+                committee_topics.append(
+                    {
+                        "committee_id": api_committee["id"],
+                        "topic_id": topic["id"],
+                    }
+                )
+
+        insert_and_update(models.Committee, committees)
+        print("Successfully retrieved committeees")
+        insert_only(models.CommitteeHasTopic, committee_topics)
+        print("Successfully retrieved committee topics")
+
+    else:
+        print("Nothing to fetch for committeees and committee topics")
+
+
+def committee_memberships() -> List:
+    missing_committee_memberships = fetch_missing_entity(
+        "committee-memberships", models.CommitteeMembership
+    )
+    if missing_committee_memberships:
+        committee_memberships = [
+            {
+                "id": api_committee_membership["id"],
+                "entity_type": api_committee_membership["entity_type"],
+                "label": api_committee_membership["label"],
+                "api_url": api_committee_membership["api_url"],
+                "committee_id": api_committee_membership["committee"]["id"],
+                "candidacy_mandate_id": api_committee_membership["candidacy_mandate"][
+                    "id"
+                ],
+                "committee_role": api_committee_membership["committee_role"],
+            }
+            for api_committee_membership in missing_committee_memberships
+        ]
+        insert_and_update(models.CommitteeMembership, committee_memberships)
+        print("Successfully retrieved committee memberships")
+    else:
+        print("Nothing to fetch for committee memberships")
+
+
 def append_sidejobs() -> List:
     missing_sidejobs = fetch_missing_entity("sidejobs", models.Sidejob)
     if missing_sidejobs:
@@ -221,16 +256,15 @@ def append_sidejobs() -> List:
             }
             for api_sidejob in missing_sidejobs
         ]
-        # To do: figure out SQL error when updating table
-        """ sidejobs_have_mandates = [
+        sidejobs_have_mandates = [
             {
                 "sidejob_id": api_sidejob["id"],
                 "candidacy_mandate_id": api_sidejob["mandates"][0]["id"],
             }
             for api_sidejob in missing_sidejobs
-        ] """
+        ]
         insert_and_update(models.Sidejob, sidejobs)
-        # insert_and_update(models.SidejobHasMandate, sidejobs_have_mandates)
+        insert_only(models.SidejobHasMandate, sidejobs_have_mandates)
         print("Successfully retrieved sidejobs")
         return sidejobs
     else:
@@ -377,4 +411,4 @@ def append_politicians() -> List:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    # append_candidacies()
+    # committee_memberships()
