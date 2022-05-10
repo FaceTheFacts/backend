@@ -66,7 +66,7 @@ def fetch_missing_entity(entity: str, model: Any):
     diff = total_entity - database_rows
     # Uncomment line below + Line 86 when you already fetch the data locally
     # file_path = f"src/cron_jobs/data/{entity}.json"
-    if diff > 0:
+    if diff:
         last_id = session.query(model).order_by(model.id.desc()).first().id
         print(f"The last id of {entity} is: {last_id}")
         result = fetch_json(
