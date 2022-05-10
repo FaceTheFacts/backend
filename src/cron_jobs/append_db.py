@@ -265,12 +265,24 @@ def append_sidejobs() -> List:
             }
             for api_sidejob in missing_sidejobs
         ]
+        sidejobs_have_topics = []
+        for api_sidejob in missing_sidejobs:
+            if api_sidejob["field_topics"]:
+                for topic in api_sidejob["field_topics"]:
+                    sidejobs_have_topics.append(
+                        {
+                            "sidejob_id": api_sidejob["id"],
+                            "topic_id": topic["id"],
+                        }
+                    )
         insert_and_update(models.Sidejob, sidejobs)
         insert_only(models.SidejobHasMandate, sidejobs_have_mandates)
+        insert_only(models.SidejobHasTopic, sidejobs_have_topics)
         print("Successfully retrieved sidejobs")
         return sidejobs
     else:
         print("Nothing to fetch for sidejobs")
+        return sidejobs
 
 
 def append_polls() -> List:
@@ -447,4 +459,4 @@ def append_politicians() -> List:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    # append_polls()
+    # append_sidejobs()
