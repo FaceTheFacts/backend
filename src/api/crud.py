@@ -469,6 +469,7 @@ def get_topic_ids_by_field_legislature_id(
         .filter(models.Committee.field_legislature_id == field_legislature_id)
         .filter(models.Committee.id == models.CommitteeHasTopic.committee_id)
         .filter(models.CommitteeHasTopic.topic_id == models.Topic.id)
+        .filter(models.Topic.id < 29)
         .distinct(models.Topic.id)
         .all()
     )
