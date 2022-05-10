@@ -1,15 +1,176 @@
 # std
 from typing import List
-from src.cron_jobs.utils.file import read_json
 
 # local
-from src.cron_jobs.utils.insert_and_update import insert_and_update
+from src.cron_jobs.utils.parser import gen_positions
+from src.cron_jobs.crud_db import populate_poll_results_per_fraction
+from src.cron_jobs.utils.vote_result import generate_appended_vote_results
+from src.cron_jobs.utils.insert_and_update import insert_and_update, insert_only
 from src.cron_jobs.utils.fetch import (
     fetch_missing_entity,
+    fetch_missing_sub_entity,
     load_entity,
+    match_constituency_to_parliament_periods,
 )
-from src.db.connection import engine, Base
+from src.db.connection import engine, Base, Session
 import src.db.models as models
+
+
+def append_parliament_periods() -> List:
+    missing_parliament_periods = fetch_missing_entity(
+        "parliament-periods", models.ParliamentPeriod
+    )
+    if missing_parliament_periods:
+        parliament_periods = [
+            {
+                "id": api_parliament_period["id"],
+                "entity_type": api_parliament_period["entity_type"],
+                "label": api_parliament_period["label"],
+                "api_url": api_parliament_period["api_url"],
+                "abgeordnetenwatch_url": api_parliament_period["abgeordnetenwatch_url"],
+                "type": api_parliament_period["type"],
+                "election_date": api_parliament_period["election_date"],
+                "start_date_period": api_parliament_period["start_date_period"],
+                "end_date_period": api_parliament_period["end_date_period"],
+                "parliament_id": api_parliament_period["parliament"]["id"],
+                "previous_period_id": api_parliament_period["previous_period"]["id"],
+            }
+            for api_parliament_period in missing_parliament_periods
+        ]
+        insert_and_update(models.ParliamentPeriod, parliament_periods)
+        print("Successfully retrieved candidadacies, mandates and parliament periods")
+
+
+def append_constituencies() -> List:
+    missing_constituencies = fetch_missing_entity("constituencies", models.Constituency)
+    if missing_constituencies:
+        constituencies = [
+            {
+                "id": api_constituency["id"],
+                "entity_type": api_constituency["entity_type"],
+                "label": api_constituency["label"],
+                "api_url": api_constituency["api_url"],
+                "name": api_constituency["name"],
+                "number": api_constituency["number"],
+                # Check before if the map inside match_constituency_to_parliament_periods is up-to-date
+                "parliament_period_id": match_constituency_to_parliament_periods(
+                    api_constituency["label"]
+                ),
+            }
+            for api_constituency in missing_constituencies
+        ]
+        insert_and_update(models.Constituency, constituencies)
+        print("Successfully retrieved constituencies")
+    else:
+        print("Nothing to fetch for constituencies")
+
+
+def append_electoral_lists() -> List:
+    missing_electoral_lists = fetch_missing_entity(
+        "electoral-lists", models.ElectoralList
+    )
+    if missing_electoral_lists:
+        electoral_lists = [
+            {
+                "id": api_electoral_list["id"],
+                "entity_type": api_electoral_list["entity_type"],
+                "label": api_electoral_list["label"],
+                "api_url": api_electoral_list["api_url"],
+                "name": api_electoral_list["name"],
+                "parliament_period_id": api_electoral_list["parliament_period"]["id"],
+            }
+            for api_electoral_list in missing_electoral_lists
+        ]
+        insert_and_update(models.ElectoralList, electoral_lists)
+        print("Successfully retrieved electoral lists")
+    else:
+        print("Nothing to fetch for electoral lists")
+
+
+def append_electoral_data() -> List:
+    missing_electoral_data = fetch_missing_sub_entity(
+        "electoral_data", models.ElectoralData
+    )
+    if missing_electoral_data:
+        electoral_data = [
+            {
+                "id": api_electoral_data["electoral_data"]["id"],
+                "entity_type": api_electoral_data["electoral_data"]["entity_type"],
+                "label": api_electoral_data["electoral_data"]["label"],
+                "electoral_list_id": api_electoral_data["electoral_data"][
+                    "electoral_list"
+                ]["id"]
+                if api_electoral_data["electoral_data"]["electoral_list"]
+                else None,
+                "list_position": api_electoral_data["electoral_data"]["list_position"]
+                if api_electoral_data["electoral_data"]["list_position"]
+                else None,
+                "constituency_id": api_electoral_data["electoral_data"]["constituency"][
+                    "id"
+                ]
+                if api_electoral_data["electoral_data"]["constituency"]
+                else None,
+                "constituency_result": api_electoral_data["electoral_data"][
+                    "constituency_result"
+                ]
+                if api_electoral_data["electoral_data"]
+                else None,
+                "constituency_result_count": api_electoral_data["electoral_data"][
+                    "constituency_result_count"
+                ]
+                if api_electoral_data["electoral_data"]
+                else None,
+                "mandate_won": api_electoral_data["electoral_data"]["mandate_won"]
+                if api_electoral_data["electoral_data"]
+                else None,
+            }
+            for api_electoral_data in missing_electoral_data
+        ]
+        insert_and_update(models.ElectoralData, electoral_data)
+        print("Successfully retrieved electoral data")
+    else:
+        print("Nothing to fetch for electoral data")
+
+
+def append_candidacies() -> List:
+    append_parliament_periods()
+    append_constituencies()
+    append_electoral_lists()
+    append_electoral_data()
+
+    missing_candidacies_mandates = fetch_missing_entity(
+        "candidacies-mandates", models.CandidacyMandate
+    )
+    if missing_candidacies_mandates:
+        candidacies_mandates = [
+            {
+                "id": api_candidacies_mandates["id"],
+                "entity_type": api_candidacies_mandates["entity_type"],
+                "label": api_candidacies_mandates["label"],
+                "api_url": api_candidacies_mandates["api_url"],
+                "id_external_administration": api_candidacies_mandates[
+                    "id_external_administration"
+                ],
+                "id_external_administration_description": api_candidacies_mandates[
+                    "id_external_administration_description"
+                ],
+                "type": api_candidacies_mandates["type"],
+                "parliament_period_id": api_candidacies_mandates["parliament_period"][
+                    "id"
+                ],
+                "politician_id": api_candidacies_mandates["politician"]["id"],
+                "party_id": api_candidacies_mandates["party"]["id"]
+                if "party" in api_candidacies_mandates
+                else None,
+                "start_date": api_candidacies_mandates["start_date"],
+                "end_date": api_candidacies_mandates["end_date"],
+                "info": api_candidacies_mandates["info"],
+                "electoral_data_id": api_candidacies_mandates["electoral_data"]["id"],
+                "fraction_membership_id": None,
+            }
+            for api_candidacies_mandates in missing_candidacies_mandates
+        ]
+        insert_and_update(models.CandidacyMandate, candidacies_mandates)
 
 
 def append_committees() -> List:
@@ -17,21 +178,56 @@ def append_committees() -> List:
     if missing_committees:
         committees = [
             {
-                "id": api_committees["id"],
-                "entity_type": api_committees["entity_type"],
-                "label": api_committees["label"],
-                "api_url": api_committees["api_url"],
-                "field_legislature_id": api_committees["field_legislature"]["id"]
-                if api_committees["field_legislature"]
-                else None,
+                "id": api_committee["id"],
+                "entity_type": api_committee["entity_type"],
+                "label": api_committee["label"],
+                "api_url": api_committee["api_url"],
+                "field_legislature_id": api_committee["field_legislature"]["id"],
             }
-            for api_committees in missing_committees
+            for api_committee in missing_committees
         ]
+        committee_topics = []
+        for api_committee in missing_committees:
+            for topic in api_committee["field_topics"]:
+                committee_topics.append(
+                    {
+                        "committee_id": api_committee["id"],
+                        "topic_id": topic["id"],
+                    }
+                )
+
         insert_and_update(models.Committee, committees)
-        print("Successfully retrieved")
-        return committees
+        print("Successfully retrieved committeees")
+        insert_only(models.CommitteeHasTopic, committee_topics)
+        print("Successfully retrieved committee topics")
+
     else:
-        print("Nothing fetched")
+        print("Nothing to fetch for committeees and committee topics")
+
+
+def append_committee_memberships() -> List:
+    missing_committee_memberships = fetch_missing_entity(
+        "committee-memberships", models.CommitteeMembership
+    )
+    if missing_committee_memberships:
+        committee_memberships = [
+            {
+                "id": api_committee_membership["id"],
+                "entity_type": api_committee_membership["entity_type"],
+                "label": api_committee_membership["label"],
+                "api_url": api_committee_membership["api_url"],
+                "committee_id": api_committee_membership["committee"]["id"],
+                "candidacy_mandate_id": api_committee_membership["candidacy_mandate"][
+                    "id"
+                ],
+                "committee_role": api_committee_membership["committee_role"],
+            }
+            for api_committee_membership in missing_committee_memberships
+        ]
+        insert_and_update(models.CommitteeMembership, committee_memberships)
+        print("Successfully retrieved committee memberships")
+    else:
+        print("Nothing to fetch for committee memberships")
 
 
 def append_sidejobs() -> List:
@@ -62,11 +258,31 @@ def append_sidejobs() -> List:
             }
             for api_sidejob in missing_sidejobs
         ]
+        sidejobs_have_mandates = [
+            {
+                "sidejob_id": api_sidejob["id"],
+                "candidacy_mandate_id": api_sidejob["mandates"][0]["id"],
+            }
+            for api_sidejob in missing_sidejobs
+        ]
+        sidejobs_have_topics = []
+        for api_sidejob in missing_sidejobs:
+            if api_sidejob["field_topics"]:
+                for topic in api_sidejob["field_topics"]:
+                    sidejobs_have_topics.append(
+                        {
+                            "sidejob_id": api_sidejob["id"],
+                            "topic_id": topic["id"],
+                        }
+                    )
         insert_and_update(models.Sidejob, sidejobs)
-        print("Successfully retrieved")
+        insert_only(models.SidejobHasMandate, sidejobs_have_mandates)
+        insert_only(models.SidejobHasTopic, sidejobs_have_topics)
+        print("Successfully retrieved sidejobs")
         return sidejobs
     else:
-        print("Nothing fetched")
+        print("Nothing to fetch for sidejobs")
+        return sidejobs
 
 
 def append_polls() -> List:
@@ -89,7 +305,18 @@ def append_polls() -> List:
             }
             for api_polls in missing_polls
         ]
+        poll_topics = []
+        for api_poll in missing_polls:
+            field_topics = api_poll["field_topics"]
+            if field_topics:
+                for topic in field_topics:
+                    poll_topic = {
+                        "poll_id": api_poll["id"],
+                        "topic_id": topic["id"],
+                    }
+                poll_topics.append(poll_topic)
         insert_and_update(models.Poll, polls)
+        insert_only(models.PollHasTopic, poll_topics)
         print("Successfully retrieved")
         return polls
     else:
@@ -129,7 +356,68 @@ def append_votes() -> List:
         print("Nothing fetched")
 
 
+def append_vote_results() -> List:
+    # First Update Poll-Results-Per-Fraction
+    session = Session()
+    last_row = (
+        session.query(models.VoteResult).order_by(models.VoteResult.id.desc()).first()
+    )
+    last_id = last_row.id
+    last_poll_id = last_row.poll_id
+    populate_poll_results_per_fraction()
+    vote_results = generate_appended_vote_results(session, last_id, last_poll_id)
+    insert_and_update(models.VoteResult, vote_results)
+    print("Successfully retrieved vote results")
+
+
+def append_positions() -> List:
+    # Lookup positions related parliament_period and add it to PERIOD_POSITIONS_TABLE inside parser.py
+    # Generate positions.json inside Scrapy repo src/politicians-positions/berlin.ts
+    parliamend_period_id = 136
+    missing_positions = gen_positions(parliamend_period_id)
+    if missing_positions:
+        insert_and_update(models.Position, missing_positions)
+
+
+def append_parties() -> List:
+    missing_parties = fetch_missing_entity("parties", models.Party)
+    if missing_parties:
+        parties = [
+            {
+                "id": api_party["id"],
+                "entity_type": api_party["entity_type"],
+                "label": api_party["label"],
+                "api_url": api_party["api_url"],
+                "full_name": api_party["full_name"],
+                "short_name": api_party["short_name"],
+                "party_style_id": api_party["id"],
+            }
+            for api_party in missing_parties
+        ]
+        party_styles = [
+            {
+                "id": api_party["id"],
+                "display_name": api_party["label"],
+                "foreground_color": "#FFFFFF",
+                "background_color": "#333333",
+                "border_color": None,
+            }
+            for api_party in parties
+        ]
+        insert_and_update(models.PartyStyle, party_styles)
+        insert_and_update(models.Party, parties)
+        print("Successfully updated party styles and parties")
+    print("Nothing to fetch for parties and party styles")
+
+
 def append_politicians() -> List:
+    # Before appending politicians we need to check if there new parties as party_id is a foreign key in politicians
+    append_parties()
+
+    # Now we can append politicians
+    # First we need to fetch the missing politicians
+    # Use command below when having already fetch the politicians
+    # missing_politicians = read_json("src/cron_jobs/data/politicians.json")
     missing_politicians = fetch_missing_entity("politicians", models.Politician)
     if missing_politicians:
         politicians = [
@@ -163,12 +451,12 @@ def append_politicians() -> List:
             for api_politician in missing_politicians
         ]
         insert_and_update(models.Politician, politicians)
-        print("Successfully retrieved")
+        print("Successfully retrieved politicians")
         return politicians
     else:
-        print("Nothing fetched")
+        print("Nothing to fetch for politicians")
 
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    # append_votes()
+    # append_sidejobs()

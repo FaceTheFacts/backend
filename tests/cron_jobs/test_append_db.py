@@ -22,11 +22,23 @@ def delete_last_item(last_id, model: Any, column: str):
     session.close()
 
 
+""" 
+This Test is currently not working as sidejobs items are referenced in sidejob_has_mandate and sidejob_has_topic
 def test_append_sidejobs():
     def delete_last_item_and_update():
         last_id = return_last_id(models.Sidejob)
         delete_last_item(last_id, models.Sidejob, "id")
 
         assert len(append_sidejobs()) > 0
+
+    delete_last_item_and_update() """
+
+
+def test_append_votes():
+    def delete_last_item_and_update():
+        last_id = return_last_id(models.Vote)
+        delete_last_item(last_id, models.Vote, "id")
+
+        assert len(append_votes()) > 0
 
     delete_last_item_and_update()

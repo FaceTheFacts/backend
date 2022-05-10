@@ -49,18 +49,15 @@ def read_root(name: Optional[str] = "World"):
 
 
 def scheduled_task():
-    schedule.every().monday.at("03:00").do(cron_jobs.append_committees)
-    schedule.every().monday.at("03:20").do(cron_jobs.append_polls)
-    # candidacy_mandates and related tables still missing
-    schedule.every().monday.at("03:30").do(cron_jobs.append_sidejobs)
-    # sidejobs related tables are still missing
+    schedule.every().monday.at("02:50").do(cron_jobs.append_committees)
+    schedule.every().monday.at("03:00").do(cron_jobs.append_committee_memberships)
+    schedule.every().monday.at("03:10").do(cron_jobs.append_candidacies)
+    schedule.every().monday.at("03:20").do(cron_jobs.append_sidejobs)
+    schedule.every().monday.at("03:30").do(cron_jobs.append_polls)
     schedule.every().monday.at("03:40").do(cron_jobs.append_votes)
-    schedule.every().monday.at("03:50").do(db_cron_jobs.populate_poll_has_topic)
-    schedule.every().monday.at("03:55").do(
-        db_cron_jobs.populate_poll_results_per_fraction
-    )
-    schedule.every().monday.at("04:00").do(db_cron_jobs.populate_vote_result)
-    schedule.every(25).weeks.do(cron_jobs.append_politicians)
+    schedule.every().monday.at("03:50").do(cron_jobs.append_vote_results)
+    schedule.every().monday.at("04:00").do(cron_jobs.append_parties)
+    schedule.every().monday.at("04:10").do(cron_jobs.append_politicians)
 
     print("Cronjob executed!")
     while True:

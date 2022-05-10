@@ -18,3 +18,11 @@ def insert_and_update(model: Any, data: List[Any]) -> None:
     session.execute(stmt)
     session.commit()
     session.close()
+
+
+def insert_only(model: Any, data: List[Any]) -> None:
+    session = Session()
+    stmt = insert(model).values(data)
+    session.execute(stmt)
+    session.commit()
+    session.close()

@@ -851,7 +851,6 @@ def populate_poll_results_per_fraction():
                 .distinct()
                 .all()
             )
-            alternate_fraction_id = 1
             fraction_ids = [fraction_id[0] for fraction_id in fractions]
             for fraction_id in fraction_ids:
                 total_yes = get_total_votes_of_type(
@@ -864,11 +863,7 @@ def populate_poll_results_per_fraction():
                 total_no_show = get_total_votes_of_type(
                     "no_show", poll_id, fraction_id, session
                 )
-                if fraction_id:
-                    poll_result_id = int(str(poll_id) + str(fraction_id))
-                else:
-                    poll_result_id = int(str(alternate_fraction_id) + str(poll_id))
-                    alternate_fraction_id += 1
+                poll_result_id = int(str(poll_id) + str(fraction_id))
                 poll_result = {
                     "id": poll_result_id,
                     "entity_type": "poll_result",

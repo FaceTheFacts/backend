@@ -47,7 +47,7 @@ def test_fetch_entity_count():
         assert fetch_entity_count("cities") == 1065
 
     def count_constituency():
-        assert fetch_entity_count("constituencies") == 10361
+        assert fetch_entity_count("constituencies") == 10396
 
     page_not_found()
     count_city()

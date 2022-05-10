@@ -93,6 +93,31 @@ def generate_vote_results(session: Session):
     return data_list
 
 
+def generate_appended_vote_results(session: Session, last_id: int, last_poll_id: int):
+    data_list = []
+    polls = (
+        session.query(Poll.id)
+        .where(Poll.id > last_poll_id)
+        .order_by(Poll.id.asc())
+        .all()
+    )
+    poll_ids = [poll[0] for poll in polls]
+    for poll_id in poll_ids:
+        last_id += 1
+        new_item = get_vote_result(session, poll_id)
+        if new_item:
+            new_dict = {
+                "id": last_id,
+                "yes": new_item["yes"],
+                "no": new_item["no"],
+                "abstain": new_item["abstain"],
+                "no_show": new_item["no_show"],
+                "poll_id": poll_id,
+            }
+        data_list.append(new_dict)
+    return data_list
+
+
 def get_total_votes_of_type(
     vote_type: str, poll_id: int, fraction_id: int, session: Session
 ):

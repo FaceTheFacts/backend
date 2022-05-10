@@ -821,7 +821,14 @@ def test_read_politician_speech():
 
     def selected_invalid_values_test():
         response = client.get("/v1/politician/119742/speeches?page=6")
-        expected = {"detail": "Politician Speech not found"}
+        expected = {
+            "items": [],
+            "total": 0,
+            "page": 6,
+            "size": 0,
+            "is_last_page": True,
+            "politician_id": 119742,
+        }
         assert response.json() == expected
 
     selected_values_test()
@@ -831,47 +838,89 @@ def test_read_politician_speech():
 def test_read_politician_news():
     def values_test():
         response = client.get("/v1/politician/145862/news")
-        expected_items = [
-            {
-                "id": "024810dce7f23322cef7801e4e13402cc8956af7d2d9c2b77260a7723c2bb89b",
-                "highlight": None,
-                "images": [],
-                "published": "2021-08-13T12:58:54.705000",
-                "source": "tagesschau",
-                "title": "Wahlrechtsreform: Viel Lärm um wenig",
-                "url": "https://www.tagesschau.de/inland/btw21/eilantrag-wahlrechtsreform-103.html",
-            },
-            {
-                "id": "06f776204f16e52e90aafbe6553c5782acdd494a00c0c5f4dbb20dffd016ede5",
-                "highlight": None,
-                "images": [
-                    {
-                        "url": "https://bilder.bild.de/fotos-skaliert/von-der-polizei-erwischt-gruenen-politikerin-beschaedigt-wahlplakate-von-fdp-und-cdu-b5084ae811c14489a90a0fbef6ac9718-77564960/20,c=0,h=720.bild.jpg",
-                        "title": None,
-                        "height": 720,
-                        "width": 1280,
-                    },
-                    {
-                        "url": "https://bilder.bild.de/fotos-skaliert/von-der-polizei-erwischt-gruenen-politikerin-beschaedigt-wahlplakate-von-fdp-und-cdu-b5084ae811c14489a90a0fbef6ac9718-77564998/20,c=0,h=658.bild.jpg",
-                        "title": None,
-                        "height": 658,
-                        "width": 658,
-                    },
-                    {
-                        "url": "https://bilder.bild.de/fotos-skaliert/von-der-polizei-erwischt-gruenen-politikerin-beschaedigt-wahlplakate-von-fdp-und-cdu-b5084ae811c14489a90a0fbef6ac9718-77565032/20,c=0,h=1026.bild.jpg",
-                        "title": None,
-                        "height": 1026,
-                        "width": 864,
-                    },
-                ],
-                "published": "2021-09-02T16:38:20",
-                "source": "bild",
-                "title": "Von der Polizei erwischt: Grünen-Politikerin beschädigt Wahlplakate von FDP und CDU",
-                "url": "https://www.bild.de/politik/inland/politik/gruenen-politikerin-soll-wahlplakate-von-fdp-und-cdu-beschmiert-haben-77563930.bild.html",
-            },
-        ]
+        expected_items = {
+            "items": [
+                {
+                    "id": "7440c00ed39a1cdd627a7c461097595ead732077f2758e75525e60ba772d5268",
+                    "highlight": None,
+                    "images": [
+                        {
+                            "url": "https://cdn.prod.www.spiegel.de/images/575ebbb2-44c1-4d8b-9e70-706143112610_w1200_r1.77_fpx64.47_fpy50.jpg",
+                            "title": None,
+                            "height": None,
+                            "width": None,
+                        },
+                        {
+                            "url": "https://cdn.prod.www.spiegel.de/images/575ebbb2-44c1-4d8b-9e70-706143112610_w1200_r1.33_fpx64.47_fpy50.jpg",
+                            "title": None,
+                            "height": None,
+                            "width": None,
+                        },
+                        {
+                            "url": "https://cdn.prod.www.spiegel.de/images/575ebbb2-44c1-4d8b-9e70-706143112610_w1200_r1_fpx64.47_fpy50.jpg",
+                            "title": None,
+                            "height": None,
+                            "width": None,
+                        },
+                    ],
+                    "published": "2022-04-14T14:39:53",
+                    "source": "spon",
+                    "title": "Nord Stream 2: CDU-Politiker Amthor stellt Schwesigs Glaubwürdigkeit infrage",
+                    "url": "https://www.spiegel.de/politik/deutschland/nord-stream-2-philipp-amthor-stellt-glaubwuerdigkeit-von-manuela-schwesig-infrage-a-2613f78c-1f6f-44dd-a2be-014fa0df115d",
+                },
+                {
+                    "id": "43fbcd326136b5e5d7374ab3881ae88249945d1d97a2de4b993a286b04196bf5",
+                    "highlight": None,
+                    "images": [
+                        {
+                            "url": "https://bilder.bild.de/fotos-skaliert/am-tag-nach-dem-koalitionsvertrag-erste-ampel-stoerung-wegen-impfpflicht-77b296b930664a44953c94a849a40595-78348716/11,c=0,h=720.bild.jpg",
+                            "title": None,
+                            "height": 720,
+                            "width": 1280,
+                        },
+                        {
+                            "url": "https://bilder.bild.de/fotos-skaliert/am-tag-nach-dem-koalitionsvertrag-erste-ampel-stoerung-wegen-impfpflicht-77b296b930664a44953c94a849a40595-78348750/11,c=0,h=658.bild.jpg",
+                            "title": None,
+                            "height": 658,
+                            "width": 658,
+                        },
+                        {
+                            "url": "https://bilder.bild.de/fotos-skaliert/am-tag-nach-dem-koalitionsvertrag-erste-ampel-stoerung-wegen-impfpflicht-77b296b930664a44953c94a849a40595-78348758/11,c=0,h=1026.bild.jpg",
+                            "title": None,
+                            "height": 1026,
+                            "width": 864,
+                        },
+                    ],
+                    "published": "2021-11-25T12:21:10",
+                    "source": "bild",
+                    "title": "Am Tag nach dem Koalitionsvertrag: Erste Ampel-Störung wegen Impfpflicht",
+                    "url": "https://www.bild.de/politik/inland/politik-inland/am-tag-nach-dem-koalitionsvertrag-erste-ampel-stoerung-wegen-impfpflicht-78347556.bild.html",
+                },
+                {
+                    "id": "0fa2f128e7540a5c5d2d3aaea91b340967a5bdb1db3a41bb1774bd70b0db7671",
+                    "highlight": None,
+                    "images": [],
+                    "published": "2021-11-24T13:21:29",
+                    "source": "welt",
+                    "title": "Philipp Amthor muss seinen Führerschein abgeben",
+                    "url": "https://www.welt.de/politik/deutschland/article235256256/Philipp-Amthor-muss-seinen-Fuehrerschein-abgeben.html",
+                },
+                {
+                    "id": "04447aa6e5f9219722acc693b5e58737e3d66e1876aae991150f3b5f5c46a27b",
+                    "highlight": None,
+                    "images": [],
+                    "published": "2021-11-17T08:11:00",
+                    "source": "welt",
+                    "title": "Philipp Amthor: 50 km/h zu schnell – CDU-Politiker soll Führerschein abgeben",
+                    "url": "https://www.welt.de/politik/deutschland/article235100096/Philipp-Amthor-50-km-h-zu-schnell-CDU-Politiker-soll-Fuehrerschein-abgeben.html",
+                },
+            ],
+            "total": 100,
+            "page": 1,
+            "size": 50,
+        }
 
-        for item in expected_items:
+        for item in expected_items["items"]:
             assert item in response.json()["items"]
 
     def wrong_input_test():
