@@ -1,7 +1,6 @@
 # std
 from typing import List
 
-
 # local
 from src.cron_jobs.utils.parser import gen_positions
 from src.cron_jobs.crud_db import populate_poll_results_per_fraction
@@ -206,7 +205,7 @@ def append_committees() -> List:
         print("Nothing to fetch for committeees and committee topics")
 
 
-def committee_memberships() -> List:
+def append_committee_memberships() -> List:
     missing_committee_memberships = fetch_missing_entity(
         "committee-memberships", models.CommitteeMembership
     )
@@ -294,7 +293,18 @@ def append_polls() -> List:
             }
             for api_polls in missing_polls
         ]
+        poll_topics = []
+        for api_poll in missing_polls:
+            field_topics = api_poll["field_topics"]
+            if field_topics:
+                for topic in field_topics:
+                    poll_topic = {
+                        "poll_id": api_poll["id"],
+                        "topic_id": topic["id"],
+                    }
+                poll_topics.append(poll_topic)
         insert_and_update(models.Poll, polls)
+        insert_only(models.PollHasTopic, poll_topics)
         print("Successfully retrieved")
         return polls
     else:
@@ -437,4 +447,4 @@ def append_politicians() -> List:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    # append_positions()
+    # append_polls()
