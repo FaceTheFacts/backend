@@ -1,8 +1,11 @@
 # std
 from typing import List
-from src.cron_jobs.utils.file import read_json, write_json
+
 
 # local
+from src.cron_jobs.utils.parser import gen_positions
+from src.cron_jobs.crud_db import populate_poll_results_per_fraction
+from src.cron_jobs.utils.vote_result import generate_appended_vote_results
 from src.cron_jobs.utils.insert_and_update import insert_and_update, insert_only
 from src.cron_jobs.utils.fetch import (
     fetch_missing_entity,
@@ -10,7 +13,7 @@ from src.cron_jobs.utils.fetch import (
     load_entity,
     match_constituency_to_parliament_periods,
 )
-from src.db.connection import engine, Base
+from src.db.connection import engine, Base, Session
 import src.db.models as models
 
 
@@ -331,6 +334,29 @@ def append_votes() -> List:
         print("Nothing fetched")
 
 
+def append_vote_results() -> List:
+    # First Update Poll-Results-Per-Fraction
+    session = Session()
+    last_row = (
+        session.query(models.VoteResult).order_by(models.VoteResult.id.desc()).first()
+    )
+    last_id = last_row.id
+    last_poll_id = last_row.poll_id
+    populate_poll_results_per_fraction()
+    vote_results = generate_appended_vote_results(session, last_id, last_poll_id)
+    insert_and_update(models.VoteResult, vote_results)
+    print("Successfully retrieved vote results")
+
+
+def append_positions() -> List:
+    # Lookup positions related parliament_period and add it to PERIOD_POSITIONS_TABLE inside parser.py
+    # Generate positions.json inside Scrapy repo src/politicians-positions/berlin.ts
+    parliamend_period_id = 136
+    missing_positions = gen_positions(parliamend_period_id)
+    if missing_positions:
+        insert_and_update(models.Position, missing_positions)
+
+
 def append_parties() -> List:
     missing_parties = fetch_missing_entity("parties", models.Party)
     if missing_parties:
@@ -411,4 +437,4 @@ def append_politicians() -> List:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    # committee_memberships()
+    # append_positions()
