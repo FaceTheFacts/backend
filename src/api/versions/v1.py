@@ -156,7 +156,15 @@ def read_polls(
 @router.get("/politician/{id}/speeches", response_model=schemas.PoliticianSpeechData)
 def read_politician_speech(id: int, page: int):
     politician_speech = crud.get_politician_speech(id, page)
-    check_entity_not_found(politician_speech, "Politician Speech")
+    if not politician_speech:
+        return {
+            "items": [],
+            "total": 0,
+            "page": page,
+            "size": 0,
+            "is_last_page": True,
+            "politician_id": id,
+        }
     return politician_speech
 
 
