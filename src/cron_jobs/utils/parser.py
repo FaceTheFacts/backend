@@ -134,7 +134,6 @@ def gen_scan_map():
 
 
 def gen_bundestag_politician_map():
-    file_path = "src/cron_jobs/data/id_map.json"
     file_path2 = "src/cron_jobs/data/id_map_links.json"
     session = Session()
     mandate_table = (
@@ -153,7 +152,6 @@ def gen_bundestag_politician_map():
     )
 
     politician_map = []
-    map = read_json(file_path)
     if weblink_table:
         for weblink in weblink_table:
             for politician in politician_table:

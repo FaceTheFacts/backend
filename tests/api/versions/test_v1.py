@@ -801,18 +801,13 @@ def test_read_poll_details():
 
 def test_read_politician_speech():
     def selected_values_test():
-        response = client.get("/v1/politician/119742/speeches?page=5")
+        response = client.get("/v1/politician/119742/speeches?page=6")
         response_items = [
             {
-                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7227221/7227221_h264_720_400_2000kb_baseline_de_2192.mp4",
-                "title": "Bundeskanzlerin und Bundeskanzleramt",
-                "date": "2018-05-16T07:56:56",
-            },
-            {
-                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7211358/7211358_h264_720_400_2000kb_baseline_de_2192.mp4",
-                "title": "Generalaussprache (einschl. Kultur sowie Digitales)",
-                "date": "2018-03-21T13:31:50",
-            },
+                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7193961/7193961_h264_720_400_2000kb_baseline_de_2192.mp4",
+                "title": "55 Jahre Élysée-Vertrag",
+                "date": "2018-01-22T10:50:46",
+            }
         ]
 
         for item in response_items:
@@ -820,11 +815,11 @@ def test_read_politician_speech():
         assert response.json()["is_last_page"] is True
 
     def selected_invalid_values_test():
-        response = client.get("/v1/politician/119742/speeches?page=6")
+        response = client.get("/v1/politician/119742/speeches?page=7")
         expected = {
             "items": [],
             "total": 0,
-            "page": 6,
+            "page": 7,
             "size": 0,
             "is_last_page": True,
             "politician_id": 119742,

@@ -795,14 +795,14 @@ def populate_cvs_and_career_paths() -> None:
     last_cv_id = 755
     cvs = []
     for politician in cv_connection:
-        id = politician["ID"]
+        politician_id = politician["ID"]
         cv_data = read_json(f"src/cron_jobs/data/data_politicians/{id}.json")
         if id in cv_table_ids:
             for cv in cv_table:
-                if cv.politician_id == id:
+                if cv.politician_id == politician_id:
                     cv = {
                         "id": cv.id,
-                        "politician_id": id,
+                        "politician_id": politician_id,
                         "raw_text": unicodedata.normalize(
                             "NFKD", cv_data["Biography"]["Raw"]
                         ),
@@ -814,7 +814,7 @@ def populate_cvs_and_career_paths() -> None:
         else:
             cv = {
                 "id": last_cv_id,
-                "politician_id": id,
+                "politician_id": politician_id,
                 "raw_text": unicodedata.normalize("NFKD", cv_data["Biography"]["Raw"]),
                 "short_description": unicodedata.normalize(
                     "NFKD", cv_data["Biography"]["ShortDescription"]
@@ -826,39 +826,35 @@ def populate_cvs_and_career_paths() -> None:
     # insert_and_update(CV, cvs)
 
 
-def insert_cv() -> None:
+def insert_weblinks() -> None:
     cv_connection = read_json("src/cron_jobs/data/220516_connections.json")
     weblink_table = load_entity_from_db(models.PoliticianWeblink)
     cv_table_ids = [cv.politician_id for cv in weblink_table]
     last_cv_id = 1
     weblinks = []
     for politician in cv_connection:
-        id = politician["ID"]
+        politician_id = politician["ID"]
         cv_data = read_json(f"src/cron_jobs/data/data_politicians/{id}.json")
         if id not in cv_table_ids:
-            bundestagLink = {
+            bundestag_link = {
                 "id": last_cv_id,
-                "politician_id": id,
+                "politician_id": politician_id,
                 "link": cv_data["Href"],
             }
-            weblinks.append(bundestagLink)
+            weblinks.append(bundestag_link)
             last_cv_id += 1
             if "Links" in cv_data:
                 for link in cv_data["Links"]:
                     new_link = {
                         "id": last_cv_id,
-                        "politician_id": id,
+                        "politician_id": politician_id,
                         "link": link,
                     }
                     weblinks.append(new_link)
                     last_cv_id += 1
             else:
                 print("No links")
-                print(id)
-    write_json("src/cron_jobs/data/weblinks_new.json", weblinks)
     insert_and_update(PoliticianWeblink, weblinks)
-    # cvs = read_json("src/cron_jobs/data/cvs_new.json")
-    # insert_and_update(CV, cvs)
 
 
 def populate_weblinks() -> None:

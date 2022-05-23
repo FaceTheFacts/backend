@@ -282,7 +282,6 @@ def append_sidejobs() -> List:
         return sidejobs
     else:
         print("Nothing to fetch for sidejobs")
-        return sidejobs
 
 
 def append_polls() -> List:
