@@ -1,9 +1,15 @@
 # std
 import time
+import unicodedata
 
 # local
 from src.cron_jobs.utils.file import has_valid_file, read_json, write_json
-from src.cron_jobs.utils.fetch import fetch_entity, fetch_json, load_entity
+from src.cron_jobs.utils.fetch import (
+    fetch_entity,
+    fetch_json,
+    load_entity,
+    load_entity_from_db,
+)
 from src.db.connection import engine, Session, Base
 from src.db.models.country import Country
 from src.db.models.city import City
@@ -783,32 +789,76 @@ def populate_positions() -> None:
 
 
 def populate_cvs_and_career_paths() -> None:
-    cv_data = read_json("src/static/cvs.json")
+    cv_connection = read_json("src/cron_jobs/data/220516_connections.json")
+    cv_table = load_entity_from_db(models.CV)
+    cv_table_ids = [cv.politician_id for cv in cv_table]
+    last_cv_id = 755
     cvs = []
-    career_paths = []
-    cv_id = 1
-    for politician_id in cv_data:
-        bio = cv_data[politician_id]["Biography"]
-        cv = {
-            "id": cv_id,
-            "politician_id": politician_id,
-            "raw_text": bio["Raw"],
-            "short_description": bio["ShortDescription"],
-        }
-        steps = cv_data[politician_id]["Biography"]["Steps"]
-        if steps:
-            for step in steps:
-                career_path = {
-                    "cv_id": cv_id,
-                    "raw_text": step["Raw"],
-                    "label": step["Label"],
-                    "period": step["Date"],
-                }
-                career_paths.append(career_path)
-        cvs.append(cv)
-        cv_id += 1
-    insert_and_update(CV, cvs)
-    insert_and_update(CareerPath, career_paths)
+    for politician in cv_connection:
+        id = politician["ID"]
+        cv_data = read_json(f"src/cron_jobs/data/data_politicians/{id}.json")
+        if id in cv_table_ids:
+            for cv in cv_table:
+                if cv.politician_id == id:
+                    cv = {
+                        "id": cv.id,
+                        "politician_id": id,
+                        "raw_text": unicodedata.normalize(
+                            "NFKD", cv_data["Biography"]["Raw"]
+                        ),
+                        "short_description": unicodedata.normalize(
+                            "NFKD", cv_data["Biography"]["ShortDescription"]
+                        ),
+                    }
+                    cvs.append(cv)
+        else:
+            cv = {
+                "id": last_cv_id,
+                "politician_id": id,
+                "raw_text": unicodedata.normalize("NFKD", cv_data["Biography"]["Raw"]),
+                "short_description": unicodedata.normalize(
+                    "NFKD", cv_data["Biography"]["ShortDescription"]
+                ),
+            }
+            cvs.append(cv)
+            last_cv_id += 1
+    write_json("src/cron_jobs/data/cvs_new.json", cvs)
+    # insert_and_update(CV, cvs)
+
+
+def insert_cv() -> None:
+    cv_connection = read_json("src/cron_jobs/data/220516_connections.json")
+    weblink_table = load_entity_from_db(models.PoliticianWeblink)
+    cv_table_ids = [cv.politician_id for cv in weblink_table]
+    last_cv_id = 1
+    weblinks = []
+    for politician in cv_connection:
+        id = politician["ID"]
+        cv_data = read_json(f"src/cron_jobs/data/data_politicians/{id}.json")
+        if id not in cv_table_ids:
+            bundestagLink = {
+                "id": last_cv_id,
+                "politician_id": id,
+                "link": cv_data["Href"],
+            }
+            weblinks.append(bundestagLink)
+            last_cv_id += 1
+            if "Links" in cv_data:
+                for link in cv_data["Links"]:
+                    new_link = {
+                        "id": last_cv_id,
+                        "politician_id": id,
+                        "link": link,
+                    }
+                    weblinks.append(new_link)
+                    last_cv_id += 1
+            else:
+                print("No links")
+                print(id)
+    write_json("src/cron_jobs/data/weblinks_new.json", weblinks)
+    insert_and_update(PoliticianWeblink, weblinks)
+    # cvs = read_json("src/cron_jobs/data/cvs_new.json")
+    # insert_and_update(CV, cvs)
 
 
 def populate_weblinks() -> None:
@@ -911,4 +961,5 @@ def update_politicians_occupation() -> None:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    update_politicians_occupation()
+    insert_cv()
+    # populate_cvs_and_career_paths()
