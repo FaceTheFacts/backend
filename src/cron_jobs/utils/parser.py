@@ -133,5 +133,47 @@ def gen_scan_map():
         print("No politician table data available")
 
 
+def gen_bundestag_politician_map():
+    file_path = "src/cron_jobs/data/id_map.json"
+    file_path2 = "src/cron_jobs/data/id_map_links.json"
+    session = Session()
+    mandate_table = (
+        session.query(models.CandidacyMandate)
+        .filter(models.CandidacyMandate.parliament_period_id == 132)
+        .order_by(models.CandidacyMandate.politician_id.desc())
+        .all()
+    )
+    politician_table = (
+        session.query(models.Politician).order_by(models.Politician.id.desc()).all()
+    )
+    weblink_table = (
+        session.query(models.PoliticianWeblink)
+        .where(models.PoliticianWeblink.link.ilike("%www.bundestag.de%"))
+        .all()
+    )
+
+    politician_map = []
+    map = read_json(file_path)
+    if weblink_table:
+        for weblink in weblink_table:
+            for politician in politician_table:
+                if politician.id == weblink.politician_id:
+                    for mandate in mandate_table:
+                        if weblink.politician_id == mandate.politician_id:
+                            politician_map.append(
+                                {
+                                    "id": politician.id,
+                                    "label": politician.label,
+                                    "link": weblink.link,
+                                }
+                            )
+
+        print(len(politician_map))
+        write_json(file_path2, politician_map)
+        print("Successfully generated politician map")
+    else:
+        print("No politician table data available")
+
+
 if __name__ == "__main__":
-    gen_positions(136)
+    gen_bundestag_politician_map()
