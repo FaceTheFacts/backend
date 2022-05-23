@@ -402,28 +402,19 @@ def get_bundestag_speech(db: Session, page: int):
     last_page = math.ceil(total / 10)
     if last_page < page:
         return None
-
     speech_list = []
     for item in raw_data["data"]:
-        if item["attributes"]["textContents"] != []:
-            if item["attributes"]["textContents"][0]["textBody"][0][
-                "speakerstatus"
-            ] != ("vice-president" or "president"):
-                attributes = item["attributes"]
-                politician_id = item["relationships"]["people"]["data"][0][
-                    "attributes"
-                ]["additionalInformation"]["abgeordnetenwatchID"]
-                speech_item = {
-                    "videoFileURI": attributes["videoFileURI"],
-                    "title": item["relationships"]["agendaItem"]["data"]["attributes"][
-                        "title"
-                    ],
-                    "date": attributes["dateStart"],
-                    "speaker": get_entity_by_id(
-                        db, models.Politician, int(politician_id)
-                    ),
-                }
-                speech_list.append(speech_item)
+        attributes = item["attributes"]
+        politician_id = item["relationships"]["people"]["data"][0]["attributes"][
+            "additionalInformation"
+        ]["abgeordnetenwatchID"]
+        speech_item = {
+            "videoFileURI": attributes["videoFileURI"],
+            "title": item["relationships"]["agendaItem"]["data"]["attributes"]["title"],
+            "date": attributes["dateStart"],
+            "speaker": get_entity_by_id(db, models.Politician, int(politician_id)),
+        }
+        speech_list.append(speech_item)
 
     size = raw_data["meta"]["results"]["count"]
     is_last_page = last_page == page
