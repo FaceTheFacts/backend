@@ -933,3 +933,73 @@ def test_read_politician_news():
 
     wrong_input_test()
     values_test()
+
+
+def test_read_bundestag_sidejobs():
+    def values_test():
+        response_items = client.get("/v1/bundestag/sidejobs")
+        assert response_items.status_code == 200
+        assert type(response_items.json()) is list
+        assert len(response_items.json()) == 5
+        for item in response_items.json():
+            assert "sidejob" in item
+            assert "politician" in item
+
+    values_test()
+
+
+def test_read_bundestag_sidejobs_pagination():
+    def values_test():
+        response = client.get("v1/bundestag/allsidejobs?page=1&size=50")
+        assert response.status_code == 200
+        assert type(response.json()) is dict
+        assert len(response.json()["items"]) == 50
+        assert response.json()["size"] == 50
+        assert response.json()["page"] == 1
+        for item in response.json()["items"]:
+            assert "sidejob" in item
+            assert "politician" in item
+
+    def selected_values_test():
+        response = client.get("v1/bundestag/allsidejobs?page=1&size=50")
+        response_item = {
+            "sidejob": {
+                "id": 11700,
+                "entity_type": "sidejob",
+                "label": "Mitglied des Kreistages, ehrenamtlich",
+                "income_level": None,
+                "interval": None,
+                "created": "2021-11-29",
+                "sidejob_organization": {
+                    "id": 1791,
+                    "entity_type": "sidejob_organization",
+                    "label": "Landkreis Uckermark",
+                },
+            },
+            "politician": {
+                "id": 78902,
+                "label": "Stefan Zierke",
+                "party": {
+                    "id": 1,
+                    "label": "SPD",
+                    "party_style": {
+                        "id": 1,
+                        "display_name": "SPD",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#E95050",
+                        "border_color": None,
+                    },
+                },
+            },
+        }
+
+        assert response_item in response.json()["items"]
+
+    def selected_invalid_values_test():
+        response = client.get("v1/bundestag/allsidejobs?page=22&size=50")
+        response_items = []
+        assert response.json()["items"] == response_items
+
+    values_test()
+    selected_values_test()
+    selected_invalid_values_test()

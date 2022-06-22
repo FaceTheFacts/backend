@@ -186,19 +186,19 @@ class TestCrudFunctions(unittest.TestCase):
         actual_is_last_page = actual["is_last_page"]
         expected = [
             {
-                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7531965/7531965_h264_720_400_2000kb_baseline_de_2192.mp4",
-                "title": "Vereinbarte Debatte zur Situation in Deutschland",
-                "date": "2021-09-07T08:24:16",
+                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7536861/7536861_h264_720_400_2000kb_baseline_de_2192.mp4",
+                "title": "Finanzen, Bundesrechnungshof",
+                "date": "2022-05-31T08:53:29",
             },
             {
-                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7531848/7531848_h264_720_400_2000kb_baseline_de_2192.mp4",
-                "title": "Regierungserklärung der BKn zur Lage in Afghanistan, Bundeswehreinsatz zur Evakuierung aus Afghanistan",
-                "date": "2021-08-25T10:54:47",
+                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7535513/7535513_h264_720_400_2000kb_baseline_de_2192.mp4",
+                "title": "Änderung Art. 87a GG, Bundeswehrsondervermögensgesetz",
+                "date": "2022-04-27T14:31:55",
             },
             {
-                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7530596/7530596_h264_720_400_2000kb_baseline_de_2192.mp4",
-                "title": "Regierungserklärung zum Europäischen Rat",
-                "date": "2021-06-24T07:37:40",
+                "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7535390/7535390_h264_720_400_2000kb_baseline_de_2192.mp4",
+                "title": "Viertes Corona-Steuerhilfegesetz",
+                "date": "2022-04-08T09:39:36",
             },
         ]
         for item in expected:
