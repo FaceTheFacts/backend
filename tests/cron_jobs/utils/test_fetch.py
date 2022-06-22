@@ -21,7 +21,7 @@ def test_fetch_json():
         ) == {
             "meta": {
                 "abgeordnetenwatch_api": {
-                    "version": "2.1",
+                    "version": "2.2",
                     "changelog": "https://www.abgeordnetenwatch.de/api/version-changelog/aktuell",
                     "licence": "CC0 1.0",
                     "licence_link": "https://creativecommons.org/publicdomain/zero/1.0/deed.de",
