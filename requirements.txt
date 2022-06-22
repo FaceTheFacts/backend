@@ -591,9 +591,9 @@ starlette==0.14.2; python_version >= "3.7" and python_full_version >= "3.6.1" an
 tldextract==3.3.0; python_version >= "3.7" \
     --hash=sha256:5d88321b1b528ebb8f678c72ab023f37caf6381f6af9576b4e60fd266cff178c \
     --hash=sha256:adcd24abf21ce3450417cd5a00f23b7e57554ce8ae827334dd12bfcbb6274cf1
-tomli==1.2.3; python_version < "3.11" and python_version >= "3.6" \
-    --hash=sha256:e3069e4be3ead9668e21cb9b074cd948f7b3113fd9c8bba083f48247aab8b11c \
-    --hash=sha256:05b6166bff487dc068d322585c7ea4ef78deed501cc124060e0f238e89a9231f
+tomli==2.0.1; python_version < "3.11" and python_version >= "3.7" \
+    --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
+    --hash=sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f
 twisted-iocpsupport==1.0.2; python_full_version >= "3.6.7" and python_version >= "3.6" and platform_system == "Windows" \
     --hash=sha256:72068b206ee809c9c596b57b5287259ea41ddb4774d86725b19f35bf56aa32a9 \
     --hash=sha256:985c06a33f5c0dae92c71a036d1ea63872ee86a21dd9b01e1f287486f15524b4 \
