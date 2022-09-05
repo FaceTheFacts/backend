@@ -21,7 +21,7 @@ def test_fetch_json():
         ) == {
             "meta": {
                 "abgeordnetenwatch_api": {
-                    "version": "2.2",
+                    "version": "2.3",
                     "changelog": "https://www.abgeordnetenwatch.de/api/version-changelog/aktuell",
                     "licence": "CC0 1.0",
                     "licence_link": "https://creativecommons.org/publicdomain/zero/1.0/deed.de",
@@ -47,7 +47,7 @@ def test_fetch_entity_count():
         assert fetch_entity_count("cities") == 1065
 
     def count_constituency():
-        assert fetch_entity_count("constituencies") == 10524
+        assert fetch_entity_count("constituencies") == 10611
 
     page_not_found()
     count_city()

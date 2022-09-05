@@ -89,6 +89,12 @@ def fetch_missing_entity(entity: str, model: Any):
         print(f"Table {entity} already updated")
 
 
+def fetch_last_id_from_model(model: Any) -> int:
+    session = Session()
+    last_id = session.query(model).order_by(model.id.desc()).first().id
+    return last_id
+
+
 def fetch_missing_sub_entity(entity: str, model: Any):
     data_list = []
     session = Session()

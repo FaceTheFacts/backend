@@ -20,6 +20,12 @@ To run this project, you will need to add the following environment variables to
 
 `DATABASE_NAME`
 
+`POLITRACK_API_URL`
+
+`POLITRACK_USERNAME`
+
+`POLITRACK_SECRET_PASSWORD`
+
 ## Installation/ Run locally
 
 We are using [poetry](https://python-poetry.org/) dependency management and packaging in Python. In addition, we take advantage of [uvicorn](https://www.uvicorn.org/) to implement a server. For setting up, run these commands as follows.
@@ -37,7 +43,7 @@ Every time
   # Install all packages
   $ poetry install
   # Start API server on port = 8000
-  $ uvicorn src.api.main:app --reload
+  $ poetry run uvicorn src.api.main:app --reload
 ```
 
 ## API
