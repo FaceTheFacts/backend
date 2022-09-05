@@ -7,6 +7,7 @@ from src.cron_jobs.crud_db import populate_poll_results_per_fraction
 from src.cron_jobs.utils.vote_result import generate_appended_vote_results
 from src.cron_jobs.utils.insert_and_update import insert_and_update, insert_only
 from src.cron_jobs.utils.fetch import (
+    fetch_last_id_from_model,
     fetch_missing_entity,
     fetch_missing_sub_entity,
     load_entity,
@@ -305,6 +306,8 @@ def append_polls() -> List:
             for api_polls in missing_polls
         ]
         poll_topics = []
+        poll_links = []
+        last_field_related_link_id = fetch_last_id_from_model(models.FieldRelatedLink)
         for api_poll in missing_polls:
             field_topics = api_poll["field_topics"]
             if field_topics:
@@ -313,9 +316,21 @@ def append_polls() -> List:
                         "poll_id": api_poll["id"],
                         "topic_id": topic["id"],
                     }
-                poll_topics.append(poll_topic)
+                    poll_topics.append(poll_topic)
+            field_links = api_poll["field_related_links"]
+            if field_links:
+                for link in field_links:
+                    last_field_related_link_id += 1
+                    poll_link = {
+                        "id": last_field_related_link_id,
+                        "poll_id": api_poll["id"],
+                        "uri": link["uri"],
+                        "title": link["title"],
+                    }
+                    poll_links.append(poll_link)
         insert_and_update(models.Poll, polls)
         insert_only(models.PollHasTopic, poll_topics)
+        insert_only(models.FieldRelatedLink, poll_links)
         print("Successfully retrieved")
         return polls
     else:
@@ -458,4 +473,3 @@ def append_politicians() -> List:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    # append_sidejobs()
