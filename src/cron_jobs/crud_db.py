@@ -44,6 +44,7 @@ from src.db.models.career_path import CareerPath
 from src.db.models.position import Position
 from src.db.models.politician_weblink import PoliticianWeblink
 from src.db.models.poll_result_per_party import PollResultPerFraction
+from src.db.models.party_donation import PartyDonation
 
 import src.db.models as models
 from src.cron_jobs.utils.vote_result import (
