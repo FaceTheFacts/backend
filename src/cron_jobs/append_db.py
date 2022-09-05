@@ -1,6 +1,6 @@
 # std
 from typing import List
-from cron_jobs.utils.file import read_json
+from src.cron_jobs.utils.file import read_json
 
 # local
 from src.cron_jobs.utils.parser import gen_positions
