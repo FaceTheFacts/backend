@@ -1,5 +1,6 @@
 # std
 from typing import List
+from cron_jobs.utils.file import read_json
 
 # local
 from src.cron_jobs.utils.parser import gen_positions
@@ -469,6 +470,47 @@ def append_politicians() -> List:
         return politicians
     else:
         print("Nothing to fetch for politicians")
+
+
+def append_zip_codes() -> List:
+    new_entries = []
+    data_base = []
+    constituency_number_zip_codes_map = read_json(
+        "src/cron_jobs/data/zip_codes_complete.json"
+    )
+    session = Session()
+    constituency_table = (
+        session.query(models.Constituency)
+        .where(models.Constituency.parliament_period_id == 128)
+        .order_by(models.Constituency.number.asc())
+        .all()
+    )
+    for item in constituency_number_zip_codes_map:
+        new_entry = [item["id"][:3], item["id"][6:]]
+        new_entries.append(new_entry)
+    last_id = fetch_last_id_from_model(models.ZipCode)
+    for entry in new_entries:
+        for item in constituency_table:
+            item_number = str(item.number)
+            if entry[0][0] == "0":
+                if item_number == entry[0][1:]:
+                    last_id += 1
+                    new_entry = {
+                        "id": last_id,
+                        "constituency_id": item.id,
+                        "zip_code": entry[1],
+                    }
+                    data_base.append(new_entry)
+            else:
+                if item_number == entry[0]:
+                    last_id += 1
+                    new_entry = {
+                        "id": last_id,
+                        "zip_code": entry[1],
+                        "constituency_id": item.id,
+                    }
+                    data_base.append(new_entry)
+    insert_and_update(models.ZipCode, data_base)
 
 
 if __name__ == "__main__":
