@@ -513,3 +513,13 @@ def get_politician_by_constituency(
         constituency_politicians["politicians"] = party_sort(politicians)
         return constituency_politicians
     return None
+
+
+def get_all_party_donations(db: Session):
+    party_donations = (
+        db.query(models.PartyDonation)
+        .order_by(models.PartyDonation.date.desc())
+        .all()
+    )
+
+    return party_donations

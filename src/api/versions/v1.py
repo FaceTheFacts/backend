@@ -242,3 +242,10 @@ def read_politician_news(id: int):
 
 # https://uriyyo-fastapi-pagination.netlify.app/
 add_pagination(router)
+
+
+@router.get("/partydonations/", response_model=List[schemas.PartyDonation])
+def read_party_donations(db: Session = Depends(get_db)):
+    party_donations = crud.get_party_donations(db)
+    check_entity_not_found(party_donations, "Party Donations")
+    return party_donations
