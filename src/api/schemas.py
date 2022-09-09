@@ -292,3 +292,7 @@ class PolitrackNewsArticle(FTFBaseModel):
 class SidejobBundestag(FTFBaseModel):
     sidejob: Sidejob
     politician: PoliticianHeader
+
+class Token(FTFBaseModel):
+    access_token: str
+    token_type: str
