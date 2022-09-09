@@ -10,8 +10,8 @@ class PartyDonation(Base):
     party_id = Column(Integer, ForeignKey("party.id"))
     amount = Column(Float)
     date = Column(Date)
-    party_donation_organization= Column(String, ForeignKey("party_donation_organization.id"))
+    party_donation_organization_id = Column(Integer, ForeignKey("party_donation_organization.id"))
 
-    # One to Many (one org to many donations)
+    # Many to One
     party_donation_organization = relationship(
-        "PartyDonationOrganization", back_populates="party_donation")
+        "PartyDonationOrganization", back_populates="party_donations")
