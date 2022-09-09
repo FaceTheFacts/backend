@@ -45,6 +45,7 @@ from src.db.models.position import Position
 from src.db.models.politician_weblink import PoliticianWeblink
 from src.db.models.poll_result_per_party import PollResultPerFraction
 from src.db.models.party_donation import PartyDonation
+from src.db.models.party_donation_organization import PartyDonationOrganization
 
 import src.db.models as models
 from src.cron_jobs.utils.vote_result import (
@@ -954,6 +955,37 @@ def update_politicians_occupation() -> None:
             session.commit()
     end_time = time.time()
     print(f"Total runtime to update data is {end_time - begin_time}")
+
+def populate_party_donations() -> None:
+    api_party_donations = load_entity("party_donations")
+    party_donations = [
+        {
+            "id": api_party_donation["id"],
+            "party_id": api_party_donation["party_id"],
+            "amount": api_party_donation["amount"],
+            "date": api_party_donation["date"],
+            "party_donation_organization_id": api_party_donation["party_donation_organization"]["id"]
+            if api_party_donation["party_donation_organization"]
+            else None,
+        }
+        for api_party_donation in api_party_donations
+    ]
+    insert_and_update(PartyDonation, party_donations)
+
+def populate_party_donation_organizations() -> None:
+    api_party_donation_organizations = load_entity("party_donation_organizations")
+    party_donation_organizations = [
+        {
+            "id": api_party_donation_organization["id"],
+            "donor_name": api_party_donation_organization["donor_name"],
+            "donor_address": api_party_donation_organization["donor_address"],
+            "donor_zip": api_party_donation_organization["donor_zip"],
+            "donor_city": api_party_donation_organization["donor_city"],
+            "donor_foreign": api_party_donation_organization["donor_foreign"]
+        }
+        for api_party_donation_organization in api_party_donation_organizations
+    ]
+    insert_and_update(PartyDonationOrganization, party_donation_organizations)
 
 
 if __name__ == "__main__":
