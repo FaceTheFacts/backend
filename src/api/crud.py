@@ -513,3 +513,7 @@ def get_politician_by_constituency(
         constituency_politicians["politicians"] = party_sort(politicians)
         return constituency_politicians
     return None
+
+
+def get_user(db: Session, username: int):
+    return db.query(models.User).filter(models.User.username == username).first()
