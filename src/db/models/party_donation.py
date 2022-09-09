@@ -1,5 +1,4 @@
-from xmlrpc.client import Boolean
-from sqlalchemy import Column, String, Integer, ForeignKey, Date
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, Date
 from sqlalchemy.orm import relationship
 
 from src.db.connection import Base
@@ -8,14 +7,11 @@ class PartyDonation(Base):
     __tablename__ = "party_donation"
 
     id = Column(Integer, primary_key=True)
-    # entity_type = Column(String)
-    # label = Column(String)
-    # api_url = Column(String)
     party_id = Column(Integer, ForeignKey("party.id"))
-    amount = Column(Integer)
-    donor_name = Column(String)
-    donor_address = Column(String)
-    donor_zip = Column(Integer)
-    donor_city = Column(String)
-    donor_foreign = Column(Boolean)
+    amount = Column(Float)
     date = Column(Date)
+    party_donation_organization= Column(String, ForeignKey("party_donation_organization.id"))
+
+    # One to Many (one org to many donations)
+    party_donation_organization = relationship(
+        "PartyDonationOrganization", back_populates="party_donation")
