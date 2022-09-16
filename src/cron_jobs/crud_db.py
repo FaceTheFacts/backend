@@ -46,10 +46,7 @@ from src.db.models.politician_weblink import PoliticianWeblink
 from src.db.models.poll_result_per_party import PollResultPerFraction
 from src.db.models.party_donation import PartyDonation
 from src.db.models.party_donation_organization import PartyDonationOrganization
-<<<<<<< HEAD
 from src.cron_jobs.utils.clean_donor import clean_donor
-=======
->>>>>>> ab358f73a690723845d08dcba3867d35561e6df5
 
 import src.db.models as models
 from src.cron_jobs.utils.vote_result import (
@@ -960,19 +957,18 @@ def update_politicians_occupation() -> None:
     end_time = time.time()
     print(f"Total runtime to update data is {end_time - begin_time}")
 
+
 def populate_party_donations() -> None:
     api_party_donations = load_entity("party_donations")
-<<<<<<< HEAD
-    
-=======
->>>>>>> ab358f73a690723845d08dcba3867d35561e6df5
     party_donations = [
         {
             "id": api_party_donation["id"],
             "party_id": api_party_donation["party_id"],
             "amount": api_party_donation["amount"],
             "date": api_party_donation["date"],
-            "party_donation_organization_id": api_party_donation["party_donation_organization"]["id"]
+            "party_donation_organization_id": api_party_donation[
+                "party_donation_organization"
+            ]["id"]
             if api_party_donation["party_donation_organization"]
             else None,
         }
@@ -980,10 +976,12 @@ def populate_party_donations() -> None:
     ]
     insert_and_update(PartyDonation, party_donations)
 
+
 def populate_party_donation_organizations() -> None:
-<<<<<<< HEAD
     api_party_donation_organizations = load_entity("party_donations")
-    clean_api_party_donation_organizations = clean_donor(api_party_donation_organizations)
+    clean_api_party_donation_organizations = clean_donor(
+        api_party_donation_organizations
+    )
     id = 1
     party_donation_organizations = []
     # for api_party_donation_organization in clean_api_party_donation_organizations:
@@ -991,7 +989,7 @@ def populate_party_donation_organizations() -> None:
     #     for item in party_donation_organizations:
     #         if item.donor_name == api_party_donation_organization.donor_name and api_party_donation_organization.donor_address == item.donor_address:
     #             fail = False
-    #     if fail:  
+    #     if fail:
     #         party_donation_organization = {
     #                 "id": id,
     #                 "donor_name": api_party_donation_organization["donor_name"],
@@ -1003,22 +1001,7 @@ def populate_party_donation_organizations() -> None:
     #         party_donation_organizations.append(party_donation_organization)
     #         id = id+1
     # insert_and_update(PartyDonationOrganization, party_donation_organizations)
-=======
-    api_party_donation_organizations = load_entity("party_donation_organizations")
-    party_donation_organizations = [
-        {
-            "id": api_party_donation_organization["id"],
-            "donor_name": api_party_donation_organization["donor_name"],
-            "donor_address": api_party_donation_organization["donor_address"],
-            "donor_zip": api_party_donation_organization["donor_zip"],
-            "donor_city": api_party_donation_organization["donor_city"],
-            "donor_foreign": api_party_donation_organization["donor_foreign"]
-        }
-        for api_party_donation_organization in api_party_donation_organizations
-    ]
-    insert_and_update(PartyDonationOrganization, party_donation_organizations)
 
->>>>>>> ab358f73a690723845d08dcba3867d35561e6df5
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
