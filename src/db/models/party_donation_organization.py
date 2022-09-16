@@ -1,8 +1,8 @@
-from xmlrpc.client import Boolean
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import Column, String, Integer, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
 from src.db.connection import Base
+
 
 class PartyDonationOrganization(Base):
     __tablename__ = "party_donation_organization"
@@ -16,6 +16,5 @@ class PartyDonationOrganization(Base):
 
     # One to Many
     party_donations = relationship(
-        "PartyDonation", back_populates="party_donation_organization")
-
-    
+        "PartyDonation", back_populates="party_donation_organization"
+    )
