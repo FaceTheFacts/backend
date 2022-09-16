@@ -46,6 +46,7 @@ from src.db.models.politician_weblink import PoliticianWeblink
 from src.db.models.poll_result_per_party import PollResultPerFraction
 from src.db.models.party_donation import PartyDonation
 from src.db.models.party_donation_organization import PartyDonationOrganization
+from src.cron_jobs.utils.clean_donor import clean_donor
 
 import src.db.models as models
 from src.cron_jobs.utils.vote_result import (
@@ -958,6 +959,7 @@ def update_politicians_occupation() -> None:
 
 def populate_party_donations() -> None:
     api_party_donations = load_entity("party_donations")
+    
     party_donations = [
         {
             "id": api_party_donation["id"],
@@ -973,22 +975,29 @@ def populate_party_donations() -> None:
     insert_and_update(PartyDonation, party_donations)
 
 def populate_party_donation_organizations() -> None:
-    api_party_donation_organizations = load_entity("party_donation_organizations")
-    party_donation_organizations = [
-        {
-            "id": api_party_donation_organization["id"],
-            "donor_name": api_party_donation_organization["donor_name"],
-            "donor_address": api_party_donation_organization["donor_address"],
-            "donor_zip": api_party_donation_organization["donor_zip"],
-            "donor_city": api_party_donation_organization["donor_city"],
-            "donor_foreign": api_party_donation_organization["donor_foreign"]
-        }
-        for api_party_donation_organization in api_party_donation_organizations
-    ]
-    insert_and_update(PartyDonationOrganization, party_donation_organizations)
-
+    api_party_donation_organizations = load_entity("party_donations")
+    clean_api_party_donation_organizations = clean_donor(api_party_donation_organizations)
+    id = 1
+    party_donation_organizations = []
+    # for api_party_donation_organization in clean_api_party_donation_organizations:
+    #     fail = True
+    #     for item in party_donation_organizations:
+    #         if item.donor_name == api_party_donation_organization.donor_name and api_party_donation_organization.donor_address == item.donor_address:
+    #             fail = False
+    #     if fail:  
+    #         party_donation_organization = {
+    #                 "id": id,
+    #                 "donor_name": api_party_donation_organization["donor_name"],
+    #                 "donor_address": api_party_donation_organization["donor_address"],
+    #                 "donor_zip": api_party_donation_organization["donor_zip"],
+    #                 "donor_city": api_party_donation_organization["donor_city"],
+    #                 "donor_foreign": api_party_donation_organization["donor_foreign"]
+    #             }
+    #         party_donation_organizations.append(party_donation_organization)
+    #         id = id+1
+    # insert_and_update(PartyDonationOrganization, party_donation_organizations)
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    insert_cv()
+    populate_party_donation_organizations()
     # populate_cvs_and_career_paths()
