@@ -15,7 +15,7 @@ def has_valid_file(file_path: str) -> bool:
 
 
 def read_json(file_path: str) -> Any:
-    with open(file_path) as read_file:
+    with open(file_path, encoding='utf8') as read_file:
         data = json.load(read_file)
         print(f"Loaded data from {file_path}")
         return data
