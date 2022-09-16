@@ -515,5 +515,5 @@ def get_politician_by_constituency(
     return None
 
 
-def get_user(db: Session, username: int):
-    return db.query(models.User).filter(models.User.username == username).first()
+def get_user(db: Session, username: str):
+    return db.query(models.User).filter(models.User.email == username).first()
