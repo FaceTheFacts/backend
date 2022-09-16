@@ -5,10 +5,14 @@ from src.cron_jobs.utils.file import write_json
 def clean_donor(data):
     clean_donors = []
     donor = {}
+    donar2 = {}
     for donation in data:
         full_address = donation["donar"]
-
+        # Ignore month (month entry has always amount = undefined)
         if donation["amount"]:
+            if len(donation["donar"]) < 3:
+                clean_donors.append(donation)
+            continue
             if len(donation["donar"]) >= 3:
                 # print(donation)
                 if "Übersetzung: " in donation["donar"][1]:
@@ -20,7 +24,6 @@ def clean_donor(data):
                             "donor_zip": donation["donar"][2][:4],
                             "donor_city": "Kopenhagen",
                             "donor_foreign": True,
-                            "date": donation["date"],
                         }
                     # case 19
                     else:
@@ -30,7 +33,6 @@ def clean_donor(data):
                             "donor_zip": donation["donar"][3][:4],
                             "donor_city": "Kopenhagen",
                             "donor_foreign": True,
-                            "date": donation["date"],
                         }
                     clean_donors.append(donor)
                 # case 27
@@ -42,7 +44,6 @@ def clean_donor(data):
                             "donor_zip": donation["donar"][5][3:7],
                             "donor_city": "Kopenhagen",
                             "donor_foreign": True,
-                            "date": donation["date"],
                         }
                     # case 26
                     else:
@@ -52,7 +53,6 @@ def clean_donor(data):
                             "donor_zip": donation["donar"][4][3:7],
                             "donor_city": "Kopenhagen",
                             "donor_foreign": True,
-                            "date": donation["date"],
                         }
                     clean_donors.append(donor)
     print(clean_donors)
