@@ -978,29 +978,30 @@ def populate_party_donations() -> None:
 
 
 def populate_party_donation_organizations() -> None:
-    api_party_donation_organizations = load_entity("party_donations")
-    clean_api_party_donation_organizations = clean_donor(
-        api_party_donation_organizations
-    )
+    clean_api_party_donation_organizations = load_entity("clean_donors")
+    # clean_api_party_donation_organizations = clean_donor(
+    #     api_party_donation_organizations
+    # )
     id = 1
     party_donation_organizations = []
-    # for api_party_donation_organization in clean_api_party_donation_organizations:
-    #     fail = True
-    #     for item in party_donation_organizations:
-    #         if item.donor_name == api_party_donation_organization.donor_name and api_party_donation_organization.donor_address == item.donor_address:
-    #             fail = False
-    #     if fail:
-    #         party_donation_organization = {
-    #                 "id": id,
-    #                 "donor_name": api_party_donation_organization["donor_name"],
-    #                 "donor_address": api_party_donation_organization["donor_address"],
-    #                 "donor_zip": api_party_donation_organization["donor_zip"],
-    #                 "donor_city": api_party_donation_organization["donor_city"],
-    #                 "donor_foreign": api_party_donation_organization["donor_foreign"]
-    #             }
-    #         party_donation_organizations.append(party_donation_organization)
-    #         id = id+1
-    # insert_and_update(PartyDonationOrganization, party_donation_organizations)
+    for api_party_donation_organization in clean_api_party_donation_organizations:
+        fail = True
+        for item in party_donation_organizations:
+            print(item)
+            if item["donor_name"] == api_party_donation_organization["donor_name"] and api_party_donation_organization["donor_address"] == item["donor_address"]:
+                fail = False
+        if fail:
+            party_donation_organization = {
+                    "id": id,
+                    "donor_name": api_party_donation_organization["donor_name"],
+                    "donor_address": api_party_donation_organization["donor_address"],
+                    "donor_zip": api_party_donation_organization["donor_zip"],
+                    "donor_city": api_party_donation_organization["donor_city"],
+                    "donor_foreign": api_party_donation_organization["donor_foreign"]
+                }
+            party_donation_organizations.append(party_donation_organization)
+            id = id+1
+    insert_and_update(PartyDonationOrganization, party_donation_organizations)
 
 
 if __name__ == "__main__":
