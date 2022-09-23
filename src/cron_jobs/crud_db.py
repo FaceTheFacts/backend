@@ -47,6 +47,7 @@ from src.db.models.poll_result_per_party import PollResultPerFraction
 from src.db.models.party_donation import PartyDonation
 from src.db.models.party_donation_organization import PartyDonationOrganization
 from src.cron_jobs.utils.clean_donor import clean_donor
+from src.cron_jobs.utils.clean_donations import clean_donations
 
 import src.db.models as models
 from src.cron_jobs.utils.vote_result import (
@@ -959,22 +960,30 @@ def update_politicians_occupation() -> None:
 
 
 def populate_party_donations() -> None:
-    api_party_donations = load_entity("party_donations")
-    party_donations = [
-        {
-            "id": api_party_donation["id"],
-            "party_id": api_party_donation["party_id"],
-            "amount": api_party_donation["amount"],
-            "date": api_party_donation["date"],
-            "party_donation_organization_id": api_party_donation[
-                "party_donation_organization"
-            ]["id"]
-            if api_party_donation["party_donation_organization"]
-            else None,
+    #TODO: confirm default file name and location from scrapy branch
+    party_donations = load_entity("party_donations")
+
+    #TODO: hook this function up to db, currently it requires additional local data
+    clean_donations(party_donations)
+
+    #TODO: move this into the clean donations function, the goal was to keep one JSON
+    #with all of the data together to make it easier to work with manually, but that
+    #means it has extra keys we don't need for insertion meaning we need to loop through
+    #an extra time to remove it
+    donations_to_append = []
+
+    for donation in party_donations:        
+        donation_to_append = {
+            "id": donation["id"],
+            "party_id": donation["party_id"],
+            "amount": donation["amount"],
+            "date": donation["date"],
+            "party_donation_organization_id": donation["party_donation_organization_id"]
         }
-        for api_party_donation in api_party_donations
-    ]
-    insert_and_update(PartyDonation, party_donations)
+
+        donations_to_append.append(donation_to_append)
+
+    insert_and_update(PartyDonation, donations_to_append)
 
 
 def populate_party_donation_organizations() -> None:
@@ -1003,8 +1012,7 @@ def populate_party_donation_organizations() -> None:
             id = id+1
     insert_and_update(PartyDonationOrganization, party_donation_organizations)
 
-
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    populate_party_donation_organizations()
+    populate_party_donations()
     # populate_cvs_and_career_paths()
