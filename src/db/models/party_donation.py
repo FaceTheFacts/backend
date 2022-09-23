@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 
 from src.db.connection import Base
 
+
 class PartyDonation(Base):
     __tablename__ = "party_donation"
 
@@ -10,8 +11,12 @@ class PartyDonation(Base):
     party_id = Column(Integer, ForeignKey("party.id"))
     amount = Column(Float)
     date = Column(Date)
-    party_donation_organization_id = Column(Integer, ForeignKey("party_donation_organization.id"))
+    party_donation_organization_id = Column(
+        Integer, ForeignKey("party_donation_organization.id")
+    )
+    party = relationship("Party")
 
     # Many to One
     party_donation_organization = relationship(
-        "PartyDonationOrganization", back_populates="party_donations")
+        "PartyDonationOrganization", back_populates="party_donations"
+    )

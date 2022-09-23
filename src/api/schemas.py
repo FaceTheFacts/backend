@@ -305,7 +305,7 @@ class PartyDonationOrganization(FTFBaseModel):
 
 class PartyDonation(FTFBaseModel):
     id: int
-    party_id: int
+    party: Optional[Party]
     amount: float
     date: date
-    party_donation_organization_id: int
+    party_donation_organization: PartyDonationOrganization
