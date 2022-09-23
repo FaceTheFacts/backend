@@ -517,9 +517,7 @@ def get_politician_by_constituency(
 
 def get_all_party_donations(db: Session):
     party_donations = (
-        db.query(models.PartyDonation)
-        .order_by(models.PartyDonation.date.desc())
-        .all()
+        db.query(models.PartyDonation).order_by(models.PartyDonation.date.desc()).all()
     )
 
     return party_donations

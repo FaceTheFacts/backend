@@ -19,9 +19,6 @@ from src.api.utils.error import check_entity_not_found
 from src.api.utils.party_sort import party_sort
 from src.api.utils.polls import get_politcian_ids_by_bundestag_polldata_and_follow_ids
 
-#MOCK DATA, REMOVE WHEN ROUTES ARE IMPLEMENTED
-from src.api.utils.donations_mock_data import MOCK_DASHBOARD_RESPONSE, MOCK_DONATIONS_RESPONSE
-
 router = APIRouter(
     prefix="/v1",
     tags=["v1"],
@@ -247,16 +244,8 @@ def read_politician_news(id: int):
 add_pagination(router)
 
 
-@router.get("/dashboardpartydonations")
+@router.get("/partydonations", response_model=List[schemas.PartyDonation])
 def read_party_donations(db: Session = Depends(get_db)):
-    return MOCK_DASHBOARD_RESPONSE()
-
-@router.get("/partydonations")
-def read_party_donations(db: Session = Depends(get_db)):
-    return MOCK_DONATIONS_RESPONSE()
-
-# @router.get("/partydonations/", response_model=List[schemas.PartyDonation])
-# def read_party_donations(db: Session = Depends(get_db)):
-#     party_donations = crud.get_party_donations(db)
-#     check_entity_not_found(party_donations, "Party Donations")
-#     return party_donations
+    party_donations = crud.get_all_party_donations(db)
+    check_entity_not_found(party_donations, "Party Donations")
+    return party_donations

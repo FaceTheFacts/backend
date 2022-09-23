@@ -292,3 +292,20 @@ class PolitrackNewsArticle(FTFBaseModel):
 class SidejobBundestag(FTFBaseModel):
     sidejob: Sidejob
     politician: PoliticianHeader
+
+
+class PartyDonationOrganization(FTFBaseModel):
+    id: int
+    donor_name: str
+    donor_address: str
+    donor_zip: str
+    donor_city: str
+    donor_foreign: bool
+
+
+class PartyDonation(FTFBaseModel):
+    id: int
+    party_id: int
+    amount: float
+    date: date
+    party_donation_organization_id: int
