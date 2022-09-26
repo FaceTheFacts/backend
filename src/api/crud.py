@@ -3,6 +3,7 @@ from typing import List
 import math
 from unittest import result
 import datetime
+from dateutil.relativedelta import relativedelta
 
 # third-party
 from sqlalchemy.orm import Session
@@ -520,27 +521,71 @@ def get_homepage_party_donations(db: Session):
     # temporary hard-coding, discussing DB options for this
     bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
 
-    # Gets all party donations regardless of party, needs to be updated to filter by party id
-    party_donations = (
-        db.query(models.PartyDonation).order_by(models.PartyDonation.date.desc()).all()
-    )
-
     bundestag_party_donations_last_8_years = []
+    for id in bundestag_party_ids:
+        bundestag_party_donations_last_8_years.append(
+            {
+                "id": id,
+                "party": None,
+                "donations": [],
+                "donations_over_96_months": [],
+                "donations_total": 0,
+            }
+        )
 
     date_8_years_ago_today = datetime.datetime.now().date() - datetime.timedelta(
         days=8 * 365
     )
 
-    for donation in party_donations:
-        donation_dict = {
-            "date": donation.date,
-            "amount": donation.amount,
-            "party": donation.party,
-        }
+    # Gets all party donations regardless of party, needs to be updated to filter by party id
+    all_party_donations_all_time = (
+        db.query(models.PartyDonation).order_by(models.PartyDonation.date.desc()).all()
+    )
 
-        if donation_dict["date"] >= date_8_years_ago_today:
-            if donation_dict["party"].id in bundestag_party_ids:
-                bundestag_party_donations_last_8_years.append(donation_dict)
+    for party in bundestag_party_donations_last_8_years:
+        for donation in all_party_donations_all_time:
+            if donation.party_id == party["id"]:
+                party["party"] = donation.party
+                continue
+
+    for donation in all_party_donations_all_time:
+        if donation.date >= date_8_years_ago_today:
+            for party in bundestag_party_donations_last_8_years:
+                if party["id"] == donation.party_id:
+                    party["donations"].append(
+                        {
+                            "date": donation.date,
+                            "amount": donation.amount,
+                        }
+                    )
+
+    today = datetime.date.today()
+
+    for party in bundestag_party_donations_last_8_years:
+        month_index = 1
+
+        while month_index <= 96:
+            party["donations_over_96_months"].append(0)
+            months_ago_date_start = today - relativedelta(months=month_index)
+            months_ago_date_end = months_ago_date_start + relativedelta(months=1)
+
+            for donation in party["donations"]:
+                if (
+                    donation["date"] >= months_ago_date_start
+                    and donation["date"] <= months_ago_date_end
+                ):
+                    party["donations_over_96_months"][month_index - 1] += donation[
+                        "amount"
+                    ]
+                    party["donations_total"] += donation["amount"]
+                    del donation
+                    continue
+
+            month_index += 1
+
+    for party in bundestag_party_donations_last_8_years:
+        del party["id"]
+        del party["donations"]
 
     return bundestag_party_donations_last_8_years
 

@@ -312,6 +312,6 @@ class PartyDonation(FTFBaseModel):
 
 
 class HomepagePartyDonation(FTFBaseModel):
-    amount: float
-    date: date
     party: Party
+    donations_over_96_months: List[float]
+    donations_total: float
