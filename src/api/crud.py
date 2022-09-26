@@ -2,6 +2,7 @@ from operator import and_
 from typing import List
 import math
 from unittest import result
+import datetime
 
 # third-party
 from sqlalchemy.orm import Session
@@ -513,6 +514,35 @@ def get_politician_by_constituency(
         constituency_politicians["politicians"] = party_sort(politicians)
         return constituency_politicians
     return None
+
+
+def get_homepage_party_donations(db: Session):
+    # temporary hard-coding, discussing DB options for this
+    bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
+
+    # Gets all party donations regardless of party, needs to be updated to filter by party id
+    party_donations = (
+        db.query(models.PartyDonation).order_by(models.PartyDonation.date.desc()).all()
+    )
+
+    bundestag_party_donations_last_8_years = []
+
+    date_8_years_ago_today = datetime.datetime.now().date() - datetime.timedelta(
+        days=8 * 365
+    )
+
+    for donation in party_donations:
+        donation_dict = {
+            "date": donation.date,
+            "amount": donation.amount,
+            "party": donation.party,
+        }
+
+        if donation_dict["date"] >= date_8_years_ago_today:
+            if donation_dict["party"].id in bundestag_party_ids:
+                bundestag_party_donations_last_8_years.append(donation_dict)
+
+    return bundestag_party_donations_last_8_years
 
 
 def get_all_party_donations(db: Session):
