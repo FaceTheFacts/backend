@@ -960,25 +960,27 @@ def update_politicians_occupation() -> None:
 
 
 def populate_party_donations() -> None:
-    #TODO: confirm default file name and location from scrapy branch
+    # TODO: confirm default file name and location from scrapy branch
     party_donations = load_entity("party_donations")
 
-    #TODO: hook this function up to db, currently it requires additional local data
+    # TODO: hook this function up to db, currently it requires additional local data
     clean_donations(party_donations)
 
-    #TODO: move this into the clean donations function, the goal was to keep one JSON
-    #with all of the data together to make it easier to work with manually, but that
-    #means it has extra keys we don't need for insertion meaning we need to loop through
-    #an extra time to remove it
+    # TODO: move this into the clean donations function, the goal was to keep one JSON
+    # with all of the data together to make it easier to work with manually, but that
+    # means it has extra keys we don't need for insertion meaning we need to loop through
+    # an extra time to remove it
     donations_to_append = []
 
-    for donation in party_donations:        
+    for donation in party_donations:
         donation_to_append = {
             "id": donation["id"],
             "party_id": donation["party_id"],
             "amount": donation["amount"],
             "date": donation["date"],
-            "party_donation_organization_id": donation["party_donation_organization_id"]
+            "party_donation_organization_id": donation[
+                "party_donation_organization_id"
+            ],
         }
 
         donations_to_append.append(donation_to_append)
@@ -997,22 +999,26 @@ def populate_party_donation_organizations() -> None:
         fail = True
         for item in party_donation_organizations:
             print(item)
-            if item["donor_name"] == api_party_donation_organization["donor_name"] and api_party_donation_organization["donor_address"] == item["donor_address"]:
+            if (
+                item["donor_name"] == api_party_donation_organization["donor_name"]
+                and api_party_donation_organization["donor_address"]
+                == item["donor_address"]
+            ):
                 fail = False
         if fail:
             party_donation_organization = {
-                    "id": id,
-                    "donor_name": api_party_donation_organization["donor_name"],
-                    "donor_address": api_party_donation_organization["donor_address"],
-                    "donor_zip": api_party_donation_organization["donor_zip"],
-                    "donor_city": api_party_donation_organization["donor_city"],
-                    "donor_foreign": api_party_donation_organization["donor_foreign"]
-                }
+                "id": id,
+                "donor_name": api_party_donation_organization["donor_name"],
+                "donor_address": api_party_donation_organization["donor_address"],
+                "donor_zip": api_party_donation_organization["donor_zip"],
+                "donor_city": api_party_donation_organization["donor_city"],
+                "donor_foreign": api_party_donation_organization["donor_foreign"],
+            }
             party_donation_organizations.append(party_donation_organization)
-            id = id+1
+            id = id + 1
     insert_and_update(PartyDonationOrganization, party_donation_organizations)
+
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    populate_party_donations()
-    # populate_cvs_and_career_paths()
+    # add specific populate function to run from command line here

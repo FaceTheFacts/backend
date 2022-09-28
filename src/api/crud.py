@@ -539,7 +539,7 @@ def get_homepage_party_donations(db: Session):
         data = {
             "id": id,
             "party": None,
-            "donations_over_96_months": [0],
+            "donations_over_96_months": [],
             "donations_total": 0,
         }
         response_donation_data.append(data)

@@ -6,14 +6,14 @@ def clean_donor(data):
     clean_donors = []
     donor = {}
     donor2 = {}
-    donor3= {}
-    donor4= {}
+    donor3 = {}
+    donor4 = {}
     for donation in data:
         full_address = donation["donar"]
         # Ignore month (month entry has always amount = undefined)
         if donation["amount"]:
             if len(donation["donar"]) < 3:
-                if len (donation["donar"][0]) > 10:
+                if len(donation["donar"][0]) > 10:
                     donor2 = {
                         "donor_name": donation["donar"][0][:78],
                         "donor_address": donation["donar"][0][80:],
@@ -31,7 +31,7 @@ def clean_donor(data):
                     }
                 clean_donors.append(donor2)
             # continue
-            
+
             if len(donation["donar"]) >= 3:
                 # print(donation)
                 if "Übersetzung: " in donation["donar"][1]:
@@ -74,7 +74,7 @@ def clean_donor(data):
                             "donor_foreign": True,
                         }
                     clean_donors.append(donor)
-            
+
             if len(donation["donar"]) == 3:
                 # print(donation)
                 if "Übersetzung: " not in donation["donar"][1]:
@@ -96,7 +96,7 @@ def clean_donor(data):
                             "donor_zip": donation["donar"][2][:7],
                             "donor_city": donation["donar"][2][8:],
                             "donor_foreign": True,
-                        }                        
+                        }
                     # Edge Case: Switzerland
                     elif "CH-8834" in donation["donar"][2]:
                         donor3 = {
@@ -123,7 +123,7 @@ def clean_donor(data):
                             "donor_zip": "60329",
                             "donor_city": "Frankfurt am Main",
                             "donor_foreign": True,
-                        }    
+                        }
                     else:
                         donor3 = {
                             "donor_name": donation["donar"][0],
