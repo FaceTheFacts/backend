@@ -518,76 +518,67 @@ def get_politician_by_constituency(
 
 
 def get_homepage_party_donations(db: Session):
-    # temporary hard-coding, discussing DB options for this
+    # TODO: implement db method of getting all parties currently present in the Bundestag
     bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
 
-    bundestag_party_donations_last_8_years = []
+    # get last 8 years of donations from Bundestag parties
+    date_8_years_ago_today = (datetime.datetime.now() - relativedelta(years=8)).date()
+    bundestag_party_donations_last_8_years_query = (
+        db.query(models.PartyDonation)
+        .filter(models.PartyDonation.party_id.in_(bundestag_party_ids))
+        .filter(models.PartyDonation.date >= date_8_years_ago_today)
+        .order_by(models.PartyDonation.date.asc())
+        .all()
+    )
+
+    # set up response and helper objects
+    response_donation_data = []
+    donations_over_96_months = {}
+
     for id in bundestag_party_ids:
-        bundestag_party_donations_last_8_years.append(
-            {
-                "id": id,
-                "party": None,
-                "donations": [],
-                "donations_over_96_months": [],
-                "donations_total": 0,
-            }
-        )
+        data = {
+            "id": id,
+            "party": None,
+            "donations_over_96_months": [0],
+            "donations_total": 0,
+        }
+        response_donation_data.append(data)
+        donations_over_96_months[id] = [0] * 96
 
-    date_8_years_ago_today = datetime.datetime.now().date() - datetime.timedelta(
-        days=8 * 365
+    # add party info to response
+    # TODO: remove when db method of getting Bundestag parties is implemented
+    bundestag_parties_query = db.query(models.Party).filter(
+        models.Party.id.in_(bundestag_party_ids)
     )
-
-    # Gets all party donations regardless of party, needs to be updated to filter by party id
-    all_party_donations_all_time = (
-        db.query(models.PartyDonation).order_by(models.PartyDonation.date.desc()).all()
-    )
-
-    for party in bundestag_party_donations_last_8_years:
-        for donation in all_party_donations_all_time:
-            if donation.party_id == party["id"]:
-                party["party"] = donation.party
+    for db_party in bundestag_parties_query:
+        for party in response_donation_data:
+            if party["id"] == db_party.id:
+                party["party"] = db_party
                 continue
 
-    for donation in all_party_donations_all_time:
-        if donation.date >= date_8_years_ago_today:
-            for party in bundestag_party_donations_last_8_years:
-                if party["id"] == donation.party_id:
-                    party["donations"].append(
-                        {
-                            "date": donation.date,
-                            "amount": donation.amount,
-                        }
-                    )
+    # assign donations to their respective parties
+    for donation in bundestag_party_donations_last_8_years_query:
+        donation_time_from_beginning_of_range = relativedelta(
+            donation.date, date_8_years_ago_today
+        )
 
-    today = datetime.date.today()
+        donation_month_index = (
+            donation_time_from_beginning_of_range.years * 12
+        ) + donation_time_from_beginning_of_range.months
 
-    for party in bundestag_party_donations_last_8_years:
-        month_index = 1
+        donations_over_96_months[donation.party_id][
+            donation_month_index
+        ] += donation.amount
 
-        while month_index <= 96:
-            party["donations_over_96_months"].append(0)
-            months_ago_date_start = today - relativedelta(months=month_index)
-            months_ago_date_end = months_ago_date_start + relativedelta(months=1)
+    for party in response_donation_data:
+        party["donations_over_96_months"] = donations_over_96_months[party["id"]]
+        party["donations_total"] = sum(donations_over_96_months[party["id"]])
 
-            for donation in party["donations"]:
-                if (
-                    donation["date"] >= months_ago_date_start
-                    and donation["date"] <= months_ago_date_end
-                ):
-                    party["donations_over_96_months"][month_index - 1] += donation[
-                        "amount"
-                    ]
-                    party["donations_total"] += donation["amount"]
-                    del donation
-                    continue
-
-            month_index += 1
-
-    for party in bundestag_party_donations_last_8_years:
+    # remove excess data from response object to match schema
+    for party in response_donation_data:
         del party["id"]
-        del party["donations"]
 
-    return bundestag_party_donations_last_8_years
+    return response_donation_data
 
 
 def get_all_party_donations(db: Session):
