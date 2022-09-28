@@ -18,6 +18,7 @@ CUSTOM_PARTY_NAME = {
 
 
 PERIOD_POSITION_TABLE = {
+    142: "niedersachsen",
     136: "nrw",
     130: "mecklenburg-vorpommern",
     129: "berlin",
@@ -75,7 +76,9 @@ def gen_party_styles_map(api_parties: List[Any]) -> Dict[int, PartyStyle]:
 
 
 def gen_statements(period_id: int) -> List[Statement]:
-    file_path = f"src/static/{PERIOD_POSITION_TABLE[period_id]}-assumptions.json"
+    file_path = (
+        f"src/cron_jobs/data/{PERIOD_POSITION_TABLE[period_id]}-assumptions.json"
+    )
     assumptions = read_json(file_path)
     statements: List[Statement] = []
     for id in assumptions:
@@ -92,8 +95,12 @@ def gen_statements(period_id: int) -> List[Statement]:
 def gen_positions(period_id: int) -> List[Position]:
     file_path = f"src/cron_jobs/data/{PERIOD_POSITION_TABLE[period_id]}-positions.json"
     position_data = read_json(file_path)
-    api_politicians = read_json("src/cron_jobs/data/politicians.json")
-    politician_ids: set[int] = set([politician["id"] for politician in api_politicians])
+    # api_politicians = read_json("src/cron_jobs/data/politicians.json")
+    session = Session()
+    api_politicians = (
+        session.query(models.Politician).order_by(models.Politician.id.desc()).all()
+    )
+    politician_ids = [politician.id for politician in api_politicians]
     positions: List[Position] = []
     for politician_id in position_data:
         if int(politician_id) not in politician_ids:
@@ -174,4 +181,6 @@ def gen_bundestag_politician_map():
 
 
 if __name__ == "__main__":
-    gen_bundestag_politician_map()
+    gen_statements(142)
+    gen_positions(142)
+    # gen_bundestag_politician_map()
