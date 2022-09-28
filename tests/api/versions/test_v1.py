@@ -1003,3 +1003,16 @@ def test_read_bundestag_sidejobs_pagination():
     values_test()
     selected_values_test()
     selected_invalid_values_test()
+
+
+def test_read_homepage_party_donations():
+    response = client.get("/v1/homepagepartydonations")
+    response_json = response.json()
+    assert response.status_code == 200
+
+    assert len(response_json) == 8  # only true while parties are hardcoded
+
+    # not covered by schema
+    for party in response_json:
+        assert len(party["donations_over_96_months"]) == 96
+        assert sum(party["donations_over_96_months"]) == party["donations_total"]
