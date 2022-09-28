@@ -3,7 +3,7 @@ from typing import List
 from src.cron_jobs.utils.file import read_json
 
 # local
-from src.cron_jobs.utils.parser import gen_positions
+from src.cron_jobs.utils.parser import gen_positions, gen_statements
 from src.cron_jobs.crud_db import populate_poll_results_per_fraction
 from src.cron_jobs.utils.vote_result import generate_appended_vote_results
 from src.cron_jobs.utils.insert_and_update import insert_and_update, insert_only
@@ -388,7 +388,10 @@ def append_vote_results() -> List:
 def append_positions() -> List:
     # Lookup positions related parliament_period and add it to PERIOD_POSITIONS_TABLE inside parser.py
     # Generate positions.json inside Scrapy repo src/politicians-positions/berlin.ts
-    parliamend_period_id = 136
+    parliamend_period_id = 128
+    position_statements = gen_statements(parliamend_period_id)
+    if position_statements:
+        insert_and_update(models.PositionStatement, position_statements)
     missing_positions = gen_positions(parliamend_period_id)
     if missing_positions:
         insert_and_update(models.Position, missing_positions)
@@ -451,8 +454,8 @@ def append_politicians() -> List:
                 if api_politician["party"]
                 else None,
                 "party_past": api_politician["party_past"],
-                "deceased": api_politician["deceased"],
-                "deceased_date": api_politician["deceased_date"],
+                "deceased": None,
+                "deceased_date": None,
                 "education": api_politician["education"],
                 "residence": api_politician["residence"],
                 "occupation": api_politician["occupation"],
@@ -515,3 +518,12 @@ def append_zip_codes() -> List:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
+    """ append_committees()
+    append_candidacies()
+    append_committee_memberships()
+    append_sidejobs()
+    append_polls()
+    append_votes()
+    append_vote_results() 
+    append_parties()
+    append_politicians()"""
