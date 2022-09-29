@@ -1,6 +1,5 @@
 # Function to clean donors data
 from src.cron_jobs.utils.file import write_json
-import src.cron_jobs.data.parties as parties  # used for local cleaning, dict of parties and IDs
 
 
 def clean_donations(donations, parties):
