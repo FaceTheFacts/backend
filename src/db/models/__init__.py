@@ -33,3 +33,5 @@ from src.db.models.topic import *
 from src.db.models.vote import *
 from src.db.models.zip_code import *
 from src.db.models.vote_result import *
+from src.db.models.party_donation import *
+from src.db.models.party_donation_organization import *

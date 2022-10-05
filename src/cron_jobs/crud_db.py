@@ -44,6 +44,10 @@ from src.db.models.career_path import CareerPath
 from src.db.models.position import Position
 from src.db.models.politician_weblink import PoliticianWeblink
 from src.db.models.poll_result_per_party import PollResultPerFraction
+from src.db.models.party_donation import PartyDonation
+from src.db.models.party_donation_organization import PartyDonationOrganization
+from src.cron_jobs.utils.clean_donor import clean_donor
+from src.cron_jobs.utils.clean_donations import clean_donations
 
 import src.db.models as models
 from src.cron_jobs.utils.vote_result import (
@@ -955,7 +959,66 @@ def update_politicians_occupation() -> None:
     print(f"Total runtime to update data is {end_time - begin_time}")
 
 
+def populate_party_donations() -> None:
+    # TODO: confirm default file name and location from scrapy branch
+    party_donations = load_entity("party_donations")
+
+    # TODO: hook this function up to db, currently it requires additional local data
+    clean_donations(party_donations)
+
+    # TODO: move this into the clean donations function, the goal was to keep one JSON
+    # with all of the data together to make it easier to work with manually, but that
+    # means it has extra keys we don't need for insertion meaning we need to loop through
+    # an extra time to remove it
+    donations_to_append = []
+
+    for donation in party_donations:
+        donation_to_append = {
+            "id": donation["id"],
+            "party_id": donation["party_id"],
+            "amount": donation["amount"],
+            "date": donation["date"],
+            "party_donation_organization_id": donation[
+                "party_donation_organization_id"
+            ],
+        }
+
+        donations_to_append.append(donation_to_append)
+
+    insert_and_update(PartyDonation, donations_to_append)
+
+
+def populate_party_donation_organizations() -> None:
+    clean_api_party_donation_organizations = load_entity("clean_donors")
+    # clean_api_party_donation_organizations = clean_donor(
+    #     api_party_donation_organizations
+    # )
+    id = 1
+    party_donation_organizations = []
+    for api_party_donation_organization in clean_api_party_donation_organizations:
+        fail = True
+        for item in party_donation_organizations:
+            print(item)
+            if (
+                item["donor_name"] == api_party_donation_organization["donor_name"]
+                and api_party_donation_organization["donor_address"]
+                == item["donor_address"]
+            ):
+                fail = False
+        if fail:
+            party_donation_organization = {
+                "id": id,
+                "donor_name": api_party_donation_organization["donor_name"],
+                "donor_address": api_party_donation_organization["donor_address"],
+                "donor_zip": api_party_donation_organization["donor_zip"],
+                "donor_city": api_party_donation_organization["donor_city"],
+                "donor_foreign": api_party_donation_organization["donor_foreign"],
+            }
+            party_donation_organizations.append(party_donation_organization)
+            id = id + 1
+    insert_and_update(PartyDonationOrganization, party_donation_organizations)
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    insert_cv()
-    # populate_cvs_and_career_paths()
+    # add specific populate function to run from command line here

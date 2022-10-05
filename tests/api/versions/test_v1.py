@@ -660,26 +660,26 @@ def test_read_politician_search():
 
 def test_read_politician_votes():
     def no_filters_random_test():
-        response = client.get("/v1/politician/79454/votes")
+        response = client.get("/v1/politician/79137/votes")
         test_responses = [
             {
                 "Vote": {
-                    "id": 410777,
+                    "id": 418919,
                     "entity_type": "vote",
-                    "label": "Dietmar Bartsch - Unternehmerische Sorgfaltspflichten in Lieferketten",
-                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/410777",
-                    "mandate_id": 46023,
-                    "fraction_id": 41,
-                    "poll_id": 4199,
-                    "vote": "abstain",
+                    "label": "Angela Merkel - Einsatz deutscher Streitkräfte zur militärischen Evakuierung aus Afghanistan",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/418919",
+                    "mandate_id": 44550,
+                    "fraction_id": 81,
+                    "poll_id": 4283,
+                    "vote": "yes",
                     "reason_no_show": None,
                     "reason_no_show_other": None,
                 },
                 "Poll": {
-                    "id": 4199,
-                    "label": "Unternehmerische Sorgfaltspflichten in Lieferketten",
-                    "field_intro": '<p>Der Gesetzentwurf der Bundesregierung soll die Sicherung von Menschenrechten und Umweltstandards für deutsche Unternehmen im internationalen Handel bedeuten. Lieferketten sollen nachweislich fair sein.</p>\r\n\r\n<p>Der Gesetzentwurf wurde mit den Stimmen der Fraktionen CDU/CSU, SPD und B90/DIE GRÜNEN angenommen. Ablehnung erhielt der Entwurf von den Fraktionen AfD und FDP. Entgegen des Fraktionsdrucks stimmten auch 10 Abgeordnete der CDU mit NEIN, darunter <a href="https://www.abgeordnetenwatch.de/profile/axel-eduard-fischer">Axel Eduard Fischer</a>, <a href="https://www.abgeordnetenwatch.de/profile/hans-juergen-irmer">Hans-Jürgen Irmer</a> und <a href="https://www.abgeordnetenwatch.de/profile/andreas-laemmel">Andreas Lämmel</a>. Die Fraktion DIE LINKE enthielt sich, mit Ausnahme von <a href="https://www.abgeordnetenwatch.de/profile/ulla-jelpke">Ulla Jelpke</a>, die mit JA stimmte. Insgesamt stimmten 412 Abgeordnete für den Antrag und 159 Abgeordnete dagegen.</p>\r\n\r\n<p>&nbsp;</p>\r\n',
-                    "field_poll_date": "2021-06-11",
+                    "id": 4283,
+                    "label": "Einsatz deutscher Streitkräfte zur militärischen Evakuierung aus Afghanistan",
+                    "field_intro": '<p>Der von der Bundesregierung eingebrachte <a class="link-download" href="https://dserver.bundestag.de/btd/19/320/1932022.pdf">Antrag</a> sieht vor, dass der Bundestag rückwirkend der Entsendung von deutschen Streitkräften nach Afghanistan zustimmt. Diese Entscheidung wurde bereits am 15. August durch den Krisenstab der Bundesregierung getroffen. Angesichts der sich dramatisch verschlechterten Sicherheitslage in Afghanistan soll die militärische Evakuierung fortgesetzt werden.</p>\r\n\r\n<p>Der Antrag wurde mit 538 Ja-Stimmen aus den Reihen aller Fraktionen <strong>angenommen</strong>. Neun Abgeordnete, insbesondere aus der Fraktion Die LINKE, stimmten gegen den Antrag. Dabei enthielten sich 89 Abgeordnete der AfD- und Die LINKE-Fraktion.</p>\r\n',
+                    "field_poll_date": "2021-08-25",
                     "poll_passed": True,
                 },
             },
@@ -1003,3 +1003,16 @@ def test_read_bundestag_sidejobs_pagination():
     values_test()
     selected_values_test()
     selected_invalid_values_test()
+
+
+def test_read_homepage_party_donations():
+    response = client.get("/v1/homepagepartydonations")
+    response_json = response.json()
+    assert response.status_code == 200
+
+    assert len(response_json) == 8  # only true while parties are hardcoded
+
+    # not covered by schema
+    for party in response_json:
+        assert len(party["donations_over_96_months"]) == 96
+        assert sum(party["donations_over_96_months"]) == party["donations_total"]
