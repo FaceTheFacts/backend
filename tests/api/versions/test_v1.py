@@ -2,14 +2,25 @@ from fastapi.testclient import TestClient
 from src.api.main import app
 
 client = TestClient(app)
+#### GENERAL NOTES ####
+
+# Potential things to consider:
+# status of entity (retired/active, will fields change?)
+# size of lists/dicts (what are the default boundaries? 0-what?)
+# testing variations of the parameters (e.g. for start/end size or paginations)
+# testing negatives (missing resource)
+# testing missing routes: politicianshistory, poll/id/votes, bundestag/speeches, bundestag/polls, bundestag/allpolls, partydonations
 
 
 def test_read_politician():
+    # update method name
     def random_test():
+        # replace with politician ID of someone retired and with all fields filled out if possible
         response = client.get("/v1/politician/178104")
         assert response.status_code == 200
-        assert type(response.json()) is dict
+        assert type(response.json()) is dict  # unecessary, .json() only returns dicts?
         assert response.status_code == 200
+        # serialize response once and use that to check for values instead of repeating the same code
         assert response.json()["id"] == 178104
         assert response.json()["label"] == "Thomas Frost"
         assert response.json()["occupations"] == ["Flohmarkt Betreiber"]
@@ -34,8 +45,8 @@ def test_read_politician():
         assert response.json()["votes_and_polls"] == []
         assert response.json()["topic_ids_of_latest_committee"] == []
 
+    # redundant
     def weblinks_test():
-        # Testing Weblinks
         response = client.get("/v1/politician/176101")
         assert response.status_code == 200
         assert type(response.json()) is dict
@@ -67,8 +78,8 @@ def test_read_politician():
             },
         ]
 
+    # redundant
     def cv_test():
-        # Testing CV
         response = client.get("/v1/politician/79109")
         assert response.status_code == 200
         assert type(response.json()) is dict
@@ -81,8 +92,8 @@ def test_read_politician():
             }
         ]
 
+    # redundant
     def abgeordnetenwatch_url_test():
-        # Testing abgeordnetenwatch_url
         response = client.get("/v1/politician/79107")
         assert response.status_code == 200
         assert type(response.json()) is dict
@@ -92,14 +103,20 @@ def test_read_politician():
         )
 
     def votes_and_polls_test():
-        response = client.get("/v1/politician/73426?sidejobs_end=0")
+        response = client.get(
+            "/v1/politician/73426?sidejobs_end=0"
+        )  # What is this parameter for sidejobs_end?
+
         assert response.status_code == 200
         assert type(response.json()) is dict
 
         votes_and_polls = response.json()["votes_and_polls"]
-        assert type(votes_and_polls) is list
-        assert len(votes_and_polls) == 6
+        assert type(votes_and_polls) is list  # constrained by Schema?
+        assert (
+            len(votes_and_polls) == 6
+        )  # default value, should test the boundaries too
 
+        # testing order of results (might be useful elsewhere too)
         for index in range(4):
             assert (
                 votes_and_polls[index]["Poll"]["field_poll_date"]
@@ -109,7 +126,7 @@ def test_read_politician():
     def politician_id_not_found():
         response = client.get("/v1/politician/1")
         assert response.status_code == 404
-        assert type(response.json()) is dict
+        assert type(response.json()) is dict  # unecessary
         assert response.json() == {"detail": "Politician not found"}
 
     def occupations_test():
@@ -142,7 +159,8 @@ def test_read_politician_constituencies():
     def all_elements_have_values():
         response = client.get("/v1/politician/138540/constituencies")
         assert response.status_code == 200
-        assert type(response.json()) is dict
+        assert type(response.json()) is dict  # unecessary
+        # maybe shift out into another file
         assert response.json() == {
             "constituency_number": 299,
             "constituency_name": "Homburg",
@@ -714,6 +732,7 @@ def test_read_poll_details():
     def random_test():
         response = client.get("/v1/poll/4217/details")
         assert response.status_code == 200
+        # maybe shift out into another file
         response_items = {
             "poll_results": [
                 {
@@ -833,6 +852,7 @@ def test_read_politician_speech():
 def test_read_politician_news():
     def values_test():
         response = client.get("/v1/politician/145862/news")
+        # maybe shift out into another file
         expected_items = {
             "items": [
                 {
