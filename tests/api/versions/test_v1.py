@@ -1,7 +1,10 @@
 from fastapi.testclient import TestClient
 from src.api.main import app
 
+from tests.api.versions import v1_expected_responses
+
 client = TestClient(app)
+
 #### GENERAL NOTES ####
 
 # Potential things to consider:
@@ -10,149 +13,88 @@ client = TestClient(app)
 # testing variations of the parameters (e.g. for start/end size or paginations)
 # testing negatives (missing resource)
 # testing missing routes: politicianshistory, poll/id/votes, bundestag/speeches, bundestag/polls, bundestag/allpolls, partydonations
+# split tests out into single methods instead of larger ones (otherwise a single failure blocks the whole test)
+# add human-readable error messages
+# move expected results into another file for readability
+
+#### OUTLINE OF TESTS TO IMPLEMENT ####
+# test_politician_route_expected_values
+# test_politician_route_parameters
+# test_politician_route_does_not_exist
+# test_politician_route_invalid_parameter
+
+# test_politicians_route_expected_values_single_id
+# test_politicians_route_expected_values_multiple_ids
+# test_politicians_route_single_id_parameters
+# test_politicians_route_multiple_id_parameters
+# test_politicians_route_multiple_id_invalid_parameters
+# test_politicians_route_does_not_exist_single_id
+# test_politicians_route_does_not_exist_multiple_ids
+# test_politicians_route_does_not_exist_duplicate_ids
+# test_politicians_route_does_not_exist_multiple_existing_nonexisting_ids
+
+# test_politicianshistory_route_expected_values_single_id
+# test_politicianshistory_route_expected_values_multiple_ids
+# test_politicianshistory_route_single_id_parameters
+# test_politicianshistory_route_multiple_id_parameters
+# test_politicianshistory_route_multiple_id_invalid_parameters
+# test_politicianshistory_route_does_not_exist_single_id
+# test_politicianshistory_route_does_not_exist_multiple_ids
+# test_politicianshistory_route_does_not_exist_duplicate_ids
+# test_politicianshistory_route_does_not_exist_multiple_existing_nonexisting_ids
+
+# test_politician_contituencies_route_expected_values
+# test_politician_contituencies_route_does_not_exist
+
+# test_politician_positions_route_expected_values
+# test_politician_positions_route_does_not_exist
+
+# test_politician_sidejobs_route_expected_values
+# test_politician_sidejobs_route_parameters
+# test_politician_sidejobs_route_does_not_exist
+# test_politician_sidejobs_route_invalid_parameter
+
+# NEED TO INVESTIGATE HOW SEARCH ROUTE WORKS
+# test_search_route_expected_values
+# test_search_route_does_not_exist
+# test_search_route_expected_invalid_parameter
+
+# test_image-scanner_route_expected_values
+# test_image-scanner_route_does_not_exist
+# test_image-scanner_route_invalid_parameter
+
+# test_politician_votes_route_expected_values
+# test_politician_votes_route_parameters
+# test_politician_votes_route_does_not_exist
+# test_politician_votes_route_invalid_parameter
+
+# test_poll_details_route_expected_values
+# test_poll_details_route_does_not_exist
 
 
-def test_read_politician():
-    # update method name
-    def random_test():
-        # replace with politician ID of someone retired and with all fields filled out if possible
-        response = client.get("/v1/politician/178104")
-        assert response.status_code == 200
-        assert type(response.json()) is dict  # unecessary, .json() only returns dicts?
-        assert response.status_code == 200
-        # serialize response once and use that to check for values instead of repeating the same code
-        assert response.json()["id"] == 178104
-        assert response.json()["label"] == "Thomas Frost"
-        assert response.json()["occupations"] == ["Flohmarkt Betreiber"]
-        assert response.json()["sidejobs"] == []
-        assert response.json()["cvs"] == []
-        assert (
-            response.json()["abgeordnetenwatch_url"]
-            == "https://www.abgeordnetenwatch.de/profile/thomas-frost"
-        )
-        assert response.json()["weblinks"] == [
-            {
-                "id": 31117,
-                "link": "https://www.thomasfrost.de/",
-                "politician_id": 178104,
-            },
-            {
-                "id": 31118,
-                "link": "https://www.facebook.com/familieumweltartenschutz/",
-                "politician_id": 178104,
-            },
-        ]
-        assert response.json()["votes_and_polls"] == []
-        assert response.json()["topic_ids_of_latest_committee"] == []
+def test_politician_route_expected_values():
+    response = client.get("/v1/politician/178104")
+    assert response.status_code == 200
+    assert response.json() == v1_expected_responses.politician_route
 
-    # redundant
-    def weblinks_test():
-        response = client.get("/v1/politician/176101")
-        assert response.status_code == 200
-        assert type(response.json()) is dict
-        assert response.json()["weblinks"] == [
-            {
-                "id": 32294,
-                "link": "https://www.felix-locke.de",
-                "politician_id": 176101,
-            },
-            {
-                "id": 32295,
-                "link": "https://de.wikipedia.org/wiki/Felix_Locke",
-                "politician_id": 176101,
-            },
-            {
-                "id": 32296,
-                "link": "https://www.instagram.com/felix_locke_fw/",
-                "politician_id": 176101,
-            },
-            {
-                "id": 32297,
-                "link": "https://www.facebook.com/LockeFW",
-                "politician_id": 176101,
-            },
-            {
-                "id": 32298,
-                "link": "https://twitter.com/felix_locke_fw",
-                "politician_id": 176101,
-            },
-        ]
 
-    # redundant
-    def cv_test():
-        response = client.get("/v1/politician/79109")
-        assert response.status_code == 200
-        assert type(response.json()) is dict
-        assert response.json()["cvs"] == [
-            {
-                "id": 560,
-                "short_description": "Geboren am 19. März 1969; verheiratet; zwei Kinder.",
-                "raw_text": "Abitur in Siegburg; Studium der politischen Wissenschaft an der Friedrich-Wilhems-Universität in Bonn; Promotion 2004; 2000 bis 2002 und 2004 Auslandstätigkeit in der Organisation für Sicherheit und Zusammenarbeit in Europa (OSZE) im ehemaligen Jugoslawien; 2006 bis 2013 Referent für Sicherheitspolitik bei der Fraktion DIE LINKE.\xa0 ",
-                "politician_id": 79109,
-            }
-        ]
+def test_politician_route_does_not_exist():
+    response = client.get("/v1/politician/1")
+    assert response.status_code == 404
 
-    # redundant
-    def abgeordnetenwatch_url_test():
-        response = client.get("/v1/politician/79107")
-        assert response.status_code == 200
-        assert type(response.json()) is dict
-        assert (
-            response.json()["abgeordnetenwatch_url"]
-            == "https://www.abgeordnetenwatch.de/profile/thomas-oppermann"
-        )
 
-    def votes_and_polls_test():
-        response = client.get(
-            "/v1/politician/73426?sidejobs_end=0"
-        )  # What is this parameter for sidejobs_end?
+#         votes_and_polls = response.json()["votes_and_polls"]
+#         assert type(votes_and_polls) is list  # constrained by Schema?
+#         assert (
+#             len(votes_and_polls) == 6
+#         )  # default value, should test the boundaries too
 
-        assert response.status_code == 200
-        assert type(response.json()) is dict
-
-        votes_and_polls = response.json()["votes_and_polls"]
-        assert type(votes_and_polls) is list  # constrained by Schema?
-        assert (
-            len(votes_and_polls) == 6
-        )  # default value, should test the boundaries too
-
-        # testing order of results (might be useful elsewhere too)
-        for index in range(4):
-            assert (
-                votes_and_polls[index]["Poll"]["field_poll_date"]
-                >= votes_and_polls[index + 1]["Poll"]["field_poll_date"]
-            )
-
-    def politician_id_not_found():
-        response = client.get("/v1/politician/1")
-        assert response.status_code == 404
-        assert type(response.json()) is dict  # unecessary
-        assert response.json() == {"detail": "Politician not found"}
-
-    def occupations_test():
-        response = client.get("/v1/politician/130072")
-        response_items = ["MdB"]
-
-        for item in response_items:
-            assert item in response.json()["occupations"]
-
-    def test_topic_ids_of_latest_committee():
-        response = client.get("/v1/politician/131019")
-        expected_ids = [11, 19]
-        assert expected_ids == response.json()["topic_ids_of_latest_committee"]
-
-        response = client.get("/v1/politician/139064")
-        expected_ids = [9, 11, 19, 20]
-        assert expected_ids == response.json()["topic_ids_of_latest_committee"]
-
-    random_test()
-    weblinks_test()
-    cv_test()
-    abgeordnetenwatch_url_test()
-    votes_and_polls_test()
-    politician_id_not_found()
-    occupations_test()
-    test_topic_ids_of_latest_committee()
+#         # testing order of results (might be useful elsewhere too)
+#         for index in range(4):
+#             assert (
+#                 votes_and_polls[index]["Poll"]["field_poll_date"]
+#                 >= votes_and_polls[index + 1]["Poll"]["field_poll_date"]
+#             )
 
 
 def test_read_politician_constituencies():
@@ -666,7 +608,7 @@ def test_read_politician_search():
                 ):
                     check_response = True
                     break
-            assert check_response, "{} item not fount in the response".format(item)
+            assert check_response, "{} item not found in the response".format(item)
 
     def test_response_size():
         response = client.get("/v1/search?text=Christian")
