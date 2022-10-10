@@ -1014,5 +1014,5 @@ def test_read_homepage_party_donations():
 
     # not covered by schema
     for party in response_json:
-        assert len(party["donations_over_96_months"]) == 96
-        assert sum(party["donations_over_96_months"]) == party["donations_total"]
+        assert len(party["donations_over_32_quarters"]) == 32
+        assert sum(party["donations_over_32_quarters"]) == party["donations_total"]
