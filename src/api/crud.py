@@ -568,11 +568,14 @@ def get_homepage_party_donations(db: Session):
         months = donation_time_from_beginning_of_range.months
         additional_quarters = 0
 
-        match months:
-            case months if months <= 2: additional_quarters = 0
-            case months if months >= 3 and months <= 5: additional_quarters = 1
-            case months if months >= 6 and months <= 8: additional_quarters = 2
-            case months if months >= 9: additional_quarters = 3
+        if months <= 2:
+            additional_quarters = 0
+        elif months >= 3 and months <= 5: 
+            additional_quarters = 1
+        elif months >= 6 and months <= 8:
+            additional_quarters = 2
+        else:
+            additional_quarters = 3
 
         donation_quarter_index = (
             donation_time_from_beginning_of_range.years * 4
