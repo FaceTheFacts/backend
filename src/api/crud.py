@@ -533,17 +533,19 @@ def get_homepage_party_donations(db: Session):
 
     # set up response and helper objects
     response_donation_data = []
-    donations_over_96_months = {}
+    donations_over_32_quarters = {}
 
     for id in bundestag_party_ids:
         data = {
             "id": id,
             "party": None,
-            "donations_over_96_months": [],
+            "donations_over_32_quarters": [],
             "donations_total": 0,
+            "largest_quarter": None
         }
         response_donation_data.append(data)
-        donations_over_96_months[id] = [0] * 96
+        donations_over_32_quarters[id] = [0] * 32
+
 
     # add party info to response
     # TODO: remove when db method of getting Bundestag parties is implemented
@@ -562,17 +564,28 @@ def get_homepage_party_donations(db: Session):
             donation.date, date_8_years_ago_today
         )
 
-        donation_month_index = (
-            donation_time_from_beginning_of_range.years * 12
-        ) + donation_time_from_beginning_of_range.months
+        #get year's quarter out of months
+        months = donation_time_from_beginning_of_range.months
+        quarter = 0
+        
+        match months:
+            case months if months <= 3: quarter = 1
+            case months if months <= 6: quarter = 2
+            case months if months <= 9: quarter = 3
+            case months if months <= 2: quarter = 4
 
-        donations_over_96_months[donation.party_id][
-            donation_month_index
+        donation_quarter_index = (
+            donation_time_from_beginning_of_range.years * 4
+        ) + quarter
+
+        donations_over_32_quarters[donation.party_id][
+            donation_quarter_index
         ] += donation.amount
 
     for party in response_donation_data:
-        party["donations_over_96_months"] = donations_over_96_months[party["id"]]
-        party["donations_total"] = sum(donations_over_96_months[party["id"]])
+        party["donations_over_32_quarters"] = donations_over_32_quarters[party["id"]]
+        party["donations_total"] = sum(donations_over_32_quarters[party["id"]])
+        party["largest_quarter"] = max(donations_over_32_quarters[party["id"]])
 
     # remove excess data from response object to match schema
     for party in response_donation_data:
