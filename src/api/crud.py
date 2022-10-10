@@ -541,11 +541,10 @@ def get_homepage_party_donations(db: Session):
             "party": None,
             "donations_over_32_quarters": [],
             "donations_total": 0,
-            "largest_quarter": None
+            "largest_quarter": None,
         }
         response_donation_data.append(data)
         donations_over_32_quarters[id] = [0] * 32
-
 
     # add party info to response
     # TODO: remove when db method of getting Bundestag parties is implemented
@@ -564,13 +563,13 @@ def get_homepage_party_donations(db: Session):
             donation.date, date_8_years_ago_today
         )
 
-        #Every year is 4 quarters, the remaining months can be calculated as quarters
+        # Every year is 4 quarters, the remaining months can be calculated as quarters
         months = donation_time_from_beginning_of_range.months
         additional_quarters = 0
 
         if months <= 2:
             additional_quarters = 0
-        elif months >= 3 and months <= 5: 
+        elif months >= 3 and months <= 5:
             additional_quarters = 1
         elif months >= 6 and months <= 8:
             additional_quarters = 2
@@ -581,7 +580,9 @@ def get_homepage_party_donations(db: Session):
             donation_time_from_beginning_of_range.years * 4
         ) + additional_quarters
 
-        donations_over_32_quarters[donation.party_id][donation_quarter_index] += donation.amount
+        donations_over_32_quarters[donation.party_id][
+            donation_quarter_index
+        ] += donation.amount
 
     for party in response_donation_data:
         party["donations_over_32_quarters"] = donations_over_32_quarters[party["id"]]

@@ -302,6 +302,7 @@ class PartyDonationOrganization(FTFBaseModel):
     donor_city: str
     donor_foreign: bool
 
+
 class PartyDonation(FTFBaseModel):
     id: int
     party: Party
