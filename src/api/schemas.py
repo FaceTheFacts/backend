@@ -314,4 +314,4 @@ class HomepagePartyDonation(FTFBaseModel):
     party: Party
     donations_over_32_quarters: List[float]
     donations_total: float
-    largest_donation: float
+    largest_quarter: float
