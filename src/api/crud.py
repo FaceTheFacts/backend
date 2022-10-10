@@ -579,9 +579,6 @@ def get_homepage_party_donations(db: Session):
         ) + additional_quarters
 
         donations_over_32_quarters[donation.party_id][donation_quarter_index] += donation.amount
-        if (donation.party_id) == 1:
-            print(str(donation.amount) + ":" + str(donation_time_from_beginning_of_range) + "/" + str(donation_quarter_index))
-
 
     for party in response_donation_data:
         party["donations_over_32_quarters"] = donations_over_32_quarters[party["id"]]
