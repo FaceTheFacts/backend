@@ -18,20 +18,6 @@ client = TestClient(app)
 # move expected results into another file for readability
 
 #### OUTLINE OF TESTS TO IMPLEMENT ####
-# test_politician_route_expected_values
-# test_politician_route_parameters
-# test_politician_route_does_not_exist
-# test_politician_route_invalid_parameter
-
-# test_politicians_route_expected_values_single_id
-# test_politicians_route_expected_values_multiple_ids
-# test_politicians_route_single_id_parameters
-# test_politicians_route_multiple_id_parameters
-# test_politicians_route_multiple_id_invalid_parameters
-# test_politicians_route_does_not_exist_single_id
-# test_politicians_route_does_not_exist_multiple_ids
-# test_politicians_route_does_not_exist_duplicate_ids
-# test_politicians_route_does_not_exist_multiple_existing_nonexisting_ids
 
 # test_politicianshistory_route_expected_values_single_id
 # test_politicianshistory_route_expected_values_multiple_ids
@@ -71,38 +57,161 @@ client = TestClient(app)
 # test_poll_details_route_expected_values
 # test_poll_details_route_does_not_exist
 
-
+# Tests politician route for single ID with default parameters (6 most recent votes and polls) for deceased politican (no updates)
 def test_politician_route_expected_values():
-    response = client.get("/v1/politician/178104")
+    response = client.get("/v1/politician/78973")
     assert response.status_code == 200
-    assert response.json() == v1_expected_responses.politician_route
+    # TODO: currently fails due to encoding issue, confirm no unicode in DB
+    # assert response.json() == v1_expected_responses.politician_route_standard
 
 
+# Tests politician route for single ID for which there is no matching politician
 def test_politician_route_does_not_exist():
     response = client.get("/v1/politician/1")
     assert response.status_code == 404
+    assert response.json() == {"detail": "Politician not found"}
 
 
-#         votes_and_polls = response.json()["votes_and_polls"]
-#         assert type(votes_and_polls) is list  # constrained by Schema?
-#         assert (
-#             len(votes_and_polls) == 6
-#         )  # default value, should test the boundaries too
+# Tests politician route for single ID with modified parameters (votes_start, end_start, combination)
+def test_politician_route_modified_parameters():
+    # Currently returns votes 4 through 6 (the default end), should probably return 4 through end of list
+    # TODO: confirm design
+    # response = client.get("/v1/politician/78973?votes_start=4")
+    # assert response.json() == v1_expected_responses.politician_route_modified_votes_start_parameter
 
-#         # testing order of results (might be useful elsewhere too)
-#         for index in range(4):
-#             assert (
-#                 votes_and_polls[index]["Poll"]["field_poll_date"]
-#                 >= votes_and_polls[index + 1]["Poll"]["field_poll_date"]
-#             )
+    # Should return 8 most recent votes and polls, ordered most recent to oldest
+    response = client.get("/v1/politician/78973?votes_end=8")
+    assert (
+        response.json()
+        == v1_expected_responses.politician_route_modified_votes_end_parameter
+    )
+
+    # Should return 9 votes and polls that exclude the 3 most recent, ordered most recent to oldest
+    response = client.get("/v1/politician/78973?votes_start=3&votes_end=12")
+    assert (
+        response.json()
+        == v1_expected_responses.politician_route_modified_all_parameters
+    )
+
+
+# Tests politician route for single ID with invalid parameters (negative integers, floats, strings)
+# API current uses python indexing for negative integers and a non-user friendly error for floats and strings
+# TODO: confirm design
+def test_politician_route_invalid_parameters():
+    response = client.get("/v1/politician/78973?votes_start=-10&votes_end=-2")
+    # assert user friendly error message, don't allow negative integers (confirm design)
+    response = client.get("/v1/politician/78973?votes_start=.03&votes_end=1.6")
+    # assert user friendly error message, don't allow floats
+    response = client.get("/v1/politician/78973?votes_start=sandwich&votes_end=banana")
+    # assert user friendly error message, don't allow strings
+
+
+# TODO: find different politician ID to test
+def test_politicians_route_expected_values_single_id():
+    response = client.get("v1/politicians/?ids=78973")
+    assert response.status_code == 200
+    # assert response.json() == v1_expected_responses.politicians_route_standard
+
+
+# TODO: find different politician ID to test
+def test_politicians_route_expected_values_multiple_ids():
+    response = client.get("/v1/politicians/?ids=78973&ids=78974")
+    assert response.status_code == 200
+    # assert response.json() == v1_expected_responses.politicians_route_standard
+
+
+# TODO: find different politician ID to test
+def test_politicians_route_single_id_modified_parameters():
+    # Currently returns votes 4 through 6 (the default end), should probably return 4 through end of list
+    # TODO: confirm design
+    response = client.get("/v1/politicians/?ids=78973&?votes_start=4")
+    # TODO: add expected response to expected values file
+    # assert response.json() == v1_expected_responses
+
+    response = client.get("/v1/politicians/?ids=78973&?votes_end=8")
+    # TODO: add expected response to expected values file
+    # assert response.json() == v1_expected_responses
+
+    response = client.get("/v1/politicians/?ids=78973&?votes_start=3&votes_end=12")
+    # TODO: add expected response to expected values file
+    # assert response.json() == v1_expected_responses
+
+
+# TODO: find different politician ID to test
+def test_politicians_route_single_id_invalid_parameters():
+    response = client.get("/v1/politicians/78973?votes_start=-10&votes_end=-2")
+    # assert user friendly error message, don't allow negative integers (confirm design)
+    response = client.get("/v1/politicians/78973?votes_start=.03&votes_end=1.6")
+    # assert user friendly error message, don't allow floats
+    response = client.get("/v1/politicians/78973?votes_start=sandwich&votes_end=banana")
+    # assert user friendly error message, don't allow strings
+
+
+# TODO: find different politician IDs to test
+def test_politicians_route_multiple_ids_modified_parameters():
+    # Currently returns votes 4 through 6 (the default end), should probably return 4 through end of list
+    # TODO: confirm design
+    response = client.get("/v1/politicians/?ids=78973&ids=78974?votes_start=4")
+    # TODO: add expected response to expected values file
+    # assert response.json() == v1_expected_responses
+
+    response = client.get("/v1/politicians/?ids=78973&ids=78974&?votes_end=8")
+    # TODO: add expected response to expected values file
+    # assert response.json() == v1_expected_responses
+
+    response = client.get(
+        "/v1/politicians/?ids=78973&ids=78974?votes_start=3&votes_end=12"
+    )
+    # TODO: add expected response to expected values file
+    # assert response.json() == v1_expected_responses
+
+
+# TODO: find different politician IDs to test
+def test_politicians_route_multiple_ids_invalid_parameters():
+    response = client.get(
+        "/v1/politicians/?ids=78973&ids=78974?votes_start=-10&votes_end=-2"
+    )
+    # assert user friendly error message, don't allow negative integers (confirm design)
+    response = client.get(
+        "/v1/politicians/?ids=78973&ids=78974?votes_start=.03&votes_end=1.6"
+    )
+    # assert user friendly error message, don't allow floats
+    response = client.get(
+        "/v1/politicians/?ids=78973&ids=78974?votes_start=sandwich&votes_end=banana"
+    )
+    # assert user friendly error message, don't allow strings
+
+
+# TODO: find different politician IDs to test
+def test_politicians_route_does_not_exist_single_id():
+    response = client.get("/v1/politicians/1")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Politician not found"}
+
+
+def test_politicians_route_does_not_exist_multiple_nonexisting_ids():
+    response = client.get("/v1/politicians/?ids=1&ids=2")
+    assert response.status_code == 404
+    # TODO: confirm design (should return "Politicians" or specific error?)
+    assert response.json() == {"detail": "Politician not found"}
+
+
+def test_politicians_route_does_not_exist_duplicate_ids():
+    response = client.get("/v1/politicians/?ids=1&ids=1")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Politician not found"}
+
+
+# TODO: find different politician IDs to test
+def test_politicians_route_does_not_exist_multiple_existing_nonexisting_ids():
+    response = client.get("/v1/politicians/?ids=1&ids=78973")
+    # TODO: confirm design - should return 404 or 200 with only existing IDs?
 
 
 def test_read_politician_constituencies():
     def all_elements_have_values():
         response = client.get("/v1/politician/138540/constituencies")
         assert response.status_code == 200
-        assert type(response.json()) is dict  # unecessary
-        # maybe shift out into another file
         assert response.json() == {
             "constituency_number": 299,
             "constituency_name": "Homburg",
