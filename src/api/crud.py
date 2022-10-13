@@ -581,9 +581,41 @@ def get_homepage_party_donations(db: Session):
     return response_donation_data
 
 
-def get_all_party_donations(db: Session):
+def get_party_donations_details(db: Session):
+    # get all party donations sorted by party id, then by date, in ascending order
     party_donations = (
-        db.query(models.PartyDonation).order_by(models.PartyDonation.date.desc()).all()
+        db.query(models.PartyDonation)
+        .order_by(models.PartyDonation.party_id.asc(), models.PartyDonation.date.asc())
+        .all()
     )
 
-    return party_donations
+    response_data = {}
+    four_years_ago_today = (datetime.datetime.now() - relativedelta(years=4)).date()
+    eight_years_ago_today = (datetime.datetime.now() - relativedelta(years=8)).date()
+
+    # for every donation, add it to the response object as a dictionary using the party id as the key, and separate the donations into three groups: the last 4 years, the last 8 years, and all time
+    for donation in party_donations:
+        # if a is not yet in the response object, add it, along with party info and date ranges
+        if str(donation.party_id) not in response_data:
+            response_data[str(donation.party_id)] = {
+                "party": donation.party,
+                "donations_older_than_8_years": [],
+                "donations_4_to_8_years_old": [],
+                "donations_less_than_4_years_old": [],
+            }
+
+        # organize donations by date range
+        if donation.date > four_years_ago_today:
+            response_data[str(donation.party_id)][
+                "donations_less_than_4_years_old"
+            ].append(donation)
+        if donation.date > eight_years_ago_today:
+            response_data[str(donation.party_id)]["donations_4_to_8_years_old"].append(
+                donation
+            )
+        else:
+            response_data[str(donation.party_id)][
+                "donations_older_than_8_years"
+            ].append(donation)
+
+    return response_data

@@ -311,6 +311,13 @@ class PartyDonation(FTFBaseModel):
     party_donation_organization: PartyDonationOrganization
 
 
+class PartyDonationDetail(FTFBaseModel):
+    party: Party
+    donations_older_than_8_years: List[PartyDonation]
+    donations_4_to_8_years_old: List[PartyDonation]
+    donations_less_than_4_years_old: List[PartyDonation]
+
+
 class HomepagePartyDonation(FTFBaseModel):
     party: Party
     donations_over_96_months: List[float]

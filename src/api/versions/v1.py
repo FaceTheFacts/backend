@@ -1,6 +1,6 @@
 # std
 import os
-from typing import List
+from typing import Dict, List
 
 # third-party
 import requests
@@ -253,8 +253,10 @@ def read_party_donations(db: Session = Depends(get_db)):
     return party_donations
 
 
-@router.get("/partydonations", response_model=List[schemas.PartyDonation])
-def read_party_donations(db: Session = Depends(get_db)):
-    party_donations = crud.get_all_party_donations(db)
-    check_entity_not_found(party_donations, "Party Donations")
-    return party_donations
+@router.get(
+    "/partydonationsdetails", response_model=Dict[str, schemas.PartyDonationDetail]
+)
+def read_party_donations_details(db: Session = Depends(get_db)):
+    party_donations_details = crud.get_party_donations_details(db)
+    check_entity_not_found(party_donations_details, "Party Donations")
+    return party_donations_details
