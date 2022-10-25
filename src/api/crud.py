@@ -598,11 +598,14 @@ def get_party_donations_details(db: Session):
         # if a is not yet in the response object, add it, along with party info and date ranges
         if str(donation.party_id) not in response_data:
             response_data[str(donation.party_id)] = {
-                "party": donation.party,
+                "party_style": donation.party.party_style,
                 "donations_older_than_8_years": [],
                 "donations_4_to_8_years_old": [],
                 "donations_less_than_4_years_old": [],
             }
+
+        # remove to avoid redundancy, party styling is already in the response object
+        del donation.party
 
         # organize donations by date range
         if donation.date > four_years_ago_today:
