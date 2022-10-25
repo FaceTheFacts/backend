@@ -622,18 +622,18 @@ def get_party_donations_details(db: Session):
         # remove to avoid redundancy, party styling is already in the response object
         del donation.party
 
-        # organize donations by date range
-        if donation.date > four_years_ago_today:
+        # add donation to the appropriate date range for its party
+        if donation.date < eight_years_ago_today:
             response_data[str(donation.party_id)][
-                "donations_less_than_4_years_old"
+                "donations_older_than_8_years"
             ].append(donation)
-        if donation.date > eight_years_ago_today:
+        elif donation.date < four_years_ago_today:
             response_data[str(donation.party_id)]["donations_4_to_8_years_old"].append(
                 donation
             )
         else:
             response_data[str(donation.party_id)][
-                "donations_older_than_8_years"
+                "donations_less_than_4_years_old"
             ].append(donation)
 
     return response_data
