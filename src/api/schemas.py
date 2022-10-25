@@ -311,11 +311,18 @@ class PartyDonation(FTFBaseModel):
     party_donation_organization: PartyDonationOrganization
 
 
+class PartyDonationWithoutPartyData(FTFBaseModel):
+    id: int
+    amount: float
+    date: date
+    party_donation_organization: PartyDonationOrganization
+
+
 class PartyDonationDetail(FTFBaseModel):
-    party: Party
-    donations_older_than_8_years: List[PartyDonation]
-    donations_4_to_8_years_old: List[PartyDonation]
-    donations_less_than_4_years_old: List[PartyDonation]
+    party_style: PartyStyle
+    donations_older_than_8_years: List[PartyDonationWithoutPartyData]
+    donations_4_to_8_years_old: List[PartyDonationWithoutPartyData]
+    donations_less_than_4_years_old: List[PartyDonationWithoutPartyData]
 
 
 class HomepagePartyDonation(FTFBaseModel):
