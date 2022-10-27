@@ -522,11 +522,27 @@ def get_homepage_party_donations(db: Session):
     bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
 
     # get last 8 years of donations from Bundestag parties
-    date_8_years_ago_today = (datetime.datetime.now() - relativedelta(years=8)).date()
+
+    # if today is not the last day of the month, get the last day of last month, else use today's date
+    last_day_of_the_month = None
+
+    today = datetime.date.today()
+    tomorrow = today + datetime.timedelta(days=1)
+
+    if tomorrow.month != today.month:
+        last_day_of_the_month = today
+    else:
+        last_day_of_the_month = datetime.date(
+            today.year, today.month, 1
+        ) - datetime.timedelta(days=1)
+
+    date_8_years_ago_today_from_end_of_month = last_day_of_the_month - relativedelta(
+        years=8
+    )
     bundestag_party_donations_last_8_years_query = (
         db.query(models.PartyDonation)
         .filter(models.PartyDonation.party_id.in_(bundestag_party_ids))
-        .filter(models.PartyDonation.date >= date_8_years_ago_today)
+        .filter(models.PartyDonation.date >= date_8_years_ago_today_from_end_of_month)
         .order_by(models.PartyDonation.date.asc())
         .all()
     )
@@ -560,7 +576,7 @@ def get_homepage_party_donations(db: Session):
     # assign donations to their respective parties
     for donation in bundestag_party_donations_last_8_years_query:
         donation_time_from_beginning_of_range = relativedelta(
-            donation.date, date_8_years_ago_today
+            donation.date, date_8_years_ago_today_from_end_of_month
         )
 
         # Every year is 4 quarters, the remaining months can be calculated as quarters
