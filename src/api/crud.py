@@ -612,8 +612,14 @@ def get_party_donations_details(db: Session):
     )
 
     response_data = {}
-    four_years_ago_today = (datetime.datetime.now() - relativedelta(years=4)).date()
-    eight_years_ago_today = (datetime.datetime.now() - relativedelta(years=8)).date()
+    last_day_of_the_month = get_last_day_of_the_month()
+    four_years_ago_today_from_end_of_month = last_day_of_the_month - relativedelta(
+        years=4
+    )
+
+    eight_years_ago_today_from_end_of_month = last_day_of_the_month - relativedelta(
+        years=8
+    )
 
     # for every donation, add it to the response object as a dictionary using the party id as the key, and separate the donations into three groups: the last 4 years, the last 8 years, and all time
     for donation in party_donations:
@@ -626,11 +632,11 @@ def get_party_donations_details(db: Session):
             }
 
         # add donation to the appropriate date range for its party
-        if donation.date < eight_years_ago_today:
+        if donation.date < eight_years_ago_today_from_end_of_month:
             response_data[str(donation.party_id)][
                 "donations_older_than_8_years"
             ].append(donation)
-        elif donation.date < four_years_ago_today:
+        elif donation.date < four_years_ago_today_from_end_of_month:
             response_data[str(donation.party_id)]["donations_4_to_8_years_old"].append(
                 donation
             )
