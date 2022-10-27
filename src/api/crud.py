@@ -21,6 +21,7 @@ from src.api.utils.politician import (
 )
 from src.api.utils.topic_ids_converter import convert_into_topic_id
 from src.api.utils.party_sort import party_sort
+from src.api.utils.date_utils import get_last_day_of_the_month
 
 
 def get_entity_by_id(db: Session, model, id: int):
@@ -524,17 +525,7 @@ def get_homepage_party_donations(db: Session):
     # get last 8 years of donations from Bundestag parties
 
     # if today is not the last day of the month, get the last day of last month, else use today's date
-    last_day_of_the_month = None
-
-    today = datetime.date.today()
-    tomorrow = today + datetime.timedelta(days=1)
-
-    if tomorrow.month != today.month:
-        last_day_of_the_month = today
-    else:
-        last_day_of_the_month = datetime.date(
-            today.year, today.month, 1
-        ) - datetime.timedelta(days=1)
+    last_day_of_the_month = get_last_day_of_the_month()
 
     date_8_years_ago_today_from_end_of_month = last_day_of_the_month - relativedelta(
         years=8
