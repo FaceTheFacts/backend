@@ -527,13 +527,11 @@ def get_homepage_party_donations(db: Session):
     # if today is not the last day of the month, get the last day of last month, else use today's date
     last_day_of_the_month = get_last_day_of_the_month()
 
-    date_8_years_ago_today_from_end_of_month = last_day_of_the_month - relativedelta(
-        years=8
-    )
+    date_8_years_ago_from_end_of_month = last_day_of_the_month - relativedelta(years=8)
     bundestag_party_donations_last_8_years_query = (
         db.query(models.PartyDonation)
         .filter(models.PartyDonation.party_id.in_(bundestag_party_ids))
-        .filter(models.PartyDonation.date >= date_8_years_ago_today_from_end_of_month)
+        .filter(models.PartyDonation.date >= date_8_years_ago_from_end_of_month)
         .order_by(models.PartyDonation.date.asc())
         .all()
     )
@@ -567,7 +565,7 @@ def get_homepage_party_donations(db: Session):
     # assign donations to their respective parties
     for donation in bundestag_party_donations_last_8_years_query:
         donation_time_from_beginning_of_range = relativedelta(
-            donation.date, date_8_years_ago_today_from_end_of_month
+            donation.date, date_8_years_ago_from_end_of_month
         )
 
         # Every year is 4 quarters, the remaining months can be calculated as quarters
@@ -613,13 +611,9 @@ def get_party_donations_details(db: Session):
 
     response_data = {}
     last_day_of_the_month = get_last_day_of_the_month()
-    four_years_ago_today_from_end_of_month = last_day_of_the_month - relativedelta(
-        years=4
-    )
+    four_years_ago_from_end_of_month = last_day_of_the_month - relativedelta(years=4)
 
-    eight_years_ago_today_from_end_of_month = last_day_of_the_month - relativedelta(
-        years=8
-    )
+    eight_years_ago_from_end_of_month = last_day_of_the_month - relativedelta(years=8)
 
     # for every donation, add it to the response object as a dictionary using the party id as the key, and separate the donations into three groups: the last 4 years, the last 8 years, and all time
     for donation in party_donations:
@@ -632,11 +626,11 @@ def get_party_donations_details(db: Session):
             }
 
         # add donation to the appropriate date range for its party
-        if donation.date < eight_years_ago_today_from_end_of_month:
+        if donation.date < eight_years_ago_from_end_of_month:
             response_data[str(donation.party_id)][
                 "donations_older_than_8_years"
             ].append(donation)
-        elif donation.date < four_years_ago_today_from_end_of_month:
+        elif donation.date < four_years_ago_from_end_of_month:
             response_data[str(donation.party_id)]["donations_4_to_8_years_old"].append(
                 donation
             )
