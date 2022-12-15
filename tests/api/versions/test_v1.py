@@ -8,14 +8,13 @@ client = TestClient(app)
 #### GENERAL NOTES ####
 
 # Potential things to consider:
-# status of entity (retired/active, will fields change?)
+# status of entity (retired/active, will fields change? consider mocking)
 # size of lists/dicts (what are the default boundaries? 0-what?)
 # testing variations of the parameters (e.g. for start/end size or paginations)
 # testing negatives (missing resource)
 # testing missing routes: politicianshistory, poll/id/votes, bundestag/speeches, bundestag/polls, bundestag/allpolls, partydonations
 # split tests out into single methods instead of larger ones (otherwise a single failure blocks the whole test)
 # add human-readable error messages
-# move expected results into another file for readability
 
 #### OUTLINE OF TESTS TO IMPLEMENT ####
 
@@ -59,10 +58,179 @@ client = TestClient(app)
 
 # Tests politician route for single ID with default parameters (6 most recent votes and polls) for deceased politican (no updates)
 def test_politician_route_expected_values():
-    response = client.get("/v1/politician/78973")
+    response = client.get("/v1/politician/28881")
     assert response.status_code == 200
-    # TODO: currently fails due to encoding issue, confirm no unicode in DB
-    # assert response.json() == v1_expected_responses.politician_route_standard
+
+    assert response.json() == {
+        "id": 28881,
+        "label": "Martina Michels",
+        "party": {
+            "id": 8,
+            "label": "DIE LINKE",
+            "party_style": {
+                "id": 8,
+                "display_name": "Linke",
+                "foreground_color": "#FFFFFF",
+                "background_color": "#CD3E72",
+                "border_color": None,
+            },
+        },
+        "occupations": ["MdEP"],
+        "sidejobs": [],
+        "cvs": [],
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/profile/martina-michels",
+        "weblinks": [
+            {
+                "politician_id": 28881,
+                "id": 46665,
+                "link": "https://www.martina-michels.de/",
+            },
+            {
+                "politician_id": 28881,
+                "id": 46666,
+                "link": "https://twitter.com/martina_michels",
+            },
+            {
+                "politician_id": 28881,
+                "id": 46667,
+                "link": "https://www.facebook.com/martina.michels.549",
+            },
+            {
+                "politician_id": 28881,
+                "id": 46668,
+                "link": "https://www.dielinke-europa.eu/",
+            },
+        ],
+        "votes_and_polls": [
+            {
+                "Vote": {
+                    "id": 468432,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - Einheitliche Ladekabel mit USB-C ab 2024",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/468432",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4795,
+                    "vote": "yes",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4795,
+                    "label": "Einheitliche Ladekabel mit USB-C ab 2024",
+                    "field_intro": '<p>Das Europäische Parlament hat am 04. Oktober 2022 namentlich über einen <a class="link-read-more" href="https://www.europarl.europa.eu/doceo/document/A-9-2022-0129_DE.html">Vorschlag </a>der EU-Kommission für eine Richtlinie zur Vereinheitlichung von Ladegeräten mit USB-C abgestimmt. Ab Mitte 2024 sollen kleinere elektronische Geräte nur noch mit USB-C-Anschluss verkauft werden. Für Drucker, Mäuse und Laptops gilt diese Vorgabe ab 2026.</p>\r\n\r\n<p>Der Kommissionsvorschlag wurde nahezu einheitlich angenommen, nur 13 Abgeordnete stimmten dagegen. Somit bleiben den nationalen Parlamenten zwei Jahre, um die Richtlinie in nationales Recht umzusetzen.</p>\r\n\r\n<p>Von den deutschen Abgeordneten stimmten 85 dafür und niemand dagegen. Enthalten hat sich ein Abgeordneter.</p>\r\n',
+                    "field_poll_date": "2022-10-04",
+                    "poll_passed": True,
+                },
+            },
+            {
+                "Vote": {
+                    "id": 471512,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - Angemessener Mindestlohn in der EU",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/471512",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4800,
+                    "vote": "yes",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4800,
+                    "label": "Angemessener Mindestlohn in der EU",
+                    "field_intro": '<p>Das Europäische Parlament hat am 14. September 2022 namentlich über einen <a class="link-read-more" href="https://www.europarl.europa.eu/doceo/document/TA-9-2022-0316_DE.html">Gesetzentwurf </a>zur Einführung eines angemessenen Mindestlohns in allen Mitgliedstaaten abgestimmt. Die EU strebt damit an, die soziale Gerechtigkeit und die Gleichstellung von Frauen und Männern sowie den Erhalt eines hohen Beschäftigungsniveaus zu fördern.</p>\r\n\r\n<p>Der Gesetzentwurf wurde mit 505 Stimmen <strong>angenommen</strong>. 92 Abgeordnete stimmten dagegen und 44 Abgeordnete enthielten sich. Von den deutschen Abgeordneten stimmten insgesamt 73 für den Gesetzesentwurf und zehn dagegen.</p>\r\n',
+                    "field_poll_date": "2022-09-14",
+                    "poll_passed": True,
+                },
+            },
+            {
+                "Vote": {
+                    "id": 455074,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - Keine Einstufung von Erdgas und Atomkraft als nachhaltig",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/455074",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4662,
+                    "vote": "yes",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4662,
+                    "label": "Keine Einstufung von Erdgas und Atomkraft als nachhaltig",
+                    "field_intro": '<p>Mit dem vorgelegten <a class="link-read-more" href="https://www.europarl.europa.eu/doceo/document/B-9-2022-0338_DE.pdf">Entschließungsantrag </a>des Europäischen Parlaments sollte das Vorhaben der Delegierten Verordnung der Kommission verhindert werden, die Taxonomie dahingehend zu ändern, dass zukünftig Investitionen in Erdgas und Atomkraft als nachhaltig eingestuft werden könnten.</p>\r\n\r\n<p>Für den Entschließungsantrag stimmten 278 EU-Abgeordnete - um das Vorhaben zu blockieren, wären 353 Zustimmungen notwendig gewesen. 328 Abgeordnete stimmten gegen den Antrag, 33 enthielten sich.</p>\r\n\r\n<p>Von den 96 deutschen Abgeordneten stimmten 59 Abgeordnete dafür, 21 dagegen und sieben enthielten sich. Die Mehrheit der deutschen EU-Abgeordneten stimmte demnach gegen die Änderungen der Taxonomie.</p>\r\n',
+                    "field_poll_date": "2022-07-06",
+                    "poll_passed": True,
+                },
+            },
+            {
+                "Vote": {
+                    "id": 443836,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - Entschluss über eine Wahlreform für die EU-Parlamentswahlen",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/443836",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4598,
+                    "vote": "yes",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4598,
+                    "label": "Entschluss über eine Wahlreform für die EU-Parlamentswahlen",
+                    "field_intro": '<p>Das Europäische Parlament hat über einen <a href="https://www.europarl.europa.eu/doceo/document/A-9-2022-0083_DE.html">Entschließungsantrag</a> zur Wahlreform abgestimmt. Dieser beinhaltet eine Sperrklausel von 3,5 Prozent für die Parteien bei der nächsten EU-Parlamentswahl. Außerdem sollen national übergreifende Listenkandidierende aufgestellt werden und der Wahltag einheitlich auf den 9. Mai festgelegt werden.</p>\r\n\r\n<p>Von den 96 deutschen Mitgliedern des EU-Parlamentes haben<strong> 70 für den Entschluss und 12 dagegen gestimmt</strong>. Es gab sechs Enthaltungen, acht Abgeordnete haben sich nicht an der Abstimmung beteiligt</p>\r\n',
+                    "field_poll_date": "2022-05-03",
+                    "poll_passed": True,
+                },
+            },
+            {
+                "Vote": {
+                    "id": 436368,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - EU-Richtlinie zur Lohntransparenz",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/436368",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4566,
+                    "vote": "yes",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4566,
+                    "label": "EU-Richtlinie zur Lohntransparenz",
+                    "field_intro": '<p>Das EU-Parlament hat eine <a class="link-read-more" href="https://eur-lex.europa.eu/legal-content/DE/TXT/PDF/?uri=CELEX:52021PC0093&amp;qid=1651063385803&amp;from=EN">Richtlinie des EU-Parlamentes und des Rates</a> mehrheitlich beschlossen. Die Richtlinie "zur Stärkung der Anwendung des Grundsatzes des gleichen Entgeltes für Männer und Frauen bei gleicher oder gleichwertiger Arbeit (...)" knüpft an bereits geltende Richtlinien an. Hintergrund sei die weiterhin herausfordernde Umsetzung der Lohntransparenz und damit einhergehende Unterschiede zwischen dem Gehalt von Männern und Frauen bei gleicher Arbeit.</p>\r\n\r\n<p>Von den 96 deutschen Mitgliedern des EU-Parlamentes haben 51 für die Richtlinie und 37 dagegen gestimmt. Es gab sechs Enthaltungen, zwei Abgeordnete haben sich nicht an der Abstimmung beteiligt.</p>\r\n',
+                    "field_poll_date": "2022-04-05",
+                    "poll_passed": True,
+                },
+            },
+            {
+                "Vote": {
+                    "id": 436303,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - Abwehr von ausländischen Einflüssen auf demokratische Prozesse in der EU",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/436303",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4562,
+                    "vote": "abstain",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4562,
+                    "label": "Abwehr von ausländischen Einflüssen auf demokratische Prozesse in der EU",
+                    "field_intro": '<p>Das EU-Parlament hat mit großer Mehrheit einen <a class="link-download" href="https://www.europarl.europa.eu/doceo/document/A-9-2022-0022_EN.html">Bericht</a> der lettischen Abgeordneten Sandra Kalniete angenommen, der unterschiedliche Vorhaben zur Stärkung der europäischen Demokratie gegen ausländische Einflüsse vorschlägt. Der Bericht konzentriert sich dabei insbesondere auf Einflussnahmen durch Russland und China.</p>\r\n\r\n<p>Von den 96 deutschen Europaabgeordneten stimmten 79 dafür. Zwölf Abgeordnete, vor allem aus den Reihen der AfD, stimmten gegen den Bericht. Vier Abgeordnete haben sich enthalten.</p>\r\n',
+                    "field_poll_date": "2022-03-09",
+                    "poll_passed": True,
+                },
+            },
+        ],
+        "topic_ids_of_latest_committee": [3, 7, 12, 18],
+    }
 
 
 # Tests politician route for single ID for which there is no matching politician
@@ -74,24 +242,223 @@ def test_politician_route_does_not_exist():
 
 # Tests politician route for single ID with modified parameters (votes_start, end_start, combination)
 def test_politician_route_modified_parameters():
-    # Currently returns votes 4 through 6 (the default end), should probably return 4 through end of list
-    # TODO: confirm design
     # response = client.get("/v1/politician/78973?votes_start=4")
     # assert response.json() == v1_expected_responses.politician_route_modified_votes_start_parameter
 
     # Should return 8 most recent votes and polls, ordered most recent to oldest
-    response = client.get("/v1/politician/78973?votes_end=8")
-    assert (
-        response.json()
-        == v1_expected_responses.politician_route_modified_votes_end_parameter
-    )
-
-    # Should return 9 votes and polls that exclude the 3 most recent, ordered most recent to oldest
-    response = client.get("/v1/politician/78973?votes_start=3&votes_end=12")
-    assert (
-        response.json()
-        == v1_expected_responses.politician_route_modified_all_parameters
-    )
+    response = client.get("/v1/politician/28881?votes_end=8")
+    assert response.json() == {
+        "id": 28881,
+        "label": "Martina Michels",
+        "party": {
+            "id": 8,
+            "label": "DIE LINKE",
+            "party_style": {
+                "id": 8,
+                "display_name": "Linke",
+                "foreground_color": "#FFFFFF",
+                "background_color": "#CD3E72",
+                "border_color": None,
+            },
+        },
+        "occupations": ["MdEP"],
+        "sidejobs": [],
+        "cvs": [],
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/profile/martina-michels",
+        "weblinks": [
+            {
+                "link": "https://www.martina-michels.de/",
+                "id": 46665,
+                "politician_id": 28881,
+            },
+            {
+                "link": "https://twitter.com/martina_michels",
+                "id": 46666,
+                "politician_id": 28881,
+            },
+            {
+                "link": "https://www.facebook.com/martina.michels.549",
+                "id": 46667,
+                "politician_id": 28881,
+            },
+            {
+                "link": "https://www.dielinke-europa.eu/",
+                "id": 46668,
+                "politician_id": 28881,
+            },
+        ],
+        "votes_and_polls": [
+            {
+                "Vote": {
+                    "id": 468432,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - Einheitliche Ladekabel mit USB-C ab 2024",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/468432",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4795,
+                    "vote": "yes",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4795,
+                    "label": "Einheitliche Ladekabel mit USB-C ab 2024",
+                    "field_intro": '<p>Das Europäische Parlament hat am 04. Oktober 2022 namentlich über einen <a class="link-read-more" href="https://www.europarl.europa.eu/doceo/document/A-9-2022-0129_DE.html">Vorschlag </a>der EU-Kommission für eine Richtlinie zur Vereinheitlichung von Ladegeräten mit USB-C abgestimmt. Ab Mitte 2024 sollen kleinere elektronische Geräte nur noch mit USB-C-Anschluss verkauft werden. Für Drucker, Mäuse und Laptops gilt diese Vorgabe ab 2026.</p>\r\n\r\n<p>Der Kommissionsvorschlag wurde nahezu einheitlich angenommen, nur 13 Abgeordnete stimmten dagegen. Somit bleiben den nationalen Parlamenten zwei Jahre, um die Richtlinie in nationales Recht umzusetzen.</p>\r\n\r\n<p>Von den deutschen Abgeordneten stimmten 85 dafür und niemand dagegen. Enthalten hat sich ein Abgeordneter.</p>\r\n',
+                    "field_poll_date": "2022-10-04",
+                    "poll_passed": True,
+                },
+            },
+            {
+                "Vote": {
+                    "id": 471512,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - Angemessener Mindestlohn in der EU",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/471512",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4800,
+                    "vote": "yes",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4800,
+                    "label": "Angemessener Mindestlohn in der EU",
+                    "field_intro": '<p>Das Europäische Parlament hat am 14. September 2022 namentlich über einen <a class="link-read-more" href="https://www.europarl.europa.eu/doceo/document/TA-9-2022-0316_DE.html">Gesetzentwurf </a>zur Einführung eines angemessenen Mindestlohns in allen Mitgliedstaaten abgestimmt. Die EU strebt damit an, die soziale Gerechtigkeit und die Gleichstellung von Frauen und Männern sowie den Erhalt eines hohen Beschäftigungsniveaus zu fördern.</p>\r\n\r\n<p>Der Gesetzentwurf wurde mit 505 Stimmen <strong>angenommen</strong>. 92 Abgeordnete stimmten dagegen und 44 Abgeordnete enthielten sich. Von den deutschen Abgeordneten stimmten insgesamt 73 für den Gesetzesentwurf und zehn dagegen.</p>\r\n',
+                    "field_poll_date": "2022-09-14",
+                    "poll_passed": True,
+                },
+            },
+            {
+                "Vote": {
+                    "id": 455074,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - Keine Einstufung von Erdgas und Atomkraft als nachhaltig",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/455074",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4662,
+                    "vote": "yes",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4662,
+                    "label": "Keine Einstufung von Erdgas und Atomkraft als nachhaltig",
+                    "field_intro": '<p>Mit dem vorgelegten <a class="link-read-more" href="https://www.europarl.europa.eu/doceo/document/B-9-2022-0338_DE.pdf">Entschließungsantrag </a>des Europäischen Parlaments sollte das Vorhaben der Delegierten Verordnung der Kommission verhindert werden, die Taxonomie dahingehend zu ändern, dass zukünftig Investitionen in Erdgas und Atomkraft als nachhaltig eingestuft werden könnten.</p>\r\n\r\n<p>Für den Entschließungsantrag stimmten 278 EU-Abgeordnete - um das Vorhaben zu blockieren, wären 353 Zustimmungen notwendig gewesen. 328 Abgeordnete stimmten gegen den Antrag, 33 enthielten sich.</p>\r\n\r\n<p>Von den 96 deutschen Abgeordneten stimmten 59 Abgeordnete dafür, 21 dagegen und sieben enthielten sich. Die Mehrheit der deutschen EU-Abgeordneten stimmte demnach gegen die Änderungen der Taxonomie.</p>\r\n',
+                    "field_poll_date": "2022-07-06",
+                    "poll_passed": True,
+                },
+            },
+            {
+                "Vote": {
+                    "id": 443836,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - Entschluss über eine Wahlreform für die EU-Parlamentswahlen",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/443836",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4598,
+                    "vote": "yes",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4598,
+                    "label": "Entschluss über eine Wahlreform für die EU-Parlamentswahlen",
+                    "field_intro": '<p>Das Europäische Parlament hat über einen <a href="https://www.europarl.europa.eu/doceo/document/A-9-2022-0083_DE.html">Entschließungsantrag</a> zur Wahlreform abgestimmt. Dieser beinhaltet eine Sperrklausel von 3,5 Prozent für die Parteien bei der nächsten EU-Parlamentswahl. Außerdem sollen national übergreifende Listenkandidierende aufgestellt werden und der Wahltag einheitlich auf den 9. Mai festgelegt werden.</p>\r\n\r\n<p>Von den 96 deutschen Mitgliedern des EU-Parlamentes haben<strong> 70 für den Entschluss und 12 dagegen gestimmt</strong>. Es gab sechs Enthaltungen, acht Abgeordnete haben sich nicht an der Abstimmung beteiligt</p>\r\n',
+                    "field_poll_date": "2022-05-03",
+                    "poll_passed": True,
+                },
+            },
+            {
+                "Vote": {
+                    "id": 436368,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - EU-Richtlinie zur Lohntransparenz",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/436368",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4566,
+                    "vote": "yes",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4566,
+                    "label": "EU-Richtlinie zur Lohntransparenz",
+                    "field_intro": '<p>Das EU-Parlament hat eine <a class="link-read-more" href="https://eur-lex.europa.eu/legal-content/DE/TXT/PDF/?uri=CELEX:52021PC0093&amp;qid=1651063385803&amp;from=EN">Richtlinie des EU-Parlamentes und des Rates</a> mehrheitlich beschlossen. Die Richtlinie "zur Stärkung der Anwendung des Grundsatzes des gleichen Entgeltes für Männer und Frauen bei gleicher oder gleichwertiger Arbeit (...)" knüpft an bereits geltende Richtlinien an. Hintergrund sei die weiterhin herausfordernde Umsetzung der Lohntransparenz und damit einhergehende Unterschiede zwischen dem Gehalt von Männern und Frauen bei gleicher Arbeit.</p>\r\n\r\n<p>Von den 96 deutschen Mitgliedern des EU-Parlamentes haben 51 für die Richtlinie und 37 dagegen gestimmt. Es gab sechs Enthaltungen, zwei Abgeordnete haben sich nicht an der Abstimmung beteiligt.</p>\r\n',
+                    "field_poll_date": "2022-04-05",
+                    "poll_passed": True,
+                },
+            },
+            {
+                "Vote": {
+                    "id": 436303,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - Abwehr von ausländischen Einflüssen auf demokratische Prozesse in der EU",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/436303",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4562,
+                    "vote": "abstain",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4562,
+                    "label": "Abwehr von ausländischen Einflüssen auf demokratische Prozesse in der EU",
+                    "field_intro": '<p>Das EU-Parlament hat mit großer Mehrheit einen <a class="link-download" href="https://www.europarl.europa.eu/doceo/document/A-9-2022-0022_EN.html">Bericht</a> der lettischen Abgeordneten Sandra Kalniete angenommen, der unterschiedliche Vorhaben zur Stärkung der europäischen Demokratie gegen ausländische Einflüsse vorschlägt. Der Bericht konzentriert sich dabei insbesondere auf Einflussnahmen durch Russland und China.</p>\r\n\r\n<p>Von den 96 deutschen Europaabgeordneten stimmten 79 dafür. Zwölf Abgeordnete, vor allem aus den Reihen der AfD, stimmten gegen den Bericht. Vier Abgeordnete haben sich enthalten.</p>\r\n',
+                    "field_poll_date": "2022-03-09",
+                    "poll_passed": True,
+                },
+            },
+            {
+                "Vote": {
+                    "id": 420767,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - Einrichtung einer unabhängigen Ethikbehörde zur Lobbykontrolle von EU-Institutionen",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/420767",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4305,
+                    "vote": "yes",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4305,
+                    "label": "Einrichtung einer unabhängigen Ethikbehörde zur Lobbykontrolle von EU-Institutionen",
+                    "field_intro": '<p>Das EU-Parlament hat einen <a class="link-download" href="https://www.europarl.europa.eu/doceo/document/A-9-2021-0260_DE.html">Bericht</a> des deutschen Grünen-Abgeordneten <a class="link-profile" href="https://www.abgeordnetenwatch.de/profile/daniel-freund">Daniel Freund</a> mit großer Mehrheit angenommen, der die EU-Kommission dazu auffordert, Interessenskonflikte und Korruption in EU-Institutionen in Zukunft von einem unabhängigen Gremium überwachen zu lassen. Bislang hatten die einzelnen Institutionen der EU-Verwaltung selbst kontrolliert, ob bei ihnen die Lobby- und Ethikregeln eingehalten werden.</p>\r\n\r\n<p>Von den 96 deutschen Europaabgeordneten stimmten 50 dafür. Die Abgeordneten der CDU/CSU enthielten sich bei der Abstimmung, die der AfD stimmten gegen den Entwurf.</p>\r\n',
+                    "field_poll_date": "2021-09-16",
+                    "poll_passed": True,
+                },
+            },
+            {
+                "Vote": {
+                    "id": 426118,
+                    "entity_type": "vote",
+                    "label": "Martina Michels - Sexualisierte Gewalt an Kindern im Internet bekämpfen",
+                    "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/426118",
+                    "mandate_id": 44694,
+                    "fraction_id": 251,
+                    "poll_id": 4384,
+                    "vote": "no",
+                    "reason_no_show": None,
+                    "reason_no_show_other": None,
+                },
+                "Poll": {
+                    "id": 4384,
+                    "label": "Sexualisierte Gewalt an Kindern im Internet bekämpfen",
+                    "field_intro": '<p>Mit der namentlichen Abstimmung wurde über den Vorschlag für eine <a class="link-read-more" href="https://eur-lex.europa.eu/legal-content/DE/TXT/?uri=CELEX%3A52020PC0568">Verordnung </a>abgestimmt, welche bestimmte Aspekte der <a class="link-read-more" href="https://eur-lex.europa.eu/legal-content/DE/ALL/?uri=celex%3A32002L0058">Richtlinie 2002/58/EG</a> des Europäischen Parlaments (Datenschutzrichtlinie für elektronische Kommunikation) zeitweise aussetzen möchte, um sexualisierte Gewalt an Kindern im Internet zu bekämpfen. Strafrechtlich ist der Tatbestand unter dem Begriff des sexuellen Missbrauchs bekannt.</p>\r\n\r\n<p>Von den deutschen EU-Abgeordneten stimmten hauptsächlich CDU/CSU-Abgeordnete und einige SPD-Abgeordnete dafür, dagegen stimmten Abgeordnete aus den Reihen der Bündnis 90/Die Grünen, Die Linke sowie AfD. Auch wenn die deutschen Abgeordneten in der Mehrheit <strong>gegen </strong>die Verordnung stimmten, wurde der Vorschlag über die Verordnung mit insgesamt 537 Stimmen aller EU-Abgeordneten <strong>angenommen.</strong></p>\r\n',
+                    "field_poll_date": "2021-07-06",
+                    "poll_passed": False,
+                },
+            },
+        ],
+        "topic_ids_of_latest_committee": [3, 7, 12, 18],
+    }
 
 
 # Tests politician route for single ID with invalid parameters (negative integers, floats, strings)
@@ -186,7 +553,7 @@ def test_politicians_route_multiple_ids_invalid_parameters():
 def test_politicians_route_does_not_exist_single_id():
     response = client.get("/v1/politicians/1")
     assert response.status_code == 404
-    assert response.json() == {"detail": "Politician not found"}
+    assert response.json() == {"detail": "Not Found"}
 
 
 def test_politicians_route_does_not_exist_multiple_nonexisting_ids():
@@ -369,7 +736,7 @@ def test_read_politician_constituencies():
             ],
         }
 
-    def null_constituencies_exist():
+    def None_constituencies_exist():
         response = client.get("/v1/politician/138124/constituencies")
         assert response.status_code == 200
         assert type(response.json()) is dict
@@ -561,7 +928,7 @@ def test_read_politician_constituencies():
         }
 
     all_elements_have_values()
-    null_constituencies_exist()
+    None_constituencies_exist()
 
 
 def test_read_politician_positions():
@@ -1081,7 +1448,7 @@ def test_read_homepage_party_donations():
     response_json = response.json()
     assert response.status_code == 200
 
-    assert len(response_json) == 8  # only true while parties are hardcoded
+    assert len(response_json) == 8  # only True while parties are hardcoded
 
     # not covered by schema
     for party in response_json:

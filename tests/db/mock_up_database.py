@@ -196,5 +196,30 @@ mockup_session = UnifiedAlchemyMagicMock(
                 models.VoteResult(id=2, yes=10, no=0, abstain=5, no_show=10, poll_id=7),
             ],
         ),
+        # Zip codes
+        # (
+        #     [
+        #         mock.call.query(models.ZipCode),
+        #         mock.call.filter(models.ZipCode.constituency_id == 1),
+        #     ],
+        #     [
+        #         models.ZipCode(id=1, constituency_id=1, zip_code=10058),
+        #     ],
+        # )
+        # Constituencies
+        (
+            [
+                mock.call.query(models.Constituency),
+                mock.call.filter(models.Constituency.id == 1),
+            ],
+            [
+                models.Constituency(
+                    id=1,
+                    name="Vorpommern-Rügen - Vorpommern-Greifswald I",
+                    number=15,
+                    zip_codes=10058,
+                ),
+            ],
+        ),
     ]
 )

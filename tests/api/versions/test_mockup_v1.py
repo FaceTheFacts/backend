@@ -68,7 +68,7 @@ class TestV1Routes(unittest.TestCase):
                 "id": 2,
                 "entity_type": "sidejob",
                 "label": "Chairman",
-                "income_level": None,
+                "income_level": "3.500 € bis 7.000 €",
                 "interval": None,
                 "created": "2021-01-28",
                 "sidejob_organization": None,
@@ -127,6 +127,95 @@ class TestV1Routes(unittest.TestCase):
             ],
         }
         self.assertEqual(response.json(), expected)
+
+    # unit
+    @patch(
+        "src.api.crud.get_politician_by_constituency",
+        return_value={
+            "constituency_number": 15,
+            "constituency_name": "Vorpommern-Rügen - Vorpommern-Greifswald I",
+            "politicians": [
+                {
+                    "id": 79137,
+                    "label": "Angela Merkel",
+                    "party": {
+                        "id": 2,
+                        "label": "CDU",
+                        "party_style": {
+                            "id": 2,
+                            "display_name": "CDU",
+                            "foreground_color": "#FFFFFF",
+                            "background_color": "#636363",
+                            "border_color": None,
+                        },
+                    },
+                }
+            ],
+        },
+    )
+    def test_read_politician_constituencies(self, crud):
+        response = client.get("/v1/politician/1/constituencies")
+        assert response.status_code == 200
+        expected = {
+            "constituency_number": 15,
+            "constituency_name": "Vorpommern-Rügen - Vorpommern-Greifswald I",
+            "politicians": [
+                {
+                    "id": 79137,
+                    "label": "Angela Merkel",
+                    "party": {
+                        "id": 2,
+                        "label": "CDU",
+                        "party_style": {
+                            "id": 2,
+                            "display_name": "CDU",
+                            "foreground_color": "#FFFFFF",
+                            "background_color": "#636363",
+                            "border_color": None,
+                        },
+                    },
+                }
+            ],
+        }
+
+        self.assertEqual(response.json(), expected)
+
+    # integration test
+    @patch(
+        "src.api.versions.v1.Session",
+        return_value=mockup_session,
+    )
+    def test_integration_test_read_politician_constituencies(self, session):
+        response = client.get("/v1/politician/1/constituencies")
+        assert response.status_code == 200
+        page_not_found_response = client.get("/v1/politician/0/constituencies")
+        assert page_not_found_response.status_code == 404
+
+        expected = {
+            "constituency_number": 15,
+            "constituency_name": "Vorpommern-Rügen - Vorpommern-Greifswald I",
+            "politicians": [
+                {
+                    "id": 79137,
+                    "label": "Angela Merkel",
+                    "party": {
+                        "id": 2,
+                        "label": "CDU",
+                        "party_style": {
+                            "id": 2,
+                            "display_name": "CDU",
+                            "foreground_color": "#FFFFFF",
+                            "background_color": "#636363",
+                            "border_color": None,
+                        },
+                    },
+                }
+            ],
+        }
+        self.assertEqual(response.json(), expected)
+        self.assertEqual(
+            page_not_found_response.json()["detail"], "ConstituencyPolitician not found"
+        )
 
 
 if __name__ == "__main__":
