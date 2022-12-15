@@ -1,8 +1,6 @@
 from fastapi.testclient import TestClient
 from src.api.main import app
 
-from tests.api.versions import v1_expected_responses
-
 client = TestClient(app)
 
 #### GENERAL NOTES ####
@@ -15,38 +13,6 @@ client = TestClient(app)
 # testing missing routes: politicianshistory, poll/id/votes, bundestag/speeches, bundestag/polls, bundestag/allpolls, partydonations
 # split tests out into single methods instead of larger ones (otherwise a single failure blocks the whole test)
 # add human-readable error messages
-
-#### OUTLINE OF TESTS TO IMPLEMENT ####
-
-# test_politicianshistory_route_expected_values_single_id
-# test_politicianshistory_route_expected_values_multiple_ids
-# test_politicianshistory_route_single_id_parameters
-# test_politicianshistory_route_multiple_id_parameters
-# test_politicianshistory_route_multiple_id_invalid_parameters
-# test_politicianshistory_route_does_not_exist_single_id
-# test_politicianshistory_route_does_not_exist_multiple_ids
-# test_politicianshistory_route_does_not_exist_duplicate_ids
-# test_politicianshistory_route_does_not_exist_multiple_existing_nonexisting_ids
-
-# test_politician_contituencies_route_expected_values
-# test_politician_contituencies_route_does_not_exist
-
-# test_politician_positions_route_expected_values
-# test_politician_positions_route_does_not_exist
-
-# test_politician_sidejobs_route_expected_values
-# test_politician_sidejobs_route_parameters
-# test_politician_sidejobs_route_does_not_exist
-# test_politician_sidejobs_route_invalid_parameter
-
-# NEED TO INVESTIGATE HOW SEARCH ROUTE WORKS
-# test_search_route_expected_values
-# test_search_route_does_not_exist
-# test_search_route_expected_invalid_parameter
-
-# test_image-scanner_route_expected_values
-# test_image-scanner_route_does_not_exist
-# test_image-scanner_route_invalid_parameter
 
 # test_politician_votes_route_expected_values
 # test_politician_votes_route_parameters
@@ -463,7 +429,8 @@ def test_politician_route_modified_parameters():
 
 # Tests politician route for single ID with invalid parameters (negative integers, floats, strings)
 # API current uses python indexing for negative integers and a non-user friendly error for floats and strings
-# TODO: confirm design
+
+
 def test_politician_route_invalid_parameters():
     response = client.get("/v1/politician/78973?votes_start=-10&votes_end=-2")
     # assert user friendly error message, don't allow negative integers (confirm design)
@@ -572,7 +539,8 @@ def test_politicians_route_does_not_exist_duplicate_ids():
 # TODO: find different politician IDs to test
 def test_politicians_route_does_not_exist_multiple_existing_nonexisting_ids():
     response = client.get("/v1/politicians/?ids=1&ids=78973")
-    # TODO: confirm design - should return 404 or 200 with only existing IDs?
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Politician not found"}
 
 
 def test_read_politician_constituencies():
@@ -1456,3 +1424,458 @@ def test_read_homepage_party_donations():
         assert sum(party["donations_over_96_months"]) == party["donations_total"]
 
     # add test for id not found
+
+
+def test_politicianshistory_route_expected_values_single_id():
+    response = client.get("v1/politicianshistory/?ids=78973")
+    assert response.json() == [
+        {
+            "id": 78973,
+            "label": "Karin Strenz",
+            "party": {
+                "id": 2,
+                "label": "CDU",
+                "party_style": {
+                    "id": 2,
+                    "display_name": "CDU",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#636363",
+                    "border_color": None,
+                },
+            },
+        }
+    ]
+
+
+def test_politicianshistory_route_expected_values_multiple_ids():
+    response = client.get("v1/politicianshistory/?ids=78973&ids=178584")
+    assert response.json() == [
+        {
+            "id": 78973,
+            "label": "Karin Strenz",
+            "party": {
+                "id": 2,
+                "label": "CDU",
+                "party_style": {
+                    "id": 2,
+                    "display_name": "CDU",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#636363",
+                    "border_color": None,
+                },
+            },
+        },
+        {
+            "id": 178584,
+            "label": "Fadime Tuncer",
+            "party": {
+                "id": 5,
+                "label": "Bündnis 90/Die Grünen",
+                "party_style": {
+                    "id": 5,
+                    "display_name": "Grüne",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#61A056",
+                    "border_color": None,
+                },
+            },
+        },
+    ]
+
+
+def test_politicianshistory_route_does_not_exist_single_id():
+    response = client.get("v1/politicianshistory/?ids=1")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Politician not found"}
+
+
+def test_politicianshistory_route_does_not_exist_multiple_ids():
+    response = client.get("v1/politicianshistory/?ids=1&ids=178584")
+
+
+def test_politicianshistory_route_does_not_exist_duplicate_ids():
+    response = client.get("v1/politicianshistory/?ids=78973&ids=78973")
+    assert response.json() == [
+        {
+            "id": 78973,
+            "label": "Karin Strenz",
+            "party": {
+                "id": 2,
+                "label": "CDU",
+                "party_style": {
+                    "id": 2,
+                    "display_name": "CDU",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#636363",
+                    "border_color": None,
+                },
+            },
+        }
+    ]
+
+
+def test_politicianshistory_route_does_not_exist_multiple_existing_nonexisting_ids():
+    response = client.get("v1/politicianshistory/?ids=1&ids=178584")
+    assert response.json() == {
+        "id": 178584,
+        "label": "Fadime Tuncer",
+        "party": {
+            "id": 5,
+            "label": "Bündnis 90/Die Grünen",
+            "party_style": {
+                "id": 5,
+                "display_name": "Grüne",
+                "foreground_color": "#FFFFFF",
+                "background_color": "#61A056",
+                "border_color": None,
+            },
+        },
+    }
+
+
+def test_politician_contituencies_route_expected_values():
+    response = client.get("v1/politician/78973/constituencies")
+    assert response.json() == {
+        "constituency_number": 13,
+        "constituency_name": "Ludwigslust-Parchim II - Nordwestmecklenburg II - Landkreis Rostock I",
+        "politicians": [
+            {
+                "id": 79268,
+                "label": "Frank Michael Junge",
+                "party": {
+                    "id": 1,
+                    "label": "SPD",
+                    "party_style": {
+                        "id": 1,
+                        "display_name": "SPD",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#E95050",
+                        "border_color": None,
+                    },
+                },
+            },
+            {
+                "id": 78973,
+                "label": "Karin Strenz",
+                "party": {
+                    "id": 2,
+                    "label": "CDU",
+                    "party_style": {
+                        "id": 2,
+                        "display_name": "CDU",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#636363",
+                        "border_color": None,
+                    },
+                },
+            },
+            {
+                "id": 123479,
+                "label": "Chris Rehhagen",
+                "party": {
+                    "id": 4,
+                    "label": "FDP",
+                    "party_style": {
+                        "id": 4,
+                        "display_name": "FDP",
+                        "foreground_color": "#333333",
+                        "background_color": "#FAED0B",
+                        "border_color": None,
+                    },
+                },
+            },
+            {
+                "id": 122506,
+                "label": "Claudia Schulz",
+                "party": {
+                    "id": 5,
+                    "label": "Bündnis 90/Die Grünen",
+                    "party_style": {
+                        "id": 5,
+                        "display_name": "Grüne",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#61A056",
+                        "border_color": None,
+                    },
+                },
+            },
+            {
+                "id": 123558,
+                "label": "Christoph Grimm",
+                "party": {
+                    "id": 9,
+                    "label": "AfD",
+                    "party_style": {
+                        "id": 9,
+                        "display_name": "AfD",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#3AA6F4",
+                        "border_color": None,
+                    },
+                },
+            },
+            {
+                "id": 118757,
+                "label": "Horst Krumpen",
+                "party": {
+                    "id": 8,
+                    "label": "DIE LINKE",
+                    "party_style": {
+                        "id": 8,
+                        "display_name": "Linke",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#CD3E72",
+                        "border_color": None,
+                    },
+                },
+            },
+            {
+                "id": 121301,
+                "label": "Gustav Graf von Westarp",
+                "party": {
+                    "id": 7,
+                    "label": "FREIE WÄHLER",
+                    "party_style": {
+                        "id": 7,
+                        "display_name": "FREIE WÄHLER",
+                        "foreground_color": "#2F5997",
+                        "background_color": "#F8F8F8",
+                        "border_color": "#FD820B",
+                    },
+                },
+            },
+            {
+                "id": 119230,
+                "label": "Rainer Schütt",
+                "party": {
+                    "id": 21,
+                    "label": "NPD",
+                    "party_style": {
+                        "id": 21,
+                        "display_name": "NPD",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#9D420F",
+                        "border_color": None,
+                    },
+                },
+            },
+        ],
+    }
+
+
+def test_politician_contituencies_route_does_not_exist():
+    response = client.get("v1/politician/1/constituencies")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "ConstituencyPolitician not found"}
+
+
+def test_politician_positions_route_expected_values():
+    response = client.get("v1/politician/28881/positions")
+    assert response.status_code == 200
+    assert response.json() == {"id": 28881, "positions": []}
+
+
+def test_politician_positions_route_does_not_exist():
+    response = client.get("v1/politician/1/positions")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Position not found"}
+
+
+def test_politician_sidejobs_route_expected_values():
+    response = client.get("v1/politician/79137/sidejobs?page=1&size=50")
+    assert response.status_code == 200
+    assert response.json() == {
+        "items": [
+            {
+                "id": 1523,
+                "entity_type": "sidejob",
+                "label": "Mitglied des Ehrensenats",
+                "income_level": None,
+                "interval": None,
+                "created": "2017-05-24",
+                "sidejob_organization": {
+                    "id": 1456,
+                    "entity_type": "sidejob_organization",
+                    "label": "Stiftung Lindauer Nobelpreisträgertreffen am Bodensee",
+                },
+            },
+            {
+                "id": 1522,
+                "entity_type": "sidejob",
+                "label": "Mitglied des Kuratoriums",
+                "income_level": None,
+                "interval": None,
+                "created": "2017-05-24",
+                "sidejob_organization": {
+                    "id": 1455,
+                    "entity_type": "sidejob_organization",
+                    "label": "Stiftung Frauenkirche Dresden",
+                },
+            },
+            {
+                "id": 1520,
+                "entity_type": "sidejob",
+                "label": "Ehrenmitglied des Kuratoriums",
+                "income_level": None,
+                "interval": None,
+                "created": "2017-05-24",
+                "sidejob_organization": {
+                    "id": 732,
+                    "entity_type": "sidejob_organization",
+                    "label": "Stiftung Deutsche Sporthilfe (DSH)",
+                },
+            },
+            {
+                "id": 1519,
+                "entity_type": "sidejob",
+                "label": "Mitglied des Vorstandes",
+                "income_level": None,
+                "interval": None,
+                "created": "2017-05-24",
+                "sidejob_organization": {
+                    "id": 249,
+                    "entity_type": "sidejob_organization",
+                    "label": "Konrad-Adenauer-Stiftung e.V.",
+                },
+            },
+            {
+                "id": 1518,
+                "entity_type": "sidejob",
+                "label": "Ehrenpräsidentin des Kuratoriums",
+                "income_level": None,
+                "interval": None,
+                "created": "2017-05-24",
+                "sidejob_organization": {
+                    "id": 1044,
+                    "entity_type": "sidejob_organization",
+                    "label": "Deutsches Museum",
+                },
+            },
+            {
+                "id": 1517,
+                "entity_type": "sidejob",
+                "label": "Mitglied des Kuratoriums",
+                "income_level": None,
+                "interval": None,
+                "created": "2017-05-24",
+                "sidejob_organization": {
+                    "id": 1453,
+                    "entity_type": "sidejob_organization",
+                    "label": "Deutsche Gesellschaft e.V., Verein zur Förderung politischer, kultureller und sozialer Beziehungen in Europa",
+                },
+            },
+            {
+                "id": 1515,
+                "entity_type": "sidejob",
+                "label": "Vorsitzende des Kuratoriums",
+                "income_level": None,
+                "interval": None,
+                "created": "2017-05-24",
+                "sidejob_organization": {
+                    "id": 1022,
+                    "entity_type": "sidejob_organization",
+                    "label": "Bundesakademie für Sicherheitspolitik (BAKS)",
+                },
+            },
+        ],
+        "total": 7,
+        "page": 1,
+        "size": 50,
+    }
+
+
+def test_politician_sidejobs_route_parameters():
+    response = client.get("v1/politician/79137/sidejobs?page=2&size=5")
+    assert response.status_code == 200
+    assert response.json() == {
+        "items": [
+            {
+                "id": 1517,
+                "entity_type": "sidejob",
+                "label": "Mitglied des Kuratoriums",
+                "income_level": None,
+                "interval": None,
+                "created": "2017-05-24",
+                "sidejob_organization": {
+                    "id": 1453,
+                    "entity_type": "sidejob_organization",
+                    "label": "Deutsche Gesellschaft e.V., Verein zur Förderung politischer, kultureller und sozialer Beziehungen in Europa",
+                },
+            },
+            {
+                "id": 1515,
+                "entity_type": "sidejob",
+                "label": "Vorsitzende des Kuratoriums",
+                "income_level": None,
+                "interval": None,
+                "created": "2017-05-24",
+                "sidejob_organization": {
+                    "id": 1022,
+                    "entity_type": "sidejob_organization",
+                    "label": "Bundesakademie für Sicherheitspolitik (BAKS)",
+                },
+            },
+        ],
+        "total": 7,
+        "page": 2,
+        "size": 5,
+    }
+
+
+def test_politician_sidejobs_route_does_not_exist():
+    response = client.get("v1/politician/1/sidejobs")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Sidejobs not found"}
+
+
+def test_politician_sidejobs_route_out_of_bounds_parameter():
+    response = client.get("v1/politician/79137/sidejobs?page=50&size=1")
+    assert response.status_code == 200
+    assert response.json() == {"items": [], "total": 7, "page": 50, "size": 1}
+
+
+def test_search_route_expected_values():
+    response = client.get("v1/search?text=barski")
+    assert response.json() == [
+        {
+            "id": 146712,
+            "label": "Daniel Barski",
+            "party": {
+                "id": 25,
+                "label": "Einzelbewerbung",
+                "party_style": {
+                    "id": 25,
+                    "display_name": "Einzelbewerbung",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#333333",
+                    "border_color": None,
+                },
+            },
+        },
+        {
+            "id": 136556,
+            "label": "Jürgen Rybarski",
+            "party": {
+                "id": 115,
+                "label": "Die Weissen",
+                "party_style": {
+                    "id": 115,
+                    "display_name": "Die Weissen",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#333333",
+                    "border_color": None,
+                },
+            },
+        },
+    ]
+
+
+def test_search_route_does_not_exist():
+    response = client.get("v1/search?text=barski")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Politicians not found"}
+
+
+# test_image-scanner_route_expected_values
+# test_image-scanner_route_does_not_exist
+# test_image-scanner_route_invalid_parameter

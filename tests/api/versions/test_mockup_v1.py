@@ -15,7 +15,6 @@ client = TestClient(app)
 
 
 class TestV1Routes(unittest.TestCase):
-    # unittest
     @patch(
         "src.api.crud.get_sidejobs_by_politician_id",
         return_value=[
@@ -52,7 +51,6 @@ class TestV1Routes(unittest.TestCase):
 
         self.assertEqual(response.json()["items"], expected)
 
-    # integration test
     @patch(
         "src.api.versions.v1.Session",
         return_value=mockup_session,
@@ -77,7 +75,6 @@ class TestV1Routes(unittest.TestCase):
         self.assertEqual(response.json()["items"], expected)
         self.assertEqual(page_not_found_response.json()["detail"], "Sidejobs not found")
 
-    # unittest
     @patch(
         "src.api.crud.get_entity_by_id",
         return_value={
@@ -180,7 +177,6 @@ class TestV1Routes(unittest.TestCase):
 
         self.assertEqual(response.json(), expected)
 
-    # integration test
     @patch(
         "src.api.versions.v1.Session",
         return_value=mockup_session,

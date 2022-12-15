@@ -207,19 +207,19 @@ mockup_session = UnifiedAlchemyMagicMock(
         #     ],
         # )
         # Constituencies
-        (
-            [
-                mock.call.query(models.Constituency),
-                mock.call.filter(models.Constituency.id == 1),
-            ],
-            [
-                models.Constituency(
-                    id=1,
-                    name="Vorpommern-Rügen - Vorpommern-Greifswald I",
-                    number=15,
-                    zip_codes=10058,
-                ),
-            ],
-        ),
+        # (
+        #     [
+        #         mock.call.query(models.Constituency),
+        #         mock.call.filter(models.Constituency.id == 1),
+        #     ],
+        #     [
+        #         models.Constituency(
+        #             id=1,
+        #             name="Vorpommern-Rügen - Vorpommern-Greifswald I",
+        #             number=15,
+        #             zip_codes=[10058],
+        #         ),
+        #     ],
+        # ),
     ]
 )
