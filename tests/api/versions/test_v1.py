@@ -1871,11 +1871,62 @@ def test_search_route_expected_values():
 
 
 def test_search_route_does_not_exist():
-    response = client.get("v1/search?text=barski")
+    response = client.get("v1/search?text=0")
     assert response.status_code == 404
     assert response.json() == {"detail": "Politicians not found"}
 
 
-# test_image-scanner_route_expected_values
-# test_image-scanner_route_does_not_exist
-# test_image-scanner_route_invalid_parameter
+def test_polls_expected_results():
+    response = client.get("v1/polls/28881?filters=1")
+    assert response.status_code == 200
+    assert type(response.json()) is list
+
+
+def test_polls_filter():
+    response = client.get("v1/polls/28881")
+    assert response.status_code == 200
+    assert type(response.json()) is list
+
+
+def test_polls_does_not_exist():
+    response = client.get("v1/polls/1")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Polls not found"}
+
+
+def test_poll_votes_expected_results():
+    response = client.get("v1/poll/4830/votes")
+    assert response.status_code == 200
+    assert type(response.json()) is dict
+
+
+def test_poll_votes_does_not_exist():
+    response = client.get("v1/poll/0/votes")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Votes not found"}
+
+
+def test_bundestag_speeches_expected_results():
+    response = client.get("v1/bundestag/speeches?page=1")
+    assert response.status_code == 200
+    assert type(response.json()) is dict
+
+
+# def test_bundestag_speeches_invalid_parameter():
+#     response = client.get("v1/bundestag/speeches?page=-1")
+#     assert response.status_code == 500
+
+
+def test_bundestag_polls_expected_results():
+    response = client.get("v1/bundestag/polls?follow_ids=1")
+    assert type(response.json()) is list
+
+
+def test_bundestag_polls_expected_results():
+    response = client.get("v1/bundestag/allpolls")
+    assert type(response.json()) is dict
+
+
+def test_party_donations():
+    response = client.get("v1/partydonations")
+    assert type(response.json()) is list
