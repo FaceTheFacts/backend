@@ -9,8 +9,7 @@ client = TestClient(app)
 # status of entity (retired/active, will fields change? consider mocking)
 # size of lists/dicts (what are the default boundaries? 0-what?)
 # testing variations of the parameters (e.g. for start/end size or paginations)
-# testing negatives (missing resource)
-# testing missing routes: politicianshistory, poll/id/votes, bundestag/speeches, bundestag/polls, bundestag/allpolls, partydonations
+# testing negatives (missing resource)s
 # split tests out into single methods instead of larger ones (otherwise a single failure blocks the whole test)
 # add human-readable error messages
 
@@ -429,8 +428,6 @@ def test_politician_route_modified_parameters():
 
 # Tests politician route for single ID with invalid parameters (negative integers, floats, strings)
 # API current uses python indexing for negative integers and a non-user friendly error for floats and strings
-
-
 def test_politician_route_invalid_parameters():
     response = client.get("/v1/politician/78973?votes_start=-10&votes_end=-2")
     # assert user friendly error message, don't allow negative integers (confirm design)
@@ -442,19 +439,154 @@ def test_politician_route_invalid_parameters():
 
 # TODO: find different politician ID to test
 def test_politicians_route_expected_values_single_id():
-    response = client.get("v1/politicians/?ids=78973")
+    response = client.get("v1/politicians/?ids=28882&votes_end=1")
     assert response.status_code == 200
-    # assert response.json() == v1_expected_responses.politicians_route_standard
+    assert response.json() == [
+        {
+            "id": 28882,
+            "label": "Stefan Evers",
+            "party": {
+                "id": 2,
+                "label": "CDU",
+                "party_style": {
+                    "id": 2,
+                    "display_name": "CDU",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#636363",
+                    "border_color": None,
+                },
+            },
+            "occupations": ["MdL"],
+            "sidejobs": [],
+            "cvs": [],
+            "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/profile/stefan-evers",
+            "weblinks": [],
+            "votes_and_polls": [
+                {
+                    "Vote": {
+                        "id": 421125,
+                        "entity_type": "vote",
+                        "label": "Stefan Evers - Bekenntnis zum Neutralitätsgebot an öffentlichen Schulen",
+                        "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/421125",
+                        "mandate_id": 44813,
+                        "fraction_id": 156,
+                        "poll_id": 4362,
+                        "vote": "yes",
+                        "reason_no_show": None,
+                        "reason_no_show_other": None,
+                    },
+                    "Poll": {
+                        "id": 4362,
+                        "label": "Bekenntnis zum Neutralitätsgebot an öffentlichen Schulen",
+                        "field_intro": '<p>Das Berliner Abgeordnetenhaus stimmte über einen <a class="link-download" href="https://www.parlament-berlin.de/ados/18/IIIPlen/vorgang/d18-0154-1.pdf">Änderungsantrag</a> der CDU-Fraktion ab, der sich für einen Erhalt des Berliner Neutralitätsgesetzes ausspricht. Damit soll verhindert werden, dass Lehrer:innen an öffentlichen Berliner Schulen Kopftuch oder andere sichtbare religiöse Symbole tragen dürfen.</p>\r\n\r\n<p>Der Antrag wurde mit 55 Ja-Stimmen der CDU-, FDP und AfD-Fraktion bei 88 Gegenstimmen der SPD-, Grünen- und Linke-Fraktion <strong>abgelehnt</strong>. Zwei Abgeordnete der Fraktion DIE LINKE haben sich enthalten.</p>\r\n',
+                        "field_poll_date": "2021-09-16",
+                        "poll_passed": False,
+                    },
+                }
+            ],
+            "topic_ids_of_latest_committee": [2, 16, 18],
+        }
+    ]
 
 
 # TODO: find different politician ID to test
 def test_politicians_route_expected_values_multiple_ids():
-    response = client.get("/v1/politicians/?ids=78973&ids=78974")
+    response = client.get("v1/politicians/?ids=28882&ids=28890&votes_end=1")
     assert response.status_code == 200
-    # assert response.json() == v1_expected_responses.politicians_route_standard
+    assert response.json() == [
+        {
+            "id": 28882,
+            "label": "Stefan Evers",
+            "party": {
+                "id": 2,
+                "label": "CDU",
+                "party_style": {
+                    "id": 2,
+                    "display_name": "CDU",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#636363",
+                    "border_color": None,
+                },
+            },
+            "occupations": ["MdL"],
+            "sidejobs": [],
+            "cvs": [],
+            "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/profile/stefan-evers",
+            "weblinks": [],
+            "votes_and_polls": [
+                {
+                    "Vote": {
+                        "id": 421125,
+                        "entity_type": "vote",
+                        "label": "Stefan Evers - Bekenntnis zum Neutralitätsgebot an öffentlichen Schulen",
+                        "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/421125",
+                        "mandate_id": 44813,
+                        "fraction_id": 156,
+                        "poll_id": 4362,
+                        "vote": "yes",
+                        "reason_no_show": None,
+                        "reason_no_show_other": None,
+                    },
+                    "Poll": {
+                        "id": 4362,
+                        "label": "Bekenntnis zum Neutralitätsgebot an öffentlichen Schulen",
+                        "field_intro": '<p>Das Berliner Abgeordnetenhaus stimmte über einen <a class="link-download" href="https://www.parlament-berlin.de/ados/18/IIIPlen/vorgang/d18-0154-1.pdf">Änderungsantrag</a> der CDU-Fraktion ab, der sich für einen Erhalt des Berliner Neutralitätsgesetzes ausspricht. Damit soll verhindert werden, dass Lehrer:innen an öffentlichen Berliner Schulen Kopftuch oder andere sichtbare religiöse Symbole tragen dürfen.</p>\r\n\r\n<p>Der Antrag wurde mit 55 Ja-Stimmen der CDU-, FDP und AfD-Fraktion bei 88 Gegenstimmen der SPD-, Grünen- und Linke-Fraktion <strong>abgelehnt</strong>. Zwei Abgeordnete der Fraktion DIE LINKE haben sich enthalten.</p>\r\n',
+                        "field_poll_date": "2021-09-16",
+                        "poll_passed": False,
+                    },
+                }
+            ],
+            "topic_ids_of_latest_committee": [2, 16, 18],
+        },
+        {
+            "id": 28890,
+            "label": "Daniel Caspary",
+            "party": {
+                "id": 2,
+                "label": "CDU",
+                "party_style": {
+                    "id": 2,
+                    "display_name": "CDU",
+                    "foreground_color": "#FFFFFF",
+                    "background_color": "#636363",
+                    "border_color": None,
+                },
+            },
+            "occupations": ["MdEP"],
+            "sidejobs": [],
+            "cvs": [],
+            "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/profile/daniel-caspary",
+            "weblinks": [
+                {"politician_id": 28890, "id": 46657, "link": "https://caspary.de/"}
+            ],
+            "votes_and_polls": [
+                {
+                    "Vote": {
+                        "id": 468387,
+                        "entity_type": "vote",
+                        "label": "Daniel Caspary - Einheitliche Ladekabel mit USB-C ab 2024",
+                        "api_url": "https://www.abgeordnetenwatch.de/api/v2/votes/468387",
+                        "mandate_id": 44650,
+                        "fraction_id": 248,
+                        "poll_id": 4795,
+                        "vote": "yes",
+                        "reason_no_show": None,
+                        "reason_no_show_other": None,
+                    },
+                    "Poll": {
+                        "id": 4795,
+                        "label": "Einheitliche Ladekabel mit USB-C ab 2024",
+                        "field_intro": '<p>Das Europäische Parlament hat am 04. Oktober 2022 namentlich über einen <a class="link-read-more" href="https://www.europarl.europa.eu/doceo/document/A-9-2022-0129_DE.html">Vorschlag </a>der EU-Kommission für eine Richtlinie zur Vereinheitlichung von Ladegeräten mit USB-C abgestimmt. Ab Mitte 2024 sollen kleinere elektronische Geräte nur noch mit USB-C-Anschluss verkauft werden. Für Drucker, Mäuse und Laptops gilt diese Vorgabe ab 2026.</p>\r\n\r\n<p>Der Kommissionsvorschlag wurde nahezu einheitlich angenommen, nur 13 Abgeordnete stimmten dagegen. Somit bleiben den nationalen Parlamenten zwei Jahre, um die Richtlinie in nationales Recht umzusetzen.</p>\r\n\r\n<p>Von den deutschen Abgeordneten stimmten 85 dafür und niemand dagegen. Enthalten hat sich ein Abgeordneter.</p>\r\n',
+                        "field_poll_date": "2022-10-04",
+                        "poll_passed": True,
+                    },
+                }
+            ],
+            "topic_ids_of_latest_committee": [11, 19, 21],
+        },
+    ]
 
 
-# TODO: find different politician ID to test
 def test_politicians_route_single_id_modified_parameters():
     # Currently returns votes 4 through 6 (the default end), should probably return 4 through end of list
     # TODO: confirm design
@@ -471,7 +603,6 @@ def test_politicians_route_single_id_modified_parameters():
     # assert response.json() == v1_expected_responses
 
 
-# TODO: find different politician ID to test
 def test_politicians_route_single_id_invalid_parameters():
     response = client.get("/v1/politicians/78973?votes_start=-10&votes_end=-2")
     # assert user friendly error message, don't allow negative integers (confirm design)
@@ -500,7 +631,6 @@ def test_politicians_route_multiple_ids_modified_parameters():
     # assert response.json() == v1_expected_responses
 
 
-# TODO: find different politician IDs to test
 def test_politicians_route_multiple_ids_invalid_parameters():
     response = client.get(
         "/v1/politicians/?ids=78973&ids=78974?votes_start=-10&votes_end=-2"
@@ -516,7 +646,6 @@ def test_politicians_route_multiple_ids_invalid_parameters():
     # assert user friendly error message, don't allow strings
 
 
-# TODO: find different politician IDs to test
 def test_politicians_route_does_not_exist_single_id():
     response = client.get("/v1/politicians/1")
     assert response.status_code == 404
