@@ -107,6 +107,22 @@ def read_politician_search(text: str, db: Session = Depends(get_db)):
     return sorted_politicians
 
 
+@router.get("/search-zipcode", response_model=List[schemas.PoliticianHeader])
+def read_politician_zipcode_search(text: str, db: Session = Depends(get_db)):
+    politicians = crud.get_politicians_by_zipcode(db, text)
+    check_entity_not_found(politicians, "Politicians")
+    sorted_politicians = party_sort(politicians)
+    return sorted_politicians
+
+
+@router.get("/search-name", response_model=List[schemas.PoliticianHeader])
+def read_politician_name_search(text: str, db: Session = Depends(get_db)):
+    politicians = crud.get_politicians_by_partial_name(db, text)
+    check_entity_not_found(politicians, "Politicians")
+    sorted_politicians = party_sort(politicians)
+    return sorted_politicians
+
+
 @router.get("/image-scanner", response_model=List[schemas.PoliticianHeader])
 def read_politician_image_scanner(id: int, db: Session = Depends(get_db)):
     politician = crud.get_politicians_by_ids(db, [id])
