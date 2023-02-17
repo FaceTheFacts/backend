@@ -658,6 +658,34 @@ def test_read_politician_search():
     test_response_size()
 
 
+def test_read_politician_zipcode_search():
+    response = client.get("/v1/search-zipcode?text=55278")
+    assert response.status_code == 200
+    assert type(response.json()) is list
+    test_responses = [
+        {"id": 177457, "label": "Chiara Pohl"},
+        {"id": 175546, "label": "Christian Engelke"},
+        {"id": 176888, "label": "David Hess"},
+    ]
+
+    for item in test_responses:
+        check_response = False
+        for response_item in response.json():
+            if (
+                item["id"] == response_item["id"]
+                and item["label"] == response_item["label"]
+            ):
+                check_response = True
+                break
+        assert check_response, "{} item not fount in the response".format(item)
+
+
+def test_read_politician_partial_name_search():
+    response = client.get("/v1/search-name?text=Christian")
+    assert len(response.json()) >= 1
+    assert len(response.json()) <= 20
+
+
 def test_read_politician_votes():
     def no_filters_random_test():
         response = client.get("/v1/politician/79137/votes")
