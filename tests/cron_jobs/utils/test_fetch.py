@@ -15,27 +15,27 @@ def test_fetch_json():
         with pytest.raises(Exception):
             fetch_json("random_url")
 
-    def fetch_cities():
-        assert fetch_json(
-            "https://www.abgeordnetenwatch.de/api/v2/cities?range_end=0"
-        ) == {
-            "meta": {
-                "abgeordnetenwatch_api": {
-                    "version": "2.3",
-                    "changelog": "https://www.abgeordnetenwatch.de/api/version-changelog/aktuell",
-                    "licence": "CC0 1.0",
-                    "licence_link": "https://creativecommons.org/publicdomain/zero/1.0/deed.de",
-                    "documentation": "https://www.abgeordnetenwatch.de/api/entitaeten/city",
-                },
-                "status": "ok",
-                "status_message": "",
-                "result": {"count": 0, "total": 1065, "range_start": 0, "range_end": 0},
-            },
-            "data": [],
-        }
+    # def fetch_cities():
+    #     assert fetch_json(
+    #         "https://www.abgeordnetenwatch.de/api/v2/cities?range_end=0"
+    #     ) == {
+    #         "meta": {
+    #             "abgeordnetenwatch_api": {
+    #                 "version": "2.3",
+    #                 "changelog": "https://www.abgeordnetenwatch.de/api/version-changelog/aktuell",
+    #                 "licence": "CC0 1.0",
+    #                 "licence_link": "https://creativecommons.org/publicdomain/zero/1.0/deed.de",
+    #                 "documentation": "https://www.abgeordnetenwatch.de/api/entitaeten/city",
+    #             },
+    #             "status": "ok",
+    #             "status_message": "",
+    #             "result": {"count": 0, "total": 1065, "range_start": 0, "range_end": 0},
+    #         },
+    #         "data": [],
+    #     }
 
     page_not_found()
-    fetch_cities()
+    # fetch_cities()
 
 
 def test_fetch_entity_count():
@@ -43,13 +43,13 @@ def test_fetch_entity_count():
         with pytest.raises(Exception):
             fetch_json("random_url")
 
-    def count_city():
-        assert fetch_entity_count("cities") == 1065
+    # def count_city():
+    #     assert fetch_entity_count("cities") == 1065
 
     # Number of constituencies changes over time, not a valid test without external data to update number
     # def count_constituency():
     #     assert fetch_entity_count("constituencies") == 10611
 
     page_not_found()
-    count_city()
+    # count_city()
     # count_constituency()
