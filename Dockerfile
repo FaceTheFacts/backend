@@ -1,4 +1,4 @@
-FROM python:3.9-slim as downloader
+FROM python:3.9-slim AS downloader
 RUN apt-get update && apt-get install -y \
     # packages to install
     curl \
