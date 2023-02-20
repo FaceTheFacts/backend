@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 from src.api.main import app
 
 client = TestClient(app)
+NOT_FOUND_MESSAGE = "not found in the response"
 
 
 def test_read_politician():
@@ -623,7 +624,7 @@ def test_read_politician_image_scanner():
                 ):
                     check_response = True
                     break
-            assert check_response, "{} item not fount in the response".format(item)
+            assert check_response, f"{item} {NOT_FOUND_MESSAGE}"
 
     label_and_id_test()
 
@@ -648,7 +649,7 @@ def test_read_politician_search():
                 ):
                     check_response = True
                     break
-            assert check_response, "{} item not fount in the response".format(item)
+            assert check_response, f"{item} {NOT_FOUND_MESSAGE}"
 
     def test_response_size():
         response = client.get("/v1/search?text=Christian")
@@ -677,7 +678,7 @@ def test_read_politician_zipcode_search():
             ):
                 check_response = True
                 break
-        assert check_response, "{} item not fount in the response".format(item)
+        assert check_response, f"{item} {NOT_FOUND_MESSAGE}"
 
 
 def test_read_politician_partial_name_search():
