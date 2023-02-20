@@ -1,9 +1,12 @@
-FROM python:3.9-slim as downloader
+FROM python:3.9-slim AS downloader
 RUN apt-get update && apt-get install -y \
     # packages to install
     curl \
     # clear the cache
     && rm -rf /var/lib/apt/lists/*
+
+RUN groupadd -r user && useradd -r -g user user
+USER user
 
 # install poetry
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python - --preview

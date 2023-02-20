@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 from src.api.main import app
 
 client = TestClient(app)
+NOT_FOUND_MESSAGE = "not found in the response"
 
 
 def test_read_politician():
@@ -623,7 +624,7 @@ def test_read_politician_image_scanner():
                 ):
                     check_response = True
                     break
-            assert check_response, "{} item not fount in the response".format(item)
+            assert check_response, f"{item} {NOT_FOUND_MESSAGE}"
 
     label_and_id_test()
 
@@ -648,7 +649,7 @@ def test_read_politician_search():
                 ):
                     check_response = True
                     break
-            assert check_response, "{} item not fount in the response".format(item)
+            assert check_response, f"{item} {NOT_FOUND_MESSAGE}"
 
     def test_response_size():
         response = client.get("/v1/search?text=Christian")
@@ -656,6 +657,34 @@ def test_read_politician_search():
 
     selected_values_test()
     test_response_size()
+
+
+def test_read_politician_zipcode_search():
+    response = client.get("/v1/search-zipcode?text=55278")
+    assert response.status_code == 200
+    assert type(response.json()) is list
+    test_responses = [
+        {"id": 177457, "label": "Chiara Pohl"},
+        {"id": 175546, "label": "Christian Engelke"},
+        {"id": 176888, "label": "David Hess"},
+    ]
+
+    for item in test_responses:
+        check_response = False
+        for response_item in response.json():
+            if (
+                item["id"] == response_item["id"]
+                and item["label"] == response_item["label"]
+            ):
+                check_response = True
+                break
+        assert check_response, f"{item} {NOT_FOUND_MESSAGE}"
+
+
+def test_read_politician_partial_name_search():
+    response = client.get("/v1/search-name?text=Christian")
+    assert len(response.json()) >= 1
+    assert len(response.json()) <= 20
 
 
 def test_read_politician_votes():
