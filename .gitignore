@@ -10,3 +10,4 @@ __pycache__/
 *.json
 .scannerwork
 .DS_Store
+.coverage
