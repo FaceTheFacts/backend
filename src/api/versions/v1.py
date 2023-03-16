@@ -18,6 +18,7 @@ from src.db.connection import Session
 from src.api.utils.error import check_entity_not_found
 from src.api.utils.party_sort import party_sort
 from src.api.utils.polls import get_politcian_ids_by_bundestag_polldata_and_follow_ids
+from src.redis_cache.cache import custom_cache
 
 router = APIRouter(
     prefix="/v1",
@@ -170,7 +171,8 @@ def read_polls(
 
 
 @router.get("/politician/{id}/speeches", response_model=schemas.PoliticianSpeechData)
-def read_politician_speech(id: int, page: int):
+@custom_cache(expire=60)
+async def read_politician_speech(id: int, page: int):
     politician_speech = crud.get_politician_speech(id, page)
     if not politician_speech:
         return {
@@ -185,7 +187,8 @@ def read_politician_speech(id: int, page: int):
 
 
 @router.get("/bundestag/speeches", response_model=schemas.ParliamentSpeechData)
-def read_bundestag_speech(page: int, db: Session = Depends(get_db)):
+@custom_cache(expire=60, ignore_args=["db"])
+async def read_bundestag_speech(page: int, db: Session = Depends(get_db)):
     politician_speech = crud.get_bundestag_speech(db, page)
     check_entity_not_found(politician_speech, "Politician Speech")
     return politician_speech
