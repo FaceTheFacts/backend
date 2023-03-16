@@ -407,6 +407,8 @@ def get_bundestag_speech(db: Session, page: int):
     speech_list = []
     for item in raw_data["data"]:
         attributes = item["attributes"]
+        if len(item["relationships"]["people"]["data"]) == 0:
+            continue
         politician_id = item["relationships"]["people"]["data"][0]["attributes"][
             "additionalInformation"
         ]["abgeordnetenwatchID"]
