@@ -2,19 +2,39 @@
 from typing import Optional
 import time
 import threading
+import os
+from src.redis_cache.cache import CustomFastApiRedisCache
 
 # third-party
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 import schedule
+from fastapi_redis_cache import FastApiRedisCache, cache
+from redis import asyncio as aioredis
+from sqlalchemy.orm.session import Session
+
 
 # local
 from src.api.versions import v1
 import src.cron_jobs.append_db as cron_jobs
-import src.cron_jobs.crud_db as db_cron_jobs
+
+LOCAL_REDIS_URL = "redis://127.0.0.1:6379"
 
 app = FastAPI()
+
+
+# Initialize FastAPI Redis Cache on startup
+@app.on_event("startup")
+def startup():
+    redis_cache = CustomFastApiRedisCache()
+    redis_cache.init(
+        host_url=os.environ.get("REDIS_URL", LOCAL_REDIS_URL),
+        prefix="FaceTheFacts-cache",
+        ignore_arg_types=[Request, Response, Session],
+        response_header="X-FaceTheFacts-API-Cache",
+    )
+
 
 # List all versions here
 app.include_router(v1.router)
@@ -43,7 +63,25 @@ async def add_security_headers(request: Request, call_next):
     return response
 
 
+async def get_redis_pool():
+    return await aioredis.from_url(os.environ.get("REDIS_URL", LOCAL_REDIS_URL))
+
+
+async def get_redis(redis_pool: aioredis.Redis = Depends(get_redis_pool)):
+    return redis_pool
+
+
+@app.get("/health_check")
+async def health_check(redis_pool: aioredis.Redis = Depends(get_redis)):
+    pong = await redis_pool.ping()
+    print(f"Ping result: {pong}")
+    if pong != True:
+        raise HTTPException(status_code=500, detail="Redis server is not responding")
+    return {"status": "OK", "detail": "Redis server is responding"}
+
+
 @app.get("/")
+@cache(expire=60)
 def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
 
