@@ -243,7 +243,8 @@ def read_latest_polls(
 
 
 @router.get("/politician/{id}/news", response_model=Page[schemas.PolitrackNewsArticle])
-def read_politician_news(id: int):
+@custom_cache(expire=60)
+async def read_politician_news(id: int):
     header = politrack.generate_authenticated_header()
     response = requests.get(
         os.environ["POLITRACK_API_URL"] + f"/v1/articles/{id}", headers=header
