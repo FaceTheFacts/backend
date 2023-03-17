@@ -53,10 +53,8 @@ class CustomFastApiRedisCache(FastApiRedisCache):
 
 class BetterJsonEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, datetime):
-            return {"val": obj.strftime(DATETIME_AWARE), "_spec_type": str(datetime)}
-        elif isinstance(obj, date):
-            return {"val": obj.strftime(DATE_ONLY), "_spec_type": str(date)}
+        if isinstance(obj, (datetime, date)):
+            return {"val": obj.isoformat(), "_spec_type": str(type(obj))}
         elif isinstance(obj, Decimal):
             return {"val": str(obj), "_spec_type": str(Decimal)}
         elif isinstance(obj, (Politician)):
