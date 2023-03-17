@@ -1,16 +1,17 @@
-from functools import wraps
-from fastapi_redis_cache import FastApiRedisCache
-from fastapi_redis_cache.enums import RedisEvent
-from fastapi_redis_cache.util import deserialize_json
-import json
 import asyncio
+import json
+from datetime import date, datetime, timedelta
+from decimal import Decimal
+from functools import wraps
+from http import HTTPStatus
+from typing import Dict, Union
+
 from fastapi import Response
 from fastapi.encoders import jsonable_encoder
 from fastapi_pagination import Page
-from typing import Union, Dict
-from datetime import timedelta, date, datetime
-from decimal import Decimal
-from http import HTTPStatus
+from fastapi_redis_cache import FastApiRedisCache
+from fastapi_redis_cache.enums import RedisEvent
+from fastapi_redis_cache.util import deserialize_json
 
 from src.db.models.politician import Politician
 
