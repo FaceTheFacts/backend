@@ -15,13 +15,6 @@ class Party(Base):
     short_name = Column(String)
     party_style_id = Column(Integer, ForeignKey("party_style.id"))
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "label": self.label,
-            "party_style": self.party_style.to_dict() if self.party_style else None,
-        }
-
     # One to One
     party_style = relationship("PartyStyle", back_populates="party")
 

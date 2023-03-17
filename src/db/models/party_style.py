@@ -15,14 +15,5 @@ class PartyStyle(Base):
     background_color = Column(String)
     border_color = Column(String)
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "display_name": self.display_name,
-            "foreground_color": self.foreground_color,
-            "background_color": self.background_color,
-            "border_color": self.border_color,
-        }
-
     # # One to One
     party = relationship("Party", back_populates="party_style")

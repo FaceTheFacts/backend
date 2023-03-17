@@ -1,27 +1,19 @@
 from functools import wraps
-from fastapi_redis_cache import FastApiRedisCache, cache
-import json
-from fastapi import Response
-from fastapi_pagination import Page
-
-from datetime import timedelta
-from functools import wraps
-from http import HTTPStatus
-
-from fastapi_redis_cache.util import deserialize_json, object_hook
+from fastapi_redis_cache import FastApiRedisCache
 from fastapi_redis_cache.enums import RedisEvent
-
+from fastapi_redis_cache.util import deserialize_json
+import json
 import asyncio
-
+from fastapi import Response
+from fastapi.encoders import jsonable_encoder
+from fastapi_pagination import Page
 from typing import Union, Dict
 from datetime import timedelta, date, datetime
 from decimal import Decimal
+from http import HTTPStatus
 
-from src.db.models.party_style import PartyStyle
-from src.db.models.poll import Poll
-from src.db.models.sidejob_organization import SidejobOrganization
-from src.db.models.vote import Vote
 from src.db.models.politician import Politician
+
 
 DATETIME_AWARE = "%m/%d/%Y %I:%M:%S %p %z"
 DATE_ONLY = "%m/%d/%Y"
@@ -66,11 +58,10 @@ class BetterJsonEncoder(json.JSONEncoder):
             return {"val": obj.strftime(DATE_ONLY), "_spec_type": str(date)}
         elif isinstance(obj, Decimal):
             return {"val": str(obj), "_spec_type": str(Decimal)}
-        elif isinstance(obj, (Vote, Poll, PartyStyle, SidejobOrganization, Politician)):
-            return obj.to_dict()
+        elif isinstance(obj, (Politician)):
+            return jsonable_encoder(obj)
         elif isinstance(obj, Page):
-            # Required for the Newsarticles. Still WIP
-            return obj.to_json()
+            return jsonable_encoder(obj)
         else:
             print("obj", obj, type(obj))
             return super().default(obj)
