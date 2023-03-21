@@ -1,4 +1,5 @@
 import asyncio
+import os
 import json
 from datetime import date, datetime, timedelta
 from decimal import Decimal
@@ -6,7 +7,8 @@ from functools import wraps
 from http import HTTPStatus
 from typing import Dict, Union
 
-from fastapi import Response
+from redis import asyncio as aioredis
+from fastapi import Response, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi_pagination import Page
 from fastapi_redis_cache import FastApiRedisCache
@@ -16,6 +18,7 @@ from fastapi_redis_cache.util import deserialize_json
 from src.db.models.politician import Politician
 
 
+LOCAL_REDIS_URL = "redis://127.0.0.1:6379"
 DATETIME_AWARE = "%m/%d/%Y %I:%M:%S %p %z"
 DATE_ONLY = "%m/%d/%Y"
 
@@ -24,6 +27,14 @@ ONE_DAY_IN_SECONDS = ONE_HOUR_IN_SECONDS * 24
 ONE_WEEK_IN_SECONDS = ONE_DAY_IN_SECONDS * 7
 ONE_MONTH_IN_SECONDS = ONE_DAY_IN_SECONDS * 30
 ONE_YEAR_IN_SECONDS = ONE_DAY_IN_SECONDS * 365
+
+
+async def get_redis_pool():
+    return await aioredis.from_url(os.environ.get("REDIS_URL", LOCAL_REDIS_URL))
+
+
+async def get_redis(redis_pool: aioredis.Redis = Depends(get_redis_pool)):
+    return redis_pool
 
 
 class CustomFastApiRedisCache(FastApiRedisCache):
@@ -57,8 +68,6 @@ class BetterJsonEncoder(json.JSONEncoder):
             return {"val": obj.isoformat(), "_spec_type": str(type(obj))}
         elif isinstance(obj, Decimal):
             return {"val": str(obj), "_spec_type": str(Decimal)}
-        elif isinstance(obj, (Politician)):
-            return jsonable_encoder(obj)
         elif isinstance(obj, Page):
             return jsonable_encoder(obj)
         else:

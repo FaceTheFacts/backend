@@ -3,14 +3,13 @@ from typing import Optional
 import time
 import threading
 import os
-from src.redis_cache.cache import CustomFastApiRedisCache
 
 # third-party
 import uvicorn
 from fastapi import FastAPI, Request, Depends, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 import schedule
-from fastapi_redis_cache import FastApiRedisCache, cache
+from fastapi_redis_cache import cache
 from redis import asyncio as aioredis
 from sqlalchemy.orm.session import Session
 
@@ -18,8 +17,8 @@ from sqlalchemy.orm.session import Session
 # local
 from src.api.versions import v1
 import src.cron_jobs.append_db as cron_jobs
+from src.redis_cache.cache import LOCAL_REDIS_URL, CustomFastApiRedisCache, get_redis
 
-LOCAL_REDIS_URL = "redis://127.0.0.1:6379"
 
 app = FastAPI()
 
@@ -61,14 +60,6 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Referrer-Policy"] = "no-referrer"
 
     return response
-
-
-async def get_redis_pool():
-    return await aioredis.from_url(os.environ.get("REDIS_URL", LOCAL_REDIS_URL))
-
-
-async def get_redis(redis_pool: aioredis.Redis = Depends(get_redis_pool)):
-    return redis_pool
 
 
 @app.get("/health_check")
