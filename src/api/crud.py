@@ -400,8 +400,8 @@ def get_bundestag_speech(db: Session, page: int):
     total = raw_data["meta"]["results"]["total"]
     if total == 0:
         return None
-    # openparliament.tv/api retrieves 10 data per a request
-    last_page = math.ceil(total / 10)
+    # openparliament.tv/api retrieves 40 items per request
+    last_page = math.ceil(total / 40)
     if last_page < page:
         return None
     speech_list = []
@@ -412,17 +412,31 @@ def get_bundestag_speech(db: Session, page: int):
         politician_id = item["relationships"]["people"]["data"][0]["attributes"][
             "additionalInformation"
         ]["abgeordnetenwatchID"]
+        speaker = get_entity_by_id(db, models.Politician, int(politician_id))
         speech_item = {
             "videoFileURI": attributes["videoFileURI"],
             "title": item["relationships"]["agendaItem"]["data"]["attributes"]["title"],
             "date": attributes["dateStart"],
-            "speaker": get_entity_by_id(db, models.Politician, int(politician_id)),
+            "speaker": {
+                "id": speaker.id,
+                "label": speaker.label,
+                "party": {
+                    "id": speaker.party.id,
+                    "label": speaker.party.label,
+                    "party_style": {
+                        "id": speaker.party.party_style.id,
+                        "display_name": speaker.party.party_style.display_name,
+                        "foreground_color": speaker.party.party_style.foreground_color,
+                        "background_color": speaker.party.party_style.background_color,
+                        "border_color": speaker.party.party_style.border_color,
+                    },
+                },
+            },
         }
         speech_list.append(speech_item)
 
     size = raw_data["meta"]["results"]["count"]
     is_last_page = last_page == page
-
     fetched_speeches = {
         "items": speech_list,
         "total": total,
