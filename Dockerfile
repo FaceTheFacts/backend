@@ -24,9 +24,16 @@ WORKDIR /src
 COPY --from=downloader /requirements.txt ./
 RUN pip install -r requirements.txt
 
+# install redis
+RUN apt-get update && apt-get install -y \
+    # packages to install
+    redis-server \
+    # clear the cache
+    && rm -rf /var/lib/apt/lists/*
+
 # add files
 COPY src/ src/
 
 # run server
 EXPOSE 80
-CMD [ "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "80" ]
+CMD ["sh", "-c", "redis-server --bind 127.0.0.1 --port 6379 & uvicorn src.api.main:app --host 0.0.0.0 --port 80"]
