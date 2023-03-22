@@ -71,7 +71,6 @@ class BetterJsonEncoder(json.JSONEncoder):
         elif isinstance(obj, Page):
             return jsonable_encoder(obj)
         else:
-            print("obj", obj, type(obj))
             return super().default(obj)
 
 
