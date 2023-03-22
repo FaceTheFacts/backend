@@ -1,6 +1,8 @@
 branch-defaults:
   main:
     environment: Face-The-Facts-Backend-Main
+  redis-integration:
+    environment: Face-The-Facts-Backend-Redis-Integration
 environment-defaults:
   Face-The-Facts-Backend-Main:
     branch: null
