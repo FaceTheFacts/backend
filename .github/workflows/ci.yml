@@ -1,4 +1,5 @@
-push:
+on:
+  push:
     branches: [main, feature/177/redis-cache]
   pull_request:
     branches: [main, feature/177/redis-cache]
