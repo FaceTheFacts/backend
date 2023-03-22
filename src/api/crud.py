@@ -363,12 +363,14 @@ def get_politician_speech(abgeordnetenwatch_id: int, page: int):
     total = raw_data["meta"]["results"]["total"]
     if total == 0:
         return None
-    # openparliament.tv/api retrieves 10 data per a request
-    last_page = math.ceil(total / 10)
+    # openparliament.tv/api retrieves 40 items per a request
+    last_page = math.ceil(total / 40)
     if last_page < page:
         return None
 
     speech_list = []
+    if "data" not in raw_data:
+        return None
     for item in raw_data["data"]:
         attributes = item["attributes"]
         speech_item = {
