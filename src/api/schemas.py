@@ -10,10 +10,22 @@ class FTFBaseModel(BaseModel):
 
 
 class Country(FTFBaseModel):
-    id: int
-    entity_type: str
-    label: str
-    api_url: str
+    id: int = Field(..., description="The unique ID of the country")
+    entity_type: str = Field(
+        ..., description="The type of the entity representing the country"
+    )
+    label: str = Field(..., description="The name of the country")
+    api_url: str = Field(..., description="The API URL for retrieving country data")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "id": 61,
+                "entity_type": "taxonomy_term",
+                "label": "Deutschland",
+                "api_url": "https://www.abgeordnetenwatch.de/api/v2/countries/61",
+            }
+        }
 
 
 class City(FTFBaseModel):
@@ -30,7 +42,6 @@ class Topic(FTFBaseModel):
     api_url: str
     abgeordnetenwatch_url: str
     description: Optional[str]
-    # parent: Optional[Topic]
     parent_id: Optional[int]
 
 
@@ -128,7 +139,7 @@ class VoteAndPoll(FTFBaseModel):
     Poll: Poll
 
 
-class PartyStyle(BaseModel):
+class PartyStyle(FTFBaseModel):
     id: int = Field(..., description="The unique ID of the party style")
     display_name: str = Field(..., description="The display name of the party")
     foreground_color: str = Field(
@@ -153,7 +164,7 @@ class PartyStyle(BaseModel):
         }
 
 
-class Party(BaseModel):
+class Party(FTFBaseModel):
     id: int = Field(..., description="The unique ID of the party")
     label: str = Field(..., description="The full name of the political party")
     party_style: PartyStyle = Field(
@@ -179,7 +190,7 @@ class Party(BaseModel):
 class Politician(FTFBaseModel):
     id: int = Field(..., description="The unique ID of the politician")
     label: str = Field(..., description="The full name of the politician")
-    party: Party = Field(None, description="The party the politician belongs to")
+    party: Party = Field(..., description="The party the politician belongs to")
     occupations: Optional[List[str]] = Field(
         None, description="A list of occupations held by the politician"
     )
@@ -462,9 +473,30 @@ class Politician(FTFBaseModel):
 
 
 class PoliticianHeader(FTFBaseModel):
-    id: int
-    label: str
-    party: Optional[Party]
+    id: int = Field(..., description="The unique ID of the politician")
+    label: str = Field(..., description="The name of the politician")
+    party: Party = Field(
+        ..., description="The political party the politician belongs to"
+    )
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "id": 79137,
+                "label": "Angela Merkel",
+                "party": {
+                    "id": 2,
+                    "label": "CDU",
+                    "party_style": {
+                        "id": 2,
+                        "display_name": "CDU",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#636363",
+                        "border_color": None,
+                    },
+                },
+            }
+        }
 
 
 class VoteResult(FTFBaseModel):
