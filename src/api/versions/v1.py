@@ -35,7 +35,12 @@ def get_db():
         db.close()
 
 
-@router.get("/politician/{id}", response_model=schemas.Politician)
+@router.get(
+    "/politician/{id}",
+    response_model=schemas.Politician,
+    summary="Get detailed information about a specific politician",
+    description="Returns detailed information about a politician based on the provided ID, including their party, occupations, side jobs, CVs, and voting records",
+)
 def read_politician(
     id: int = Path(
         ..., description="The ID of the politician to retrieve", example=79137
@@ -47,7 +52,12 @@ def read_politician(
     return get_politician_profile(id, db, votes_start, votes_end)
 
 
-@router.get("/politicians/", response_model=List[schemas.Politician])
+@router.get(
+    "/politicians/",
+    response_model=List[schemas.Politician],
+    summary="Get detailed information about a list of politicians",
+    description="Returns detailed information about a list of politicians based on the provided list of IDs, including their party, occupations, side jobs, CVs, and voting records",
+)
 def read_politicians(
     ids: List[int] = Query(
         None, description="A list of politician IDs to retrieve", example=[79137, 66924]
@@ -65,9 +75,16 @@ def read_politicians(
     return politicians
 
 
-@router.get("/politicianshistory/", response_model=List[schemas.PoliticianHeader])
+@router.get(
+    "/politicianshistory/",
+    response_model=List[schemas.PoliticianHeader],
+    summary="Get a list of politicians by their IDs",
+    description="Returns a list of politicians with basic information (ID, name, and party) based on the provided list of IDs",
+)
 def read_politicians(
-    ids: List[int] = Query(None),
+    ids: List[int] = Query(
+        None, description="A list of politician IDs to retrieve basic information for"
+    ),
     db: Session = Depends(get_db),
 ):
     politicians = [None] * len(ids)
