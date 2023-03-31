@@ -67,7 +67,7 @@ class Constituency(FTFBaseModel):
     label: str
     api_url: str
     name: str
-    number: Optional[int]
+    number: int
 
 
 class ElectoralDataToConstituency(FTFBaseModel):
@@ -506,10 +506,37 @@ class VoteResult(FTFBaseModel):
     no_show: int
 
 
-class ConstituencyPoliticians(FTFBaseModel):
-    constituency_number: int
-    constituency_name: str
-    politicians: List[PoliticianHeader]
+class ConstituencyPoliticians(BaseModel):
+    constituency_number: int = Field(..., description="The number of the constituency")
+    constituency_name: str = Field(..., description="The name of the constituency")
+    politicians: List[PoliticianHeader] = Field(
+        ..., description="A list of politicians representing the constituency"
+    )
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "constituency_number": 15,
+                "constituency_name": "Vorpommern-Rügen - Vorpommern-Greifswald I",
+                "politicians": [
+                    {
+                        "id": 79137,
+                        "label": "Angela Merkel",
+                        "party": {
+                            "id": 2,
+                            "label": "CDU",
+                            "party_style": {
+                                "id": 2,
+                                "display_name": "CDU",
+                                "foreground_color": "#FFFFFF",
+                                "background_color": "#636363",
+                                "border_color": None,
+                            },
+                        },
+                    }
+                ],
+            }
+        }
 
 
 class PollVotes(FTFBaseModel):
