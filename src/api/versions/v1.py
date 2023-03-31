@@ -4,7 +4,7 @@ from typing import List
 
 # third-party
 import requests
-from fastapi import Depends, Query, APIRouter, HTTPException
+from fastapi import Depends, Query, APIRouter, HTTPException, Path
 from fastapi_pagination import Page, add_pagination, paginate
 
 # local
@@ -37,20 +37,24 @@ def get_db():
 
 @router.get("/politician/{id}", response_model=schemas.Politician)
 def read_politician(
-    id: int,
+    id: int = Path(
+        ..., description="The ID of the politician to retrieve", example=79137
+    ),
     db: Session = Depends(get_db),
-    votes_start: int = None,
-    votes_end: int = 6,
+    votes_start: int = Query(None, description="Starting index of votes", example=0),
+    votes_end: int = Query(6, description="Ending index of votes", example=6),
 ):
     return get_politician_profile(id, db, votes_start, votes_end)
 
 
 @router.get("/politicians/", response_model=List[schemas.Politician])
 def read_politicians(
-    ids: List[int] = Query(None),
+    ids: List[int] = Query(
+        None, description="A list of politician IDs to retrieve", example=[79137, 66924]
+    ),
     db: Session = Depends(get_db),
-    votes_start: int = None,
-    votes_end: int = 6,
+    votes_start: int = Query(None, description="Starting index of votes", example=0),
+    votes_end: int = Query(6, description="Ending index of votes", example=6),
 ):
     politicians = [None] * len(ids)
     list_index = 0
