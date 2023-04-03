@@ -60,7 +60,7 @@ jobs:
           tags: facethefacts/api:latest
   cd:
     runs-on: ubuntu-latest
-    needs: [ci]
+    needs: [build_and_push_docker_image]
     if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feature/177/redis-cache') }}
 
     steps:
