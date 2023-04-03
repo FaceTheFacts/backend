@@ -18,7 +18,7 @@ from fastapi_redis_cache.util import deserialize_json
 from src.db.models.politician import Politician
 
 
-LOCAL_REDIS_URL = "redis://127.0.0.1:6379"
+LOCAL_REDIS_URL = "redis://redis:6379"
 DATETIME_AWARE = "%m/%d/%Y %I:%M:%S %p %z"
 DATE_ONLY = "%m/%d/%Y"
 
