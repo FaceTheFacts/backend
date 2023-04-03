@@ -247,8 +247,8 @@ def test_read_politician_constituencies():
                         "party_style": {
                             "id": 201,
                             "display_name": "dieBasis",
-                            "foreground_color": "#FFFFFF",
-                            "background_color": "#333333",
+                            "foreground_color": "#333333",
+                            "background_color": "#FFFFFF",
                             "border_color": None,
                         },
                     },
@@ -408,8 +408,8 @@ def test_read_politician_constituencies():
                         "party_style": {
                             "id": 201,
                             "display_name": "dieBasis",
-                            "foreground_color": "#FFFFFF",
-                            "background_color": "#333333",
+                            "foreground_color": "#333333",
+                            "background_color": "#FFFFFF",
                             "border_color": None,
                         },
                     },
@@ -423,8 +423,8 @@ def test_read_politician_constituencies():
                         "party_style": {
                             "id": 15,
                             "display_name": "MLPD",
-                            "foreground_color": "#FFFFFF",
-                            "background_color": "#333333",
+                            "foreground_color": "#FFD700",
+                            "background_color": "#E11B11",
                             "border_color": None,
                         },
                     },
