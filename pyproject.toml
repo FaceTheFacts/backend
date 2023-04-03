@@ -2,14 +2,14 @@
 name = "main"
 version = "0.1.0"
 description = ""
-authors = ["Richard Krümmel <richard.kruemmel@code.berlin>" ,"Johann Hemmann <johann.hemmann@code.berlin>"]
+authors = ["Richard Krümmel <richard.kruemmel@code.berlin>", "Johann Hemmann <johann.hemmann@code.berlin>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 click = "^8.0.4"
 fastapi = "^0.68.0"
 requests = "^2.26.0"
-uvicorn = "^0.14.0"
+uvicorn = {extras = ["standard"], version = "^0.21.1"}
 python-dotenv = "^0.19.1"
 SQLAlchemy = "^1.4.25"
 pydantic = "^1.8.2"
