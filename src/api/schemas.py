@@ -506,7 +506,7 @@ class VoteResult(FTFBaseModel):
     no_show: int
 
 
-class ConstituencyPoliticians(BaseModel):
+class ConstituencyPoliticians(FTFBaseModel):
     constituency_number: int = Field(..., description="The number of the constituency")
     constituency_name: str = Field(..., description="The name of the constituency")
     politicians: List[PoliticianHeader] = Field(
