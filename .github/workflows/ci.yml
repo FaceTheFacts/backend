@@ -38,6 +38,26 @@ jobs:
           POLITRACK_SECRET_PASSWORD: ${{ secrets.POLITRACK_SECRET_PASSWORD}}
         run: poetry run pytest
 
+  build_and_push_docker_image:
+    runs-on: ubuntu-latest
+    needs: [ci]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/177/redis-cache' }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: facethefacts/api/:latest
   cd:
     runs-on: ubuntu-latest
     needs: [ci]
@@ -47,10 +67,24 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v2
 
-      - name: Generate deployment package
-        run: zip -r deploy.zip . -x '*.git*'
+      - name: Create Dockerrun.aws.json
+        run: |
+          cat > Dockerrun.aws.json <<EOF
+          {
+            "AWSEBDockerrunVersion": "1",
+            "Image": {
+              "Name": "facethefacts/api/:latest",
+              "Update": "true"
+            },
+            "Ports": [
+              {
+                "ContainerPort": "80"
+              }
+            ]
+          }
+          EOF
 
-      - name: Deploy to EB
+      - name: Deploy Docker image to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v18
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -60,4 +94,4 @@ jobs:
           version_label: ${{ github.sha }}
           use_existing_version_if_available: true
           region: eu-central-1
-          deployment_package: deploy.zip
+          deployment_package: Dockerrun.aws.json
