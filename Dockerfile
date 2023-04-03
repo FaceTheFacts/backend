@@ -1,39 +1,41 @@
+# Use a multi-stage build to separate the downloader and final image
 FROM python:3.9-slim AS downloader
 RUN apt-get update && apt-get install -y \
-    # packages to install
     curl \
-    # clear the cache
     && rm -rf /var/lib/apt/lists/*
 
+# Create a non-root user
 RUN groupadd -r user && useradd -r -g user user
+
+# Create the home directory and necessary directories for the non-root user
+RUN mkdir -p /home/user && chown -R user:user /home/user
+RUN mkdir -p /home/user/.local/share && mkdir -p /home/user/.local/bin && chown -R user:user /home/user/.local
 USER user
 
-# install poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python - --preview
-ENV PATH=$PATH:/root/.local/bin
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | python -
+ENV PATH=$PATH:/home/user/.local/bin
 
-# generate requirements.txt
-COPY pyproject.toml poetry.lock ./
+# Generate requirements.txt
+COPY --chown=user:user pyproject.toml poetry.lock ./
+
+USER root
 RUN poetry update
-RUN poetry export > requirements.txt
+RUN poetry export > /home/user/requirements.txt
+USER user
 
-FROM python:3.8-slim
+
+# Final image
+FROM python:3.9
 WORKDIR /src
 
-# install dependencies
-COPY --from=downloader /requirements.txt ./
+# Install dependencies
+COPY --from=downloader /home/user/requirements.txt ./
 RUN pip install -r requirements.txt
 
-# install redis
-RUN apt-get update && apt-get install -y \
-    # packages to install
-    redis-server \
-    # clear the cache
-    && rm -rf /var/lib/apt/lists/*
-
-# add files
+# Add files
 COPY src/ src/
 
-# run server
-EXPOSE 80
-CMD ["sh", "-c", "redis-server --bind 127.0.0.1 --port 6379 & uvicorn src.api.main:app --host 0.0.0.0 --port 80"]
+# Run server
+EXPOSE 8000
+CMD ["sh", "-c", "uvicorn src.api.main:app --host 0.0.0.0 --port 8000"]
