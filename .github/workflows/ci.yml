@@ -78,7 +78,7 @@ jobs:
             },
             "Ports": [
               {
-                "ContainerPort": "80"
+                "ContainerPort": "8000"
               }
             ]
           }
