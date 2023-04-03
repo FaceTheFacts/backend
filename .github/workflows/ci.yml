@@ -57,7 +57,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: facethefacts/api/:latest
+          tags: facethefacts/api:latest
   cd:
     runs-on: ubuntu-latest
     needs: [ci]
@@ -73,7 +73,7 @@ jobs:
           {
             "AWSEBDockerrunVersion": "1",
             "Image": {
-              "Name": "facethefacts/api/:latest",
+              "Name": "facethefacts/api:latest",
               "Update": "true"
             },
             "Ports": [
