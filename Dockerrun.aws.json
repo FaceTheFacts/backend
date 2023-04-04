@@ -1,0 +1,36 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "volumes": [
+    {
+      "name": "app-data",
+      "host": {
+        "sourcePath": "/var/app/current"
+      }
+    }
+  ],
+  "containerDefinitions": [
+    {
+      "name": "api-container",
+      "image": "facethefacts/api:latest",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 8000
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "app-data",
+          "containerPath": "/var/app/current",
+          "readOnly": true
+        },
+        {
+          "sourceVolume": "awseb-logs-api-container",
+          "containerPath": "/var/log/api"
+        }
+      ]
+    }
+  ]
+}

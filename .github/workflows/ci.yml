@@ -67,23 +67,6 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v2
 
-      - name: Create Dockerrun.aws.json
-        run: |
-          cat > Dockerrun.aws.json <<EOF
-          {
-            "AWSEBDockerrunVersion": "1",
-            "Image": {
-              "Name": "facethefacts/api:latest",
-              "Update": "true"
-            },
-            "Ports": [
-              {
-                "ContainerPort": "8000"
-              }
-            ]
-          }
-          EOF
-
       - name: Deploy Docker image to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
         with:
