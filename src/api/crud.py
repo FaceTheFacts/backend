@@ -1,7 +1,6 @@
 from operator import and_
 from typing import List
 import math
-from unittest import result
 import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -12,7 +11,6 @@ from sqlalchemy.orm import Session
 # local
 import src.db.models as models
 from src.api.schemas import ConstituencyPoliticians
-from src.api.utils.read_url import load_json_from_url
 from src.api.utils.sidejob import convert_income_level
 from src.api.utils.politician import (
     add_image_urls_to_politicians,
@@ -21,10 +19,22 @@ from src.api.utils.politician import (
 )
 from src.api.utils.topic_ids_converter import convert_into_topic_id
 from src.api.utils.party_sort import party_sort
+from src.api.utils.speeches import fetch_speech_data, process_speech_data
 
 
 def get_entity_by_id(db: Session, model, id: int):
     return db.query(model).filter(model.id == id).first()
+
+
+def get_politician_with_mandate_by_name(
+    db: Session, name: str, parliament_period_id: int
+):
+    return (
+        db.query(models.CandidacyMandate)
+        .filter(models.CandidacyMandate.label.ilike(f"%{name}%"))
+        .where(models.CandidacyMandate.parliament_period_id == parliament_period_id)
+        .first()
+    )
 
 
 def get_politicians_by_ids(db: Session, ids: List[int]):
@@ -355,106 +365,38 @@ def get_votes_by_poll_id(db: Session, poll_id: int) -> dict:
     return politician_votes
 
 
-def get_politician_speech(abgeordnetenwatch_id: int, page: int):
-    raw_data = load_json_from_url(
-        f"https://de.openparliament.tv/api/v1/search/media?abgeordnetenwatchID={abgeordnetenwatch_id}&page={page}&sort=date-desc"
+def get_politician_speech(db: Session, abgeordnetenwatch_id: int, page: int):
+    raw_data = fetch_speech_data(page, abgeordnetenwatch_id)
+
+    if raw_data is None:
+        return None
+
+    fetched_speeches = process_speech_data(
+        db=db,
+        get_entity_by_id_func=get_entity_by_id,
+        get_politician_with_mandate_by_name_func=get_politician_with_mandate_by_name,
+        page=page,
+        raw_data=raw_data,
+        abgeordnetenwatch_id=abgeordnetenwatch_id,
     )
-
-    total = raw_data["meta"]["results"]["total"]
-    if total == 0:
-        return None
-    # openparliament.tv/api retrieves 40 items per a request
-    last_page = math.ceil(total / 40)
-    if last_page < page:
-        return None
-
-    speech_list = []
-    if "data" not in raw_data:
-        return None
-    for item in raw_data["data"]:
-        attributes = item["attributes"]
-        speech_item = {
-            "videoFileURI": attributes["videoFileURI"],
-            "title": item["relationships"]["agendaItem"]["data"]["attributes"]["title"],
-            "date": attributes["dateStart"],
-        }
-        speech_list.append(speech_item)
-
-    size = raw_data["meta"]["results"]["count"]
-    is_last_page = last_page == page
-
-    fetched_speeches = {
-        "items": speech_list,
-        "total": total,
-        "page": page,
-        "size": size,
-        "is_last_page": is_last_page,
-        "politician_id": abgeordnetenwatch_id,
-    }
+    print(fetched_speeches)
     return fetched_speeches
 
 
 def get_bundestag_speech(db: Session, page: int):
-    raw_data = load_json_from_url(
-        f"https://de.openparliament.tv/api/v1/search/media?parliament=DE&page={page}&sort=date-desc"
+    raw_data = fetch_speech_data(page)
+
+    if not raw_data:
+        return None
+
+    fetched_speeches = process_speech_data(
+        db=db,
+        get_entity_by_id_func=get_entity_by_id,
+        get_politician_with_mandate_by_name_func=get_politician_with_mandate_by_name,
+        page=page,
+        raw_data=raw_data,
     )
 
-    total = raw_data["meta"]["results"]["total"]
-    if total == 0:
-        return None
-    # openparliament.tv/api retrieves 40 items per request
-    last_page = math.ceil(total / 40)
-    if last_page < page:
-        return None
-    speech_list = []
-    for item in raw_data["data"]:
-        if item["annotations"]["data"][0]["attributes"]["additionalInformation"][
-            "role"
-        ] in [
-            "Bundestagspräsidentin",
-            "Bundestagspräsident",
-            "Bundestagsvizepräsidentin",
-            "Bundestagsvizepräsident",
-        ]:
-            continue
-        attributes = item["attributes"]
-        if len(item["relationships"]["people"]["data"]) == 0:
-            continue
-        politician_id = item["relationships"]["people"]["data"][0]["attributes"][
-            "additionalInformation"
-        ]["abgeordnetenwatchID"]
-        speaker = get_entity_by_id(db, models.Politician, int(politician_id))
-        speech_item = {
-            "videoFileURI": attributes["videoFileURI"],
-            "title": item["relationships"]["agendaItem"]["data"]["attributes"]["title"],
-            "date": attributes["dateStart"],
-            "speaker": {
-                "id": speaker.id,
-                "label": speaker.label,
-                "party": {
-                    "id": speaker.party.id,
-                    "label": speaker.party.label,
-                    "party_style": {
-                        "id": speaker.party.party_style.id,
-                        "display_name": speaker.party.party_style.display_name,
-                        "foreground_color": speaker.party.party_style.foreground_color,
-                        "background_color": speaker.party.party_style.background_color,
-                        "border_color": speaker.party.party_style.border_color,
-                    },
-                },
-            },
-        }
-        speech_list.append(speech_item)
-
-    size = raw_data["meta"]["results"]["count"]
-    is_last_page = last_page == page
-    fetched_speeches = {
-        "items": speech_list,
-        "total": total,
-        "page": page,
-        "size": size,
-        "is_last_page": is_last_page,
-    }
     return fetched_speeches
 
 
