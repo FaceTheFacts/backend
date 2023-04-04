@@ -408,6 +408,15 @@ def get_bundestag_speech(db: Session, page: int):
         return None
     speech_list = []
     for item in raw_data["data"]:
+        if item["annotations"]["data"][0]["attributes"]["additionalInformation"][
+            "role"
+        ] in [
+            "Bundestagspräsidentin",
+            "Bundestagspräsident",
+            "Bundestagsvizepräsidentin",
+            "Bundestagsvizepräsident",
+        ]:
+            continue
         attributes = item["attributes"]
         if len(item["relationships"]["people"]["data"]) == 0:
             continue
