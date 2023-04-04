@@ -1,36 +1,20 @@
 {
-  "AWSEBDockerrunVersion": 2,
-  "volumes": [
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "facethefacts/api:latest",
+    "Update": "true"
+  },
+  "Ports": [
     {
-      "name": "app-data",
-      "host": {
-        "sourcePath": "/var/app/current"
-      }
+      "ContainerPort": "8000",
+      "HostPort": "80"
     }
   ],
-  "containerDefinitions": [
+  "Volumes": [
     {
-      "name": "api-container",
-      "image": "facethefacts/api:latest",
-      "essential": true,
-      "memory": 512,
-      "portMappings": [
-        {
-          "hostPort": 80,
-          "containerPort": 8000
-        }
-      ],
-      "mountPoints": [
-        {
-          "sourceVolume": "app-data",
-          "containerPath": "/var/app/current",
-          "readOnly": true
-        },
-        {
-          "sourceVolume": "awseb-logs-api-container",
-          "containerPath": "/var/log/api"
-        }
-      ]
+      "HostDirectory": "/var/app/current",
+      "ContainerDirectory": "/var/app/current"
     }
-  ]
+  ],
+  "Logging": "/var/log/api"
 }
