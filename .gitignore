@@ -6,6 +6,7 @@ __pycache__/
 !.elasticbeanstalk/*.global.yml
 .env
 .idea
+!Dockerrun.aws.json
 *.json
 .scannerwork
 .DS_Store
