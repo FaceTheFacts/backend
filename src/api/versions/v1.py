@@ -171,8 +171,8 @@ def read_polls(
 
 @router.get("/politician/{id}/speeches", response_model=schemas.PoliticianSpeechData)
 @custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
-async def read_politician_speech(id: int, page: int = 1):
-    politician_speech = crud.get_politician_speech(id, page)
+async def read_politician_speech(id: int, page: int = 1, db: Session = Depends(get_db)):
+    politician_speech = crud.get_politician_speech(db, id, page)
     if not politician_speech:
         return {
             "items": [],
