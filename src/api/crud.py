@@ -379,7 +379,6 @@ def get_politician_speech(db: Session, abgeordnetenwatch_id: int, page: int):
         raw_data=raw_data,
         abgeordnetenwatch_id=abgeordnetenwatch_id,
     )
-    print(fetched_speeches)
     return fetched_speeches
 
 
