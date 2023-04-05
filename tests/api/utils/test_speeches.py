@@ -106,10 +106,36 @@ def generate_raw_data_multiple_speeches():
     return {
         "data": [
             {
+                "id": "DE-1",
                 "attributes": {
                     "videoFileURI": "url_1",
                     "dateStart": "2022-01-01",
-                    "textContents": [],
+                    "textContents": [
+                        {
+                            "textBody": [
+                                {
+                                    "type": "speech",
+                                    "sentences": [
+                                        {
+                                            "timeStart": 0,
+                                            "timeEnd": 10,
+                                            "text": "This is a comment",
+                                        }
+                                    ],
+                                },
+                                {
+                                    "type": "comment",
+                                    "sentences": [
+                                        {
+                                            "timeStart": 0,
+                                            "timeEnd": 10,
+                                            "text": "This is another comment",
+                                        }
+                                    ],
+                                },
+                            ]
+                        }
+                    ],
                 },
                 "annotations": {
                     "data": [
@@ -133,8 +159,75 @@ def generate_raw_data_multiple_speeches():
                         ]
                     },
                     "agendaItem": {"data": {"attributes": {"title": "title_1"}}},
+                    "session": {"data": {"id": "1"}},
+                    "electoralPeriod": {"data": {"attributes": {"number": 19}}},
                 },
             },
         ],
         "meta": {"results": {"count": 2, "total": 2}},
     }
+
+
+def test_process_speech_data_single_speech_abgeordnetenwatch_id():
+    raw_data = generate_raw_data_single_speech()
+    get_entity_by_id_func = MagicMock()
+    get_politician_with_mandate_by_name_func = MagicMock()
+
+    actual = process_speech_data(
+        db=None,
+        get_entity_by_id_func=get_entity_by_id_func,
+        get_politician_with_mandate_by_name_func=get_politician_with_mandate_by_name_func,
+        page=1,
+        raw_data=raw_data,
+        abgeordnetenwatch_id=119742,
+    )
+    expected = {
+        "items": [
+            {
+                "videoFileURI": "url_1",
+                "title": "title_1",
+                "date": "2022-01-01",
+            },
+        ],
+        "total": 1,
+        "page": 1,
+        "size": 1,
+        "politician_id": 119742,
+        "is_last_page": True,
+    }
+    assert actual == expected
+
+
+def test_process_speech_data_multiple_speeches_no_abgeordnetenwatch_id():
+    raw_data = generate_raw_data_multiple_speeches()
+    get_entity_by_id_func = MagicMock()
+    get_politician_with_mandate_by_name_func = MagicMock()
+
+    get_entity_by_id_func.return_value = MagicMock(id=119742)
+
+    actual = process_speech_data(
+        db=None,
+        get_entity_by_id_func=get_entity_by_id_func,
+        get_politician_with_mandate_by_name_func=get_politician_with_mandate_by_name_func,
+        page=1,
+        raw_data=raw_data,
+    )
+    expected = {
+        "items": [
+            {
+                "date": "2022-01-01",
+                "id": "1",
+                "parliament_period_id": 111,
+                "politician_id": 119742,
+                "session": "1",
+                "text": [{"end": 10, "start": 0, "text": ["This is a comment"]}],
+                "title": "title_1",
+                "videoFileURI": "url_1",
+            }
+        ],
+        "total": 2,
+        "page": 1,
+        "size": 1,
+        "is_last_page": True,
+    }
+    assert actual == expected
