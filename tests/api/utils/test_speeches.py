@@ -168,6 +168,306 @@ def generate_raw_data_multiple_speeches():
     }
 
 
+def generate_raw_data_with_excluded_roles():
+    return {
+        "data": [
+            {
+                "id": "DE-1",
+                "attributes": {
+                    "videoFileURI": "url_1",
+                    "dateStart": "2022-01-01",
+                    "textContents": [
+                        {
+                            "textBody": [
+                                {
+                                    "type": "speech",
+                                    "sentences": [
+                                        {
+                                            "timeStart": 0,
+                                            "timeEnd": 10,
+                                            "text": "This is a comment",
+                                        }
+                                    ],
+                                },
+                                {
+                                    "type": "comment",
+                                    "sentences": [
+                                        {
+                                            "timeStart": 0,
+                                            "timeEnd": 10,
+                                            "text": "This is another comment",
+                                        }
+                                    ],
+                                },
+                            ]
+                        }
+                    ],
+                },
+                "annotations": {
+                    "data": [
+                        {
+                            "attributes": {
+                                "additionalInformation": {
+                                    "role": "Bundestagspräsidentin"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "relationships": {
+                    "people": {
+                        "data": [
+                            {
+                                "attributes": {
+                                    "additionalInformation": {
+                                        "abgeordnetenwatchID": 119742
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "agendaItem": {"data": {"attributes": {"title": "title_1"}}},
+                    "session": {"data": {"id": "1"}},
+                    "electoralPeriod": {"data": {"attributes": {"number": 19}}},
+                },
+            },
+            {
+                "id": "DE-2",
+                "attributes": {
+                    "videoFileURI": "url_2",
+                    "dateStart": "2022-01-01",
+                    "textContents": [
+                        {
+                            "textBody": [
+                                {
+                                    "type": "speech",
+                                    "sentences": [
+                                        {
+                                            "timeStart": 0,
+                                            "timeEnd": 10,
+                                            "text": "This is a comment",
+                                        }
+                                    ],
+                                },
+                                {
+                                    "type": "comment",
+                                    "sentences": [
+                                        {
+                                            "timeStart": 0,
+                                            "timeEnd": 10,
+                                            "text": "This is another comment",
+                                        }
+                                    ],
+                                },
+                            ]
+                        }
+                    ],
+                },
+                "annotations": {
+                    "data": [
+                        {
+                            "attributes": {
+                                "additionalInformation": {"role": "Abgeordnete"}
+                            }
+                        }
+                    ]
+                },
+                "relationships": {
+                    "people": {
+                        "data": [
+                            {
+                                "attributes": {
+                                    "additionalInformation": {
+                                        "abgeordnetenwatchID": 119742
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "agendaItem": {"data": {"attributes": {"title": "title_1"}}},
+                    "session": {"data": {"id": "1"}},
+                    "electoralPeriod": {"data": {"attributes": {"number": 19}}},
+                },
+            },
+        ],
+        "meta": {"results": {"count": 2, "total": 2}},
+    }
+
+
+def generate_raw_data_with_missing_politician_relationships():
+    return {
+        "data": [
+            {
+                "id": "DE-1",
+                "attributes": {
+                    "videoFileURI": "url_1",
+                    "dateStart": "2022-01-01",
+                    "textContents": [
+                        {
+                            "textBody": [
+                                {
+                                    "type": "speech",
+                                    "sentences": [
+                                        {
+                                            "timeStart": 0,
+                                            "timeEnd": 10,
+                                            "text": "This is a comment",
+                                        }
+                                    ],
+                                },
+                                {
+                                    "type": "comment",
+                                    "sentences": [
+                                        {
+                                            "timeStart": 0,
+                                            "timeEnd": 10,
+                                            "text": "This is another comment",
+                                        }
+                                    ],
+                                },
+                            ]
+                        }
+                    ],
+                },
+                "annotations": {
+                    "data": [
+                        {
+                            "attributes": {
+                                "additionalInformation": {
+                                    "role": "Bundestagspräsidentin"
+                                }
+                            }
+                        }
+                    ]
+                },
+                # Speech with missing politician relationship
+                "relationships": {
+                    "people": {"data": []},
+                },
+                "agendaItem": {"data": {"attributes": {"title": "title_1"}}},
+                "session": {"data": {"id": "1"}},
+                "electoralPeriod": {"data": {"attributes": {"number": 19}}},
+            },
+            {
+                "id": "DE-2",
+                "attributes": {
+                    "videoFileURI": "url_2",
+                    "dateStart": "2022-01-01",
+                    "textContents": [
+                        {
+                            "textBody": [
+                                {
+                                    "type": "speech",
+                                    "sentences": [
+                                        {
+                                            "timeStart": 0,
+                                            "timeEnd": 10,
+                                            "text": "This is a comment",
+                                        }
+                                    ],
+                                },
+                                {
+                                    "type": "comment",
+                                    "sentences": [
+                                        {
+                                            "timeStart": 0,
+                                            "timeEnd": 10,
+                                            "text": "This is another comment",
+                                        }
+                                    ],
+                                },
+                            ]
+                        }
+                    ],
+                },
+                "annotations": {
+                    "data": [
+                        {
+                            "attributes": {
+                                "additionalInformation": {"role": "Abgeordnete"}
+                            }
+                        }
+                    ]
+                },
+                # Speech with valid politician relationship
+                "relationships": {
+                    "people": {
+                        "data": [
+                            {
+                                "attributes": {
+                                    "additionalInformation": {
+                                        "abgeordnetenwatchID": 119742
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "agendaItem": {"data": {"attributes": {"title": "title_1"}}},
+                    "session": {"data": {"id": "1"}},
+                    "electoralPeriod": {"data": {"attributes": {"number": 19}}},
+                },
+            },
+        ],
+        "meta": {"results": {"count": 2, "total": 2}},
+    }
+
+
+def generate_raw_data_with_multiple_comments():
+    return {
+        "data": [
+            {
+                "id": "DE-1",
+                "attributes": {
+                    "textContents": [
+                        {
+                            "textBody": [
+                                {
+                                    "type": "comment",
+                                    "sentences": [{"text": "Comment 1"}],
+                                },
+                                {
+                                    "type": "speech",
+                                    "sentences": [{"text": "Speech 1"}],
+                                },
+                                {
+                                    "type": "comment",
+                                    "sentences": [{"text": "Comment 2"}],
+                                },
+                            ]
+                        }
+                    ],
+                },
+                "annotations": {
+                    "data": [
+                        {
+                            "attributes": {
+                                "additionalInformation": {"role": "Abgeordnete"}
+                            }
+                        }
+                    ]
+                },
+                "relationships": {
+                    "people": {
+                        "data": [
+                            {
+                                "attributes": {
+                                    "additionalInformation": {
+                                        "abgeordnetenwatchID": 119742
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "agendaItem": {"data": {"attributes": {"title": "title_1"}}},
+                    "session": {"data": {"id": "1"}},
+                    "electoralPeriod": {"data": {"attributes": {"number": 19}}},
+                },
+            },
+        ],
+        "meta": {"results": {"count": 1, "total": 1}},
+    }
+
+
 def test_process_speech_data_single_speech_abgeordnetenwatch_id():
     raw_data = generate_raw_data_single_speech()
     get_entity_by_id_func = MagicMock()
@@ -231,3 +531,46 @@ def test_process_speech_data_multiple_speeches_no_abgeordnetenwatch_id():
         "is_last_page": True,
     }
     assert actual == expected
+
+
+def test_process_speech_data_no_speeches(mock_process_speech_data_dependencies):
+    raw_data = generate_raw_data_no_speeches()
+    result = process_speech_data(*mock_process_speech_data_dependencies, 1, raw_data)
+    assert result["items"] == []
+    assert result["total"] == 0
+    assert result["page"] == 1
+    assert result["size"] == 0
+    assert result["is_last_page"] == True
+
+
+def test_process_speech_data_exclude_roles(mock_process_speech_data_dependencies):
+    raw_data = generate_raw_data_with_excluded_roles()
+    result = process_speech_data(*mock_process_speech_data_dependencies, 1, raw_data)
+    assert len(result["items"]) == 1
+    assert result["total"] == 2
+    assert result["page"] == 1
+    assert result["size"] == 1
+    assert result["is_last_page"] == True
+
+
+def test_process_speech_data_missing_politician_relationships(
+    mock_process_speech_data_dependencies,
+):
+    raw_data = generate_raw_data_with_missing_politician_relationships()
+    result = process_speech_data(*mock_process_speech_data_dependencies, 1, raw_data)
+    assert len(result["items"]) == 1
+    assert result["total"] == 2
+    assert result["page"] == 1
+    assert result["size"] == 1
+    assert result["is_last_page"] == True
+
+
+def test_process_speech_data_multiple_comments(mock_process_speech_data_dependencies):
+    raw_data = generate_raw_data_with_multiple_comments()
+    result = process_speech_data(*mock_process_speech_data_dependencies, 1, raw_data)
+    assert len(result["items"]) == 1
+    assert len(result["items"][0]["text"]) == 3
+    assert result["total"] == 1
+    assert result["page"] == 1
+    assert result["size"] == 1
+    assert result["is_last_page"] == True
