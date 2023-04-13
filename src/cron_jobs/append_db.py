@@ -1,6 +1,6 @@
 # std
 from typing import List
-from src.cron_jobs.utils.file import read_json
+
 
 # local
 from src.cron_jobs.utils.parser import gen_positions
@@ -12,10 +12,14 @@ from src.cron_jobs.utils.fetch import (
     fetch_missing_entity,
     fetch_missing_sub_entity,
     load_entity,
+    load_entity_from_db,
     match_constituency_to_parliament_periods,
 )
 from src.db.connection import engine, Base, Session
 import src.db.models as models
+from src.api.schemas import PartyDonation
+from src.cron_jobs.utils.clean_donations import clean_donations
+from src.cron_jobs.utils.file import read_json, write_json
 
 
 def append_parliament_periods() -> List:
@@ -513,5 +517,32 @@ def append_zip_codes() -> List:
     insert_and_update(models.ZipCode, data_base)
 
 
+def append_partydonation(json_data: str) -> None:
+    party_donations = read_json(json_data)
+
+    parties = load_entity_from_db(models.Party)
+    clean_donation = clean_donations(party_donations, parties)
+
+    donations_to_append = []
+    for donation in clean_donation:
+        print(donation)
+        donation_to_append = {
+            "id": donation["id"],
+            "party_id": donation["party_id"],
+            "amount": donation["amount"],
+            "date": donation["date"],
+            "party_donation_organization_id": donation[
+                "party_donation_organization_id"
+            ],
+        }
+
+        donations_to_append.append(donation_to_append)
+
+    # Insert the cleaned donations into the database
+    insert_and_update(PartyDonation, donations_to_append)
+    # write_json("src/cron_jobs/data/clean_partydonation.json", donations_to_append)
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
+    append_partydonation("src/cron_jobs/data/partydonation.json")
