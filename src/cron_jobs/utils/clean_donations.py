@@ -1,18 +1,20 @@
 # Function to clean donors data
+import src.db.models as models
+from src.cron_jobs.utils.fetch import fetch_last_id_from_model
 from src.cron_jobs.utils.file import write_json
+from fuzzywuzzy import fuzz, process
 
 
 def clean_donations(donations, parties):
     clean_donations = []
-    # TODO: implement get_last_id here for future inserts
-    id = 1
+    id = fetch_last_id_from_model(models.PartyDonation)
 
     for donation in donations:
+        if not donation["amount"]:
+            continue
         clean_donation = {
             "id": id,
-            "party_id": get_party_id(
-                donation["party"], parties
-            ),  ##TODO: implement DB version
+            "party_id": get_party_id(donation["party"], parties),
             "amount": clean_amount(
                 donation["amount"]
             ),  ##JSON imperial float (e.g. 15000.25)
@@ -21,12 +23,9 @@ def clean_donations(donations, parties):
             # TODO: add function for donor org ID
             # "donor_organization_id": donation["donor_organization_id"]
         }
-
         clean_donations.append(clean_donation)
         id += 1
-
-    write_json("clean_donations.json", clean_donations)
-    # return(clean_donations)
+    return clean_donations
 
 
 def clean_amount(original_amount):
@@ -43,22 +42,31 @@ def clean_amount(original_amount):
     return updated_amount
 
 
-# TODO: implement DB version, this is currently set up locally
 def get_party_id(donation_party, parties):
-    found = False
+    # Map of common variations or abbreviations to standard party names
+    party_name_mapping = {
+        "Volt Deutsch-land": "Volt",
+        "Bündnis 90 / Die Grünen": "Bündnis 90/Die Grünen",
+        # Add more mappings as needed
+    }
 
-    for party in parties:
-        if donation_party == party["name"]:
-            party_id = party["id"]
-            found = True
-            break
+    # If the donation_party is in the mapping, use the mapped name
+    if donation_party in party_name_mapping:
+        donation_party = party_name_mapping[donation_party]
 
-    # TODO: figure out better way to handle imperfect party names (Bündnis90/DieGrünen is a problem)
-    if not found:
-        print("Party not found: " + donation_party)
-        party_id = None
+    best_match, best_match_score = process.extractOne(
+        donation_party, [party.label for party in parties]
+    )
 
-    return party_id
+    min_score = 80
+    if best_match_score >= min_score:
+        for party in parties:
+            if party.label == best_match:
+                return party.id
+    else:
+        print(f"Party not found: {donation_party}")
+
+    return None
 
 
 def reformat_date(original_date):
