@@ -121,14 +121,24 @@ def read_politician_positions(id: int, db: Session = Depends(get_db)):
 
 
 # Tested with mockup
-@router.get("/politician/{id}/sidejobs", response_model=Page[schemas.Sidejob])
+@router.get(
+    "/politician/{id}/sidejobs",
+    response_model=Page[schemas.Sidejob],
+    summary="Get the sidejobs associated with a specific politician",
+    description="Returns a list of sidejobs associated with the politician with the provided ID",
+)
 def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)
     check_entity_not_found(sidejobs, "Sidejobs")
     return paginate(sidejobs)
 
 
-@router.get("/search", response_model=List[schemas.PoliticianHeader])
+@router.get(
+    "/search",
+    response_model=List[schemas.PoliticianHeader],
+    summary="Get the Politicans associated with a specific search term",
+    description="Returns a list of Politicans associated with the search term",
+)
 def read_politician_search(text: str, db: Session = Depends(get_db)):
     politicians = crud.get_politician_by_search(db, text)
     check_entity_not_found(politicians, "Politicians")
@@ -136,7 +146,12 @@ def read_politician_search(text: str, db: Session = Depends(get_db)):
     return sorted_politicians
 
 
-@router.get("/search-zipcode", response_model=List[schemas.PoliticianHeader])
+@router.get(
+    "/search-zipcode",
+    response_model=List[schemas.PoliticianHeader],
+    summary="Get the Politicans associated with a specific zip code",
+    description="Returns a list of Politicans associated with the zip code",
+)
 def read_politician_zipcode_search(text: str, db: Session = Depends(get_db)):
     politicians = crud.get_politicians_by_zipcode(db, text)
     check_entity_not_found(politicians, "Politicians")
@@ -144,7 +159,12 @@ def read_politician_zipcode_search(text: str, db: Session = Depends(get_db)):
     return sorted_politicians
 
 
-@router.get("/search-name", response_model=List[schemas.PoliticianHeader])
+@router.get(
+    "/search-name",
+    response_model=List[schemas.PoliticianHeader],
+    summary="Get the Politicians associated with a specific search term",
+    description="Returns a list of Politicians associated with the search term",
+)
 def read_politician_name_search(text: str, db: Session = Depends(get_db)):
     politicians = crud.get_politicians_by_partial_name(db, text)
     check_entity_not_found(politicians, "Politicians")
@@ -159,7 +179,12 @@ def read_politician_image_scanner(id: int, db: Session = Depends(get_db)):
     return politician
 
 
-@router.get("/politician/{id}/votes", response_model=Page[schemas.VoteAndPoll])
+@router.get(
+    "/politician/{id}/votes",
+    response_model=Page[schemas.VoteAndPoll],
+    summary="Get the Polls and Votes associated with a specific politician",
+    description="Returns a list of Polls and Votes associated with the politician with the provided ID",
+)
 def read_politician_votes(
     id: int,
     db: Session = Depends(get_db),
@@ -173,7 +198,12 @@ def read_politician_votes(
 # Tested with mockup
 
 
-@router.get("/poll/{id}/details", response_model=schemas.PollDetails)
+@router.get(
+    "/poll/{id}/details",
+    response_model=schemas.PollDetails,
+    summary="Get more detailed information about the Poll asssociated with a specific ID",
+    description="Returns detailed information about a Poll associated with the provided ID",
+)
 def read_poll_details(id: int, db: Session = Depends(get_db)):
     poll_results = crud.get_poll_results_by_poll_id(db, id)
     poll_links = crud.get_poll_links_by_poll_id(db, id)
@@ -182,7 +212,12 @@ def read_poll_details(id: int, db: Session = Depends(get_db)):
     return poll_details
 
 
-@router.get("/poll/{id}/votes", response_model=schemas.PollVotes)
+@router.get(
+    "/poll/{id}/votes",
+    response_model=schemas.PollVotes,
+    summary="Get the votes associated with the specific ID",
+    description="Returns the yes, no, abstain and no show votes as a List of politicians associate with the specific ID",
+)
 def read_poll_votes(id: int, db: Session = Depends(get_db)):
     vote_results = crud.get_votes_by_poll_id(db, id)
     check_entity_not_found(vote_results, "Poll Results")
