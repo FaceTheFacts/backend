@@ -33,7 +33,10 @@ class QuotesSpider(scrapy.Spider):
         ):
             party = row.css("td:nth-child(1) ::text").get()
             amount = row.css("td:nth-child(2) ::text").get()
-            donar = row.css("td:nth-child(3) ::text").getall()
+            donar = [
+                text.replace("\u00a0", "")
+                for text in row.css("td:nth-child(3) ::text").getall()
+            ]
             date = row.css("td:nth-child(4) ::text").get()
 
             yield PartyDonation(
@@ -49,6 +52,7 @@ process = process = CrawlerProcess(
         "FEEDS": {
             "json/partydonation.json": {"format": "json"},
         },
+        "FEED_EXPORT_ENCODING": "utf-8",
     }
 )
 
