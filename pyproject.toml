@@ -24,6 +24,8 @@ schedule = "^1.1.0"
 aioredis = "^2.0.1"
 fastapi-redis-cache = "^0.2.5"
 psycopg2 = "^2.9.6"
+fuzzywuzzy = "^0.18.0"
+python-levenshtein = "^0.20.9"
 
 [tool.poetry.dev-dependencies]
 black = "22.3"
