@@ -485,6 +485,22 @@ def get_politician_by_constituency(
     return None
 
 
+def get_party_donations_for_ids_and_time_range(
+    db: Session,
+    party_ids: list,
+    start_of_time_range: datetime,
+    end_of_time_range: datetime,
+):
+    return (
+        db.query(models.PartyDonation)
+        .filter(models.PartyDonation.party_id.in_(party_ids))
+        .filter(models.PartyDonation.date >= start_of_time_range)
+        .filter(models.PartyDonation.date < end_of_time_range)
+        .order_by(models.PartyDonation.date.asc())
+        .all()
+    )
+
+
 def get_last_8_years_of_bundestag_party_donations(
     db: Session, bundestag_party_ids: list, date_8_years_ago_today: datetime
 ):
