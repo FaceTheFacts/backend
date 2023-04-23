@@ -523,6 +523,9 @@ def get_party_donations_for_ids_and_time_range(
     start_of_time_range: datetime,
     end_of_time_range: datetime,
 ):
+    if end_of_time_range < start_of_time_range:
+        raise ValueError("End of time range cannot be before start of time range")
+
     return (
         db.query(models.PartyDonation)
         .filter(models.PartyDonation.party_id.in_(party_ids))
@@ -535,7 +538,7 @@ def get_party_donations_for_ids_and_time_range(
 
 def get_homepage_party_donations(db: Session):
     bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
-    date_8_years_ago_today = (datetime.datetime.now() - relativedelta(years=8)).date()
+    date_8_years_ago_today = datetime.datetime.now() - relativedelta(years=8)
 
     bundestag_party_donations_last_8_years_query = (
         get_party_donations_for_ids_and_time_range(
