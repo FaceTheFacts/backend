@@ -26,7 +26,6 @@ class TestGetPoliticianBySearch(unittest.TestCase):
 
 class TestGePartyDonationsForIdsAndTimeRange(unittest.TestCase):
     def get_party_donations_for_ids_and_time_range_invalid_time_range(self):
-        # query_result = get_party_donations_for_ids_and_time_range(Session, [1], datetime.datetime.now(), datetime.datetime.min)
         self.assertRaises(
             ValueError,
             get_party_donations_for_ids_and_time_range,
