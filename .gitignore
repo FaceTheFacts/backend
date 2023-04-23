@@ -10,3 +10,4 @@ __pycache__/
 !Dockerrun.aws.json
 .scannerwork
 .DS_Store
+.coverage

@@ -486,7 +486,7 @@ def get_politician_by_constituency(
 
 
 def get_last_8_years_of_bundestag_party_donations(
-    db: Session, bundestag_party_ids, date_8_years_ago_today
+    db: Session, bundestag_party_ids: list, date_8_years_ago_today: datetime
 ):
     return (
         db.query(models.PartyDonation)
