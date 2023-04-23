@@ -11,3 +11,4 @@ __pycache__/
 .scannerwork
 .DS_Store
 .coverage
+**/.vscode/
