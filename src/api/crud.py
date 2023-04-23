@@ -501,25 +501,13 @@ def get_party_donations_for_ids_and_time_range(
     )
 
 
-def get_last_8_years_of_bundestag_party_donations(
-    db: Session, bundestag_party_ids: list, date_8_years_ago_today: datetime
-):
-    return (
-        db.query(models.PartyDonation)
-        .filter(models.PartyDonation.party_id.in_(bundestag_party_ids))
-        .filter(models.PartyDonation.date >= date_8_years_ago_today)
-        .order_by(models.PartyDonation.date.asc())
-        .all()
-    )
-
-
 def get_homepage_party_donations(db: Session):
     bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
     date_8_years_ago_today = (datetime.datetime.now() - relativedelta(years=8)).date()
 
     bundestag_party_donations_last_8_years_query = (
-        get_last_8_years_of_bundestag_party_donations(
-            db, bundestag_party_ids, date_8_years_ago_today
+        get_party_donations_for_ids_and_time_range(
+            db, bundestag_party_ids, date_8_years_ago_today, datetime.datetime.now()
         )
     )
 
