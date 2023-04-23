@@ -504,6 +504,31 @@ def get_party_donations_for_ids_and_time_range(
     )
 
 
+def build_donation_data_response_object(bundestag_party_ids):
+    response_donation_data_container = []
+
+    for id in bundestag_party_ids:
+        data = {
+            "id": id,
+            "party": None,
+            "donations_over_32_quarters": [],
+            "donations_total": 0,
+            "largest_quarter": None,
+        }
+        response_donation_data_container.append(data)
+
+    return response_donation_data_container
+
+
+def build_donations_over_time_container(bundestag_party_ids):
+    donations_over_32_quarters_container = {}
+
+    for id in bundestag_party_ids:
+        donations_over_32_quarters_container[id] = [0] * 32
+
+    return donations_over_32_quarters_container
+
+
 def get_homepage_party_donations(db: Session):
     bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
     date_8_years_ago_today = datetime.datetime.now() - relativedelta(years=8)
@@ -514,20 +539,10 @@ def get_homepage_party_donations(db: Session):
         )
     )
 
-    # set up response and helper objects
-    response_donation_data = []
-    donations_over_32_quarters = {}
-
-    for id in bundestag_party_ids:
-        data = {
-            "id": id,
-            "party": None,
-            "donations_over_32_quarters": [],
-            "donations_total": 0,
-            "largest_quarter": None,
-        }
-        response_donation_data.append(data)
-        donations_over_32_quarters[id] = [0] * 32
+    response_donation_data = build_donation_data_response_object(bundestag_party_ids)
+    donations_over_32_quarters = build_donations_over_time_container(
+        bundestag_party_ids
+    )
 
     # add party info to response
     # TODO: remove when db method of getting Bundestag parties is implemented
