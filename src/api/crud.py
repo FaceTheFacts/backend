@@ -517,18 +517,26 @@ def get_politician_by_constituency(
     return None
 
 
-def get_homepage_party_donations(db: Session):
-    # TODO: implement db method of getting all parties currently present in the Bundestag
-    bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
-
-    # get last 8 years of donations from Bundestag parties
-    date_8_years_ago_today = (datetime.datetime.now() - relativedelta(years=8)).date()
-    bundestag_party_donations_last_8_years_query = (
+def get_last_8_years_of_bundestag_party_donations(
+    db: Session, bundestag_party_ids, date_8_years_ago_today
+):
+    return (
         db.query(models.PartyDonation)
         .filter(models.PartyDonation.party_id.in_(bundestag_party_ids))
         .filter(models.PartyDonation.date >= date_8_years_ago_today)
         .order_by(models.PartyDonation.date.asc())
         .all()
+    )
+
+
+def get_homepage_party_donations(db: Session):
+    bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
+    date_8_years_ago_today = (datetime.datetime.now() - relativedelta(years=8)).date()
+
+    bundestag_party_donations_last_8_years_query = (
+        get_last_8_years_of_bundestag_party_donations(
+            db, bundestag_party_ids, date_8_years_ago_today
+        )
     )
 
     # set up response and helper objects
