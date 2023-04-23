@@ -529,6 +529,10 @@ def build_donations_over_time_container(bundestag_party_ids):
     return donations_over_32_quarters_container
 
 
+def get_parties_by_id(db: Session, party_ids: list):
+    db.query(models.Party).filter(models.Party.id.in_(party_ids))
+
+
 def get_homepage_party_donations(db: Session):
     bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
     date_8_years_ago_today = datetime.datetime.now() - relativedelta(years=8)
@@ -544,8 +548,6 @@ def get_homepage_party_donations(db: Session):
         bundestag_party_ids
     )
 
-    # add party info to response
-    # TODO: remove when db method of getting Bundestag parties is implemented
     bundestag_parties_query = db.query(models.Party).filter(
         models.Party.id.in_(bundestag_party_ids)
     )
