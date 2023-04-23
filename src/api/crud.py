@@ -562,7 +562,7 @@ def build_donations_over_time_container(bundestag_party_ids):
 
 
 def get_parties_by_id(db: Session, party_ids: list):
-    db.query(models.Party).filter(models.Party.id.in_(party_ids))
+    return db.query(models.Party).filter(models.Party.id.in_(party_ids))
 
 
 def get_homepage_party_donations(db: Session):
@@ -580,9 +580,8 @@ def get_homepage_party_donations(db: Session):
         bundestag_party_ids
     )
 
-    bundestag_parties_query = db.query(models.Party).filter(
-        models.Party.id.in_(bundestag_party_ids)
-    )
+    bundestag_parties_query = get_parties_by_id(db, bundestag_party_ids)
+
     for db_party in bundestag_parties_query:
         for party in response_donation_data:
             if party["id"] == db_party.id:
