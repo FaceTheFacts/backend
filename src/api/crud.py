@@ -536,7 +536,7 @@ def get_party_donations_for_ids_and_time_range(
     )
 
 
-def build_donation_data_response_object(bundestag_party_ids):
+def build_donation_data_response_object(bundestag_party_ids: list):
     response_donation_data_container = []
 
     for id in bundestag_party_ids:
@@ -552,7 +552,7 @@ def build_donation_data_response_object(bundestag_party_ids):
     return response_donation_data_container
 
 
-def build_donations_over_time_container(bundestag_party_ids):
+def build_donations_over_time_container(bundestag_party_ids: list):
     donations_over_32_quarters_container = {}
 
     for id in bundestag_party_ids:
