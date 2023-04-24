@@ -552,13 +552,13 @@ def build_donation_data_response_object(bundestag_party_ids: list):
     return response_donation_data_container
 
 
-def build_donations_over_time_container(bundestag_party_ids: list):
-    donations_over_32_quarters_container = {}
+def build_donations_over_time_container(bundestag_party_ids: list, quarters: int):
+    donations_over_quarters = {}
 
     for id in bundestag_party_ids:
-        donations_over_32_quarters_container[id] = [0] * 32
+        donations_over_quarters[id] = [0] * quarters
 
-    return donations_over_32_quarters_container
+    return donations_over_quarters
 
 
 def get_parties_by_id(db: Session, party_ids: list):
@@ -589,7 +589,7 @@ def get_homepage_party_donations(db: Session):
 
     response_donation_data = build_donation_data_response_object(bundestag_party_ids)
     donations_over_32_quarters = build_donations_over_time_container(
-        bundestag_party_ids
+        bundestag_party_ids, 32
     )
 
     bundestag_parties_query = get_parties_by_id(db, bundestag_party_ids)
