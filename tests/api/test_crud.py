@@ -8,6 +8,7 @@ import datetime
 from src.api.crud import get_politician_by_search
 from src.api.crud import get_party_donations_for_ids_and_time_range
 from src.api.crud import build_donation_data_response_object
+from src.api.crud import build_donations_over_time_container
 from src.db.connection import Session
 
 session = Session()
@@ -73,3 +74,18 @@ class TestGetPartyDonationsForIdsAndTimeRange(unittest.TestCase):
                 "largest_quarter": None,
             },
         ]
+
+    def test_build_donations_over_time_container_length(self):
+        donation_over_quarters = build_donations_over_time_container([3, 5], 32)
+
+        assert (
+            len(donation_over_quarters[3]) == 32
+            and len(donation_over_quarters[5]) == 32
+        )
+
+    def test_build_donations_over_time_container_values(self):
+        donation_over_quarters = build_donations_over_time_container([2, 4], 20)
+
+        assert (
+            sum(donation_over_quarters[2]) == 0 and sum(donation_over_quarters[4]) == 0
+        )
