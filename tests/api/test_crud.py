@@ -7,6 +7,7 @@ import datetime
 
 from src.api.crud import get_politician_by_search
 from src.api.crud import get_party_donations_for_ids_and_time_range
+from src.api.crud import build_donation_data_response_object
 from src.db.connection import Session
 
 session = Session()
@@ -52,3 +53,23 @@ class TestGetPartyDonationsForIdsAndTimeRange(unittest.TestCase):
             datetime.datetime(2022, 5, 25),
             datetime.datetime(2022, 5, 24),
         )
+
+    def test_build_donation_data_response_object(self):
+        response_object = build_donation_data_response_object([4, 33])
+
+        assert response_object == [
+            {
+                "id": 4,
+                "party": None,
+                "donations_over_32_quarters": [],
+                "donations_total": 0,
+                "largest_quarter": None,
+            },
+            {
+                "id": 33,
+                "party": None,
+                "donations_over_32_quarters": [],
+                "donations_total": 0,
+                "largest_quarter": None,
+            },
+        ]
