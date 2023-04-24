@@ -565,6 +565,18 @@ def get_parties_by_id(db: Session, party_ids: list):
     return db.query(models.Party).filter(models.Party.id.in_(party_ids))
 
 
+def add_party_data_to_donations_response(
+    bundestag_parties_query: list, response_donation_data: list
+):
+    for db_party in bundestag_parties_query:
+        for party in response_donation_data:
+            if party["id"] == db_party.id:
+                party["party"] = db_party
+                continue
+
+    return response_donation_data
+
+
 def get_homepage_party_donations(db: Session):
     bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
     date_8_years_ago_today = datetime.datetime.now() - relativedelta(years=8)
@@ -582,11 +594,9 @@ def get_homepage_party_donations(db: Session):
 
     bundestag_parties_query = get_parties_by_id(db, bundestag_party_ids)
 
-    for db_party in bundestag_parties_query:
-        for party in response_donation_data:
-            if party["id"] == db_party.id:
-                party["party"] = db_party
-                continue
+    response_donation_data = add_party_data_to_donations_response(
+        bundestag_parties_query, response_donation_data
+    )
 
     # assign donations to their respective parties
     for donation in bundestag_party_donations_last_8_years_query:
