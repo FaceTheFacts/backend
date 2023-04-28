@@ -610,6 +610,15 @@ def get_homepage_party_donations(db: Session, bundestag_party_ids: list):
     return response_donation_data
 
 
+class PartyDonationResponse:
+    def __init__(
+        self, party_ids: list, time_range_start: datetime, time_range_end: datetime
+    ):
+        self.party_ids = party_ids
+        self.time_range_start = time_range_start
+        self.time_range_end = time_range_end
+
+
 def get_all_party_donations(db: Session):
     party_donations = (
         db.query(models.PartyDonation).order_by(models.PartyDonation.date.desc()).all()
