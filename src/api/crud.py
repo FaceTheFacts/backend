@@ -517,6 +517,37 @@ def get_politician_by_constituency(
     return None
 
 
+def get_party_donations_sorted_by_party_and_date(
+    db: Session,
+    party_ids: list,
+    start_of_time_range: datetime,
+    end_of_time_range: datetime,
+):
+    if end_of_time_range < start_of_time_range:
+        raise ValueError("End of time range cannot be before start of time range")
+
+    sorted_donations = (
+        db.query(models.PartyDonation)
+        .filter(models.PartyDonation.party_id.in_(party_ids))
+        .filter(models.PartyDonation.date >= start_of_time_range)
+        .filter(models.PartyDonation.date < end_of_time_range)
+        .order_by(models.PartyDonation.party_id, models.PartyDonation.date.desc())
+    )
+
+    for donation in sorted_donations.all():
+        print(donation.party_id, donation.date.strftime("%m/%d/%Y"))
+
+    # prints ordered by party ID and desc date, e.g.:
+    # 3 12/18/2015
+    # 4 12/22/2021
+    # 5 05/27/2022
+    # 5 05/19/2022
+
+    # use itertools.groupby() to group by dynamic date ranges?
+
+    return sorted_donations
+
+
 def get_party_donations_for_ids_and_time_range(
     db: Session,
     party_ids: list,
