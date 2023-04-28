@@ -552,8 +552,7 @@ def delete_excess_party_data(response_donation_data):
     return response_donation_data
 
 
-def get_homepage_party_donations(db: Session):
-    bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
+def get_homepage_party_donations(db: Session, bundestag_party_ids: list):
     date_8_years_ago_today = datetime.datetime.now() - relativedelta(years=8)
 
     bundestag_party_donations_last_8_years_query = (
