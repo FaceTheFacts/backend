@@ -264,7 +264,8 @@ add_pagination(router)
     "/homepagepartydonations", response_model=List[schemas.HomepagePartyDonation]
 )
 def read_party_donations(db: Session = Depends(get_db)):
-    party_donations = crud.get_homepage_party_donations(db)
+    bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
+    party_donations = crud.get_homepage_party_donations(db, bundestag_party_ids)
 
     return party_donations
 
