@@ -1,13 +1,11 @@
 from operator import and_
 from typing import List
 import math
-from unittest import result
 import datetime
 from dateutil.relativedelta import relativedelta
 
 # third-party
 from sqlalchemy.orm import Session
-
 
 # local
 import src.db.models as models
@@ -570,9 +568,9 @@ def get_party_donations_for_ids_and_time_range(
 def build_donation_data_response_object(bundestag_party_ids: list):
     response_donation_data_container = []
 
-    for id in bundestag_party_ids:
+    for party_id in bundestag_party_ids:
         data = {
-            "id": id,
+            "id": party_id,
             "party": None,
             "donations_over_32_quarters": [],
             "donations_total": 0,
@@ -586,8 +584,8 @@ def build_donation_data_response_object(bundestag_party_ids: list):
 def build_donations_over_time_container(bundestag_party_ids: list, quarters: int):
     donations_over_quarters = {}
 
-    for id in bundestag_party_ids:
-        donations_over_quarters[id] = [0] * quarters
+    for party_id in bundestag_party_ids:
+        donations_over_quarters[party_id] = [0] * quarters
 
     return donations_over_quarters
 
