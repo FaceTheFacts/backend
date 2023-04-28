@@ -577,6 +577,13 @@ def add_party_data_to_donations_response(
     return response_donation_data
 
 
+def delete_excess_party_data(response_donation_data):
+    for party in response_donation_data:
+        del party["id"]
+
+    return response_donation_data
+
+
 def get_homepage_party_donations(db: Session):
     bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
     date_8_years_ago_today = datetime.datetime.now() - relativedelta(years=8)
@@ -631,8 +638,7 @@ def get_homepage_party_donations(db: Session):
         party["largest_quarter"] = max(donations_over_32_quarters[party["id"]])
 
     # remove excess data from response object to match schema
-    for party in response_donation_data:
-        del party["id"]
+    response_donation_data = delete_excess_party_data(response_donation_data)
 
     return response_donation_data
 
