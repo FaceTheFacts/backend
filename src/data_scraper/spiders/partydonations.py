@@ -6,7 +6,7 @@ from scrapy.crawler import CrawlerProcess
 class PartyDonation(Item):
     party = Field()
     amount = Field()
-    donar = Field()
+    donor = Field()
     city = Field()
     date = Field()
 
@@ -33,7 +33,7 @@ class QuotesSpider(scrapy.Spider):
         ):
             party = row.css("td:nth-child(1) ::text").get()
             amount = row.css("td:nth-child(2) ::text").get()
-            donar = [
+            donor = [
                 text.replace("\u00a0", "")
                 for text in row.css("td:nth-child(3) ::text").getall()
             ]
@@ -42,7 +42,7 @@ class QuotesSpider(scrapy.Spider):
             yield PartyDonation(
                 party=party,
                 amount=amount,
-                donar=donar,
+                donor=donor,
                 date=date,
             )
 
