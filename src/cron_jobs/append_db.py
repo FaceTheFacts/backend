@@ -18,7 +18,7 @@ from src.cron_jobs.utils.fetch import (
 from src.db.connection import engine, Base, Session
 import src.db.models as models
 from src.api.schemas import PartyDonation
-from src.cron_jobs.utils.clean_donations import clean_donations
+from src.cron_jobs.utils.partydonations import clean_donations
 from src.cron_jobs.utils.file import read_json, write_json
 
 
@@ -521,7 +521,8 @@ def append_partydonation(json_data: str) -> None:
     party_donations = read_json(json_data)
 
     parties = load_entity_from_db(models.Party)
-    clean_donation = clean_donations(party_donations, parties)
+    donor_orgs = load_entity_from_db(models.PartyDonationOrganization)
+    clean_donation = clean_donations(party_donations, parties, donor_orgs)
 
     donations_to_append = []
     for donation in clean_donation:
@@ -539,8 +540,16 @@ def append_partydonation(json_data: str) -> None:
         donations_to_append.append(donation_to_append)
 
     # Insert the cleaned donations into the database
-    insert_and_update(PartyDonation, donations_to_append)
-    # write_json("src/cron_jobs/data/clean_partydonation.json", donations_to_append)
+    # insert_and_update(PartyDonation, donations_to_append)
+    write_json("src/cron_jobs/data/clean_partydonation.json", donations_to_append)
+
+
+def append_partydonation_organization() -> None:
+    party_donation_organizations = fetch_missing_entity(
+        "party_donation_organizations", models.PartyDonationOrganization
+    )
+    insert_and_update(models.PartyDonationOrganization, party_donation_organizations)
+    print("Successfully retrieved party donation organizations")
 
 
 if __name__ == "__main__":
