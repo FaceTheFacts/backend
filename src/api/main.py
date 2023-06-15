@@ -7,6 +7,7 @@ import os
 # third-party
 import uvicorn
 from fastapi import FastAPI, Request, Depends, HTTPException, Response
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 import schedule
 from fastapi_redis_cache import cache
@@ -15,12 +16,29 @@ from sqlalchemy.orm.session import Session
 
 
 # local
-from src.api.versions import v1
+from src.api.versions import v1, plugin
+from src.api.utils.openapi import api_description, tags_metadata
 import src.cron_jobs.append_db as cron_jobs
 from src.redis_cache.cache import LOCAL_REDIS_URL, CustomFastApiRedisCache, get_redis
 
 
-app = FastAPI()
+
+app = FastAPI(
+    title="FaceTheFacts API",
+    description=api_description,
+    version="1.0",
+    terms_of_service="https://facethefacts.app/legal-notice",
+    contact={
+        "name": "FaceTheFacts",
+        "url": "https://facethefacts.app/contact",
+        "email": "info@facethefacts.app",
+    },
+    license_info={
+        "name": "GNU GENERAL PUBLIC LICENSE Version 3",
+        "url": "https://www.gnu.org/licenses/gpl-3.0.en.html",
+    },
+    openapi_tags=tags_metadata,
+)
 
 
 # Initialize FastAPI Redis Cache on startup
@@ -36,11 +54,12 @@ def startup():
 
 
 # List all versions here
+app.include_router(plugin.router)
 app.include_router(v1.router)
 
 # CORS-policy
 # * docs: https://fastapi.tiangolo.com/tutorial/cors/
-app.add_middleware(CORSMiddleware, allow_origins=["*"])
+app.add_middleware(CORSMiddleware, allow_credentials=True, allow_methods=["*"], allow_headers=["*"], allow_origins=["*"])
 
 
 @app.middleware("http")
@@ -75,6 +94,17 @@ async def health_check(redis_pool: aioredis.Redis = Depends(get_redis)):
 @cache(expire=60)
 def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
+
+@app.get("/logo.png")
+async def plugin_logo():
+    filename = "logo.png"
+    return FileResponse(filename, media_type="image/png")
+
+@app.get("/.well-known/ai-plugin.json")
+async def plugin_manifest():
+    with open("./.well-known/ai-plugin.json") as f:
+        text = f.read()
+        return Response(text, media_type="application/json")
 
 
 def scheduled_task():
