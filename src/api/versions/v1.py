@@ -109,10 +109,10 @@ def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
 
 
 @router.get(
-    "/politician/{id}/constituencies",
-    response_model=schemas.ConstituencyPoliticians,
-    summary="Get the constituency and politicians associated with a specific politician",
-    description="Returns the constituency and a list of politicians representing the same constituency as the politician with the provided ID",
+    "/politician/{id}/positions",
+    response_model=schemas.PoliticianToPosition,
+    summary="Get the poisitions associated with a specific politician",
+    description="Returns a list of positions associated with the politician with the provided ID",
 )
 def read_politician_positions(id: int, db: Session = Depends(get_db)):
     positions = crud.get_entity_by_id(db, models.Politician, id)
