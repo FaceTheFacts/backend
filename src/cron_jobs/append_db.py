@@ -1,5 +1,5 @@
 # std
-from typing import List
+from typing import List, Optional
 
 
 # local
@@ -8,11 +8,13 @@ from src.cron_jobs.crud_db import populate_poll_results_per_fraction
 from src.cron_jobs.utils.vote_result import generate_appended_vote_results
 from src.cron_jobs.utils.insert_and_update import insert_and_update, insert_only
 from src.cron_jobs.utils.fetch import (
+    fetch_entity_data_by_ids,
     fetch_last_id_from_model,
     fetch_missing_entity,
     fetch_missing_sub_entity,
     load_entity,
     load_entity_from_db,
+    load_entity_ids_from_db,
     match_constituency_to_parliament_periods,
 )
 from src.db.connection import engine, Base, Session
@@ -138,15 +140,17 @@ def append_electoral_data() -> List:
         print("Nothing to fetch for electoral data")
 
 
-def append_candidacies() -> List:
+def append_candidacies(candidacies: Optional[List]) -> List:
     append_parliament_periods()
     append_constituencies()
     append_electoral_lists()
     append_electoral_data()
-
-    missing_candidacies_mandates = fetch_missing_entity(
-        "candidacies-mandates", models.CandidacyMandate
-    )
+    if not candidacies:
+        missing_candidacies_mandates = fetch_missing_entity(
+            "candidacies-mandates", models.CandidacyMandate
+        )
+    else:
+        missing_candidacies_mandates = candidacies
     if missing_candidacies_mandates:
         candidacies_mandates = [
             {
@@ -179,8 +183,11 @@ def append_candidacies() -> List:
         insert_and_update(models.CandidacyMandate, candidacies_mandates)
 
 
-def append_committees() -> List:
-    missing_committees = fetch_missing_entity("committees", models.Committee)
+def append_committees(committies: Optional[List]) -> List:
+    if not committies:
+        missing_committees = fetch_missing_entity("committees", models.Committee)
+    else:
+        missing_committees = committies
     if missing_committees:
         committees = [
             {
@@ -230,6 +237,28 @@ def append_committee_memberships() -> List:
             }
             for api_committee_membership in missing_committee_memberships
         ]
+        mandate_ids = load_entity_ids_from_db(models.CandidacyMandate)
+        committee_ids = load_entity_ids_from_db(models.Committee)
+        missing_mandate_ids = []
+        missing_committee_memberships_ids = []
+
+        for item in committee_memberships:
+            if item["candidacy_mandate_id"] not in mandate_ids:
+                print("Missing mandate id: ", item["candidacy_mandate_id"])
+                if item["candidacy_mandate_id"] not in missing_mandate_ids:
+                    missing_mandate_ids.append(item["candidacy_mandate_id"])
+            if item["committee_id"] not in committee_ids:
+                print("Missing committee id: ", item["committee_id"])
+                if item["committee_id"] not in missing_committee_memberships_ids:
+                    missing_committee_memberships_ids.append(item["committee_id"])
+        print("Missing mandate ids: ", missing_mandate_ids)
+        print("Missing committee ids: ", missing_committee_memberships_ids)
+        if missing_mandate_ids:
+            missing_mandates = fetch_entity_data_by_ids("candidacies-mandates", missing_mandate_ids)
+            append_candidacies(missing_mandates)
+        if missing_committee_memberships_ids:
+            missing_commities = fetch_entity_data_by_ids("committees", missing_committee_memberships_ids)
+            append_committees(missing_commities)
         insert_and_update(models.CommitteeMembership, committee_memberships)
         print("Successfully retrieved committee memberships")
     else:
@@ -388,6 +417,24 @@ def append_vote_results() -> List:
     insert_and_update(models.VoteResult, vote_results)
     print("Successfully retrieved vote results")
 
+def append_fractions() -> List:
+    missing_fractions = fetch_missing_entity("fractions", models.Fraction)
+    if missing_fractions:
+        fractions = [
+            {
+                "id": api_fraction["id"],
+                "entity_type": api_fraction["entity_type"],
+                "label": api_fraction["label"],
+                "api_url": api_fraction["api_url"],
+                "full_name": api_fraction["full_name"],
+                "short_name": api_fraction["short_name"],
+                "legislature_id": api_fraction["legislature"]["id"],
+            }
+            for api_fraction in missing_fractions
+        ]
+        insert_and_update(models.Fraction, fractions)
+        print("Successfully retrieved fractions")
+        return fractions
 
 def append_positions() -> List:
     # Lookup positions related parliament_period and add it to PERIOD_POSITIONS_TABLE inside parser.py
@@ -455,8 +502,8 @@ def append_politicians() -> List:
                 if api_politician["party"]
                 else None,
                 "party_past": api_politician["party_past"],
-                "deceased": api_politician["deceased"],
-                "deceased_date": api_politician["deceased_date"],
+                "deceased": None,
+                "deceased_date": None,
                 "education": api_politician["education"],
                 "residence": api_politician["residence"],
                 "occupation": api_politician["occupation"],
@@ -526,7 +573,6 @@ def append_partydonation(json_data: str) -> None:
 
     donations_to_append = []
     for donation in clean_donation:
-        print(donation)
         donation_to_append = {
             "id": donation["id"],
             "party_id": donation["party_id"],
@@ -540,8 +586,9 @@ def append_partydonation(json_data: str) -> None:
         donations_to_append.append(donation_to_append)
 
     # Insert the cleaned donations into the database
-    # insert_and_update(PartyDonation, donations_to_append)
-    write_json("src/cron_jobs/data/clean_partydonation.json", donations_to_append)
+    insert_and_update(PartyDonation, donations_to_append)
+    print("Successfully retrieved party donations")
+
 
 
 def append_partydonation_organization() -> None:
@@ -554,4 +601,3 @@ def append_partydonation_organization() -> None:
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    append_partydonation("src/cron_jobs/data/partydonation.json")
