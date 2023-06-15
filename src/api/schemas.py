@@ -86,7 +86,7 @@ class PoliticianToConstituencies(FTFBaseModel):
 
 
 # -----------------------
-class PositionStateMent(FTFBaseModel):
+class PositionStatement(FTFBaseModel):
     statement: str
 
 
@@ -94,7 +94,7 @@ class Position(FTFBaseModel):
     id: int
     position: str
     reason: Optional[str]
-    position_statement: PositionStateMent
+    position_statement: PositionStatement
 
 
 class PoliticianToPosition(FTFBaseModel):
