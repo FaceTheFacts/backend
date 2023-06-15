@@ -254,10 +254,14 @@ def append_committee_memberships() -> List:
         print("Missing mandate ids: ", missing_mandate_ids)
         print("Missing committee ids: ", missing_committee_memberships_ids)
         if missing_mandate_ids:
-            missing_mandates = fetch_entity_data_by_ids("candidacies-mandates", missing_mandate_ids)
+            missing_mandates = fetch_entity_data_by_ids(
+                "candidacies-mandates", missing_mandate_ids
+            )
             append_candidacies(missing_mandates)
         if missing_committee_memberships_ids:
-            missing_commities = fetch_entity_data_by_ids("committees", missing_committee_memberships_ids)
+            missing_commities = fetch_entity_data_by_ids(
+                "committees", missing_committee_memberships_ids
+            )
             append_committees(missing_commities)
         insert_and_update(models.CommitteeMembership, committee_memberships)
         print("Successfully retrieved committee memberships")
@@ -417,6 +421,7 @@ def append_vote_results() -> List:
     insert_and_update(models.VoteResult, vote_results)
     print("Successfully retrieved vote results")
 
+
 def append_fractions() -> List:
     missing_fractions = fetch_missing_entity("fractions", models.Fraction)
     if missing_fractions:
@@ -435,6 +440,7 @@ def append_fractions() -> List:
         insert_and_update(models.Fraction, fractions)
         print("Successfully retrieved fractions")
         return fractions
+
 
 def append_positions() -> List:
     # Lookup positions related parliament_period and add it to PERIOD_POSITIONS_TABLE inside parser.py
@@ -588,7 +594,6 @@ def append_partydonation(json_data: str) -> None:
     # Insert the cleaned donations into the database
     insert_and_update(PartyDonation, donations_to_append)
     print("Successfully retrieved party donations")
-
 
 
 def append_partydonation_organization() -> None:
