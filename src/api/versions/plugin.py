@@ -4,7 +4,7 @@ from typing import List
 
 # third-party
 import requests
-from fastapi import Depends, Query, APIRouter, HTTPException, Path 
+from fastapi import Depends, Query, APIRouter, HTTPException, Path
 from fastapi_pagination import Page, add_pagination, paginate
 
 # local

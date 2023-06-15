@@ -28,5 +28,5 @@ tags_metadata = [
     {
         "name": "v1",
         "description": "Version 1 of the FaceTheFacts API used for the FaceTheFacts mobile app.",
-    },   
+    },
 ]

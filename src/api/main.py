@@ -22,7 +22,6 @@ import src.cron_jobs.append_db as cron_jobs
 from src.redis_cache.cache import LOCAL_REDIS_URL, CustomFastApiRedisCache, get_redis
 
 
-
 app = FastAPI(
     title="FaceTheFacts API",
     description=api_description,
@@ -59,7 +58,13 @@ app.include_router(v1.router)
 
 # CORS-policy
 # * docs: https://fastapi.tiangolo.com/tutorial/cors/
-app.add_middleware(CORSMiddleware, allow_credentials=True, allow_methods=["*"], allow_headers=["*"], allow_origins=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_origins=["*"],
+)
 
 
 @app.middleware("http")
@@ -95,10 +100,12 @@ async def health_check(redis_pool: aioredis.Redis = Depends(get_redis)):
 def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
 
+
 @app.get("/logo.png")
 async def plugin_logo():
     filename = "logo.png"
     return FileResponse(filename, media_type="image/png")
+
 
 @app.get("/.well-known/ai-plugin.json")
 async def plugin_manifest():
