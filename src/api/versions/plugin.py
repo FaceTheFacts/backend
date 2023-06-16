@@ -51,6 +51,14 @@ def read_politician(
 ):
     return get_politician_profile(id, db, votes_start, votes_end)
 
+@router.get(
+        "/topics/",
+        response_model=List[schemas.Topic],
+        summary="Get a list of all topics",
+        description="Returns a list of all topics, including their IDs, names, and descriptions",
+)
+def read_topics(db: Session = Depends(get_db)):
+    return crud.get_topics(db)
 
 @router.get(
     "/politicians/",
@@ -70,27 +78,6 @@ def read_politicians(
     list_index = 0
     for id in ids:
         politician = get_politician_profile(id, db, votes_start, votes_end)
-        politicians[list_index] = politician
-        list_index += 1
-    return politicians
-
-
-@router.get(
-    "/politicianshistory/",
-    response_model=List[schemas.PoliticianHeader],
-    summary="Get a list of politicians by their IDs",
-    description="Returns a list of politicians with basic information (ID, name, and party) based on the provided list of IDs",
-)
-def read_politicians(
-    ids: List[int] = Query(
-        None, description="A list of politician IDs to retrieve basic information for"
-    ),
-    db: Session = Depends(get_db),
-):
-    politicians = [None] * len(ids)
-    list_index = 0
-    for id in ids:
-        politician = crud.get_entity_by_id(db, models.Politician, id)
         politicians[list_index] = politician
         list_index += 1
     return politicians
@@ -133,18 +120,6 @@ def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     return paginate(sidejobs)
 
 
-@router.get(
-    "/search",
-    response_model=List[schemas.PoliticianHeader],
-    summary="Get the Politicans associated with a specific search term",
-    description="Returns a list of Politicans associated with the search term",
-)
-def read_politician_search(text: str, db: Session = Depends(get_db)):
-    politicians = crud.get_politician_by_search(db, text)
-    check_entity_not_found(politicians, "Politicians")
-    sorted_politicians = party_sort(politicians)
-    return sorted_politicians
-
 
 @router.get(
     "/search-zipcode",
@@ -170,13 +145,6 @@ def read_politician_name_search(text: str, db: Session = Depends(get_db)):
     check_entity_not_found(politicians, "Politicians")
     sorted_politicians = party_sort(politicians)
     return sorted_politicians
-
-
-@router.get("/image-scanner", response_model=List[schemas.PoliticianHeader])
-def read_politician_image_scanner(id: int, db: Session = Depends(get_db)):
-    politician = crud.get_politicians_by_ids(db, [id])
-    check_entity_not_found(politician, "Politicians")
-    return politician
 
 
 @router.get(
