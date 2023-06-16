@@ -19,7 +19,7 @@ from sqlalchemy.orm.session import Session
 from src.api.versions import v1, plugin
 from src.api.utils.openapi import api_description, tags_metadata
 import src.cron_jobs.append_db as cron_jobs
-from src.redis_cache.cache import LOCAL_REDIS_URL, CustomFastApiRedisCache, get_redis
+from src.redis_cache.cache import redis_url, CustomFastApiRedisCache, get_redis
 
 
 app = FastAPI(
@@ -45,7 +45,7 @@ app = FastAPI(
 def startup():
     redis_cache = CustomFastApiRedisCache()
     redis_cache.init(
-        host_url=os.environ.get("REDIS_URL", LOCAL_REDIS_URL),
+        host_url=redis_url,
         prefix="FaceTheFacts-cache",
         ignore_arg_types=[Request, Response, Session],
         response_header="X-FaceTheFacts-API-Cache",
