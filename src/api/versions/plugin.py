@@ -51,14 +51,16 @@ def read_politician(
 ):
     return get_politician_profile(id, db, votes_start, votes_end)
 
+
 @router.get(
-        "/topics/",
-        response_model=List[schemas.Topic],
-        summary="Get a list of all topics",
-        description="Returns a list of all topics, including their IDs, names, and descriptions",
+    "/topics/",
+    response_model=List[schemas.Topic],
+    summary="Get a list of all topics",
+    description="Returns a list of all topics, including their IDs, names, and descriptions",
 )
 def read_topics(db: Session = Depends(get_db)):
     return crud.get_topics(db)
+
 
 @router.get(
     "/politicians/",
@@ -118,7 +120,6 @@ def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)
     check_entity_not_found(sidejobs, "Sidejobs")
     return paginate(sidejobs)
-
 
 
 @router.get(
