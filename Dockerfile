@@ -31,13 +31,30 @@ USER user
 FROM python:3.9
 WORKDIR /src
 
-# Install dependencies
-COPY --from=downloader /home/user/requirements.txt ./
-RUN pip install -r requirements.txt
+# Create a non-root user and switch to it
+RUN groupadd -r user && useradd -r -g user user
+
+# Set the user's home directory ownership
+RUN mkdir -p /home/user && chown -R user:user /home/user
+
+# Install Poetry as the non-root user
+RUN su - user -c "pip install --user poetry"
+
+# Set the PATH to include the user's local bin directory
+ENV PATH=/home/user/.local/bin:$PATH
+
+# Switch to non-root user
+USER user
+
+# Copy dependencies
+COPY --from=downloader --chown=user:user /home/user/.local ./.local
+COPY --chown=user:user pyproject.toml poetry.lock ./
+RUN poetry install --no-dev
 
 # Add files
-COPY src/ src/
+COPY --chown=user:user src/ src/
 
 # Run server
 EXPOSE 8000
-CMD ["sh", "-c", "uvicorn src.api.main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "poetry run uvicorn src.api.main:app --host 0.0.0.0 --port 8000"]
+
