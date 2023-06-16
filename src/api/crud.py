@@ -655,3 +655,8 @@ def get_all_party_donations(db: Session):
     )
 
     return party_donations
+
+def get_topics(db: Session):
+    topics = db.query(models.Topic).all()
+
+    return topics
