@@ -2,7 +2,7 @@
 from typing import Optional
 import time
 import threading
-import os
+import requests
 
 # third-party
 import uvicorn
@@ -13,14 +13,15 @@ import schedule
 from fastapi_redis_cache import cache
 from redis import asyncio as aioredis
 from sqlalchemy.orm.session import Session
-
+from slowapi.errors import RateLimitExceeded
+from slowapi import _rate_limit_exceeded_handler
 
 # local
 from src.api.versions import v1, plugin
 from src.api.utils.openapi import api_description, tags_metadata
 import src.cron_jobs.append_db as cron_jobs
 from src.redis_cache.cache import redis_url, CustomFastApiRedisCache, get_redis
-
+from src.api.utils.limiter import limiter
 
 app = FastAPI(
     title="FaceTheFacts API",
@@ -39,6 +40,8 @@ app = FastAPI(
     openapi_tags=tags_metadata,
 )
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Initialize FastAPI Redis Cache on startup
 @app.on_event("startup")
@@ -66,6 +69,10 @@ app.add_middleware(
     allow_origins=["*"],
 )
 
+# Register the exception handler
+@app.exception_handler(RateLimitExceeded)
+async def ratelimit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(status_code=HTTP_429_TOO_MANY_REQUESTS, content={"detail": "Too Many Requests"})
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
@@ -85,6 +92,12 @@ async def add_security_headers(request: Request, call_next):
 
     return response
 
+def send_request():
+        try:
+            response = requests.get('http://localhost:8000/plugin//bundestag/sidejobs')
+            response.raise_for_status()
+        except requests.HTTPError as http_err:
+            print(f'HTTP error occurred: {http_err}') 
 
 @app.get("/health_check")
 async def health_check(redis_pool: aioredis.Redis = Depends(get_redis)):
@@ -96,10 +109,15 @@ async def health_check(redis_pool: aioredis.Redis = Depends(get_redis)):
 
 
 @app.get("/")
-@cache(expire=60)
-def read_root(name: Optional[str] = "World"):
+async def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
 
+@app.get("/test")
+async def read_root(name: Optional[str] = "World"):
+    num_requests = 6  # change this value to exceed the rate limit
+    for _ in range(num_requests):
+        send_request()
+        time.sleep(0.1)
 
 @app.get("/logo.png")
 async def plugin_logo():
