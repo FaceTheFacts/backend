@@ -27,6 +27,8 @@ psycopg2 = "^2.9.6"
 fuzzywuzzy = "^0.18.0"
 python-levenshtein = "^0.20.9"
 aiofiles = "^23.1.0"
+slowapi = "^0.1.8"
+email-validator = "^2.0.0.post2"
 
 [tool.poetry.dev-dependencies]
 black = "22.3"
