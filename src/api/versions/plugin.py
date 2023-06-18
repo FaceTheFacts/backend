@@ -4,7 +4,7 @@ from typing import List
 
 # third-party
 import requests
-from fastapi import Depends, Query, APIRouter, HTTPException, Path
+from fastapi import Depends, Query, APIRouter, HTTPException, Path, Request
 from fastapi_pagination import Page, add_pagination, paginate
 
 # local
@@ -18,6 +18,7 @@ from src.api.utils.error import check_entity_not_found
 from src.api.utils.party_sort import party_sort
 from src.api.utils.polls import get_politcian_ids_by_bundestag_polldata_and_follow_ids
 from src.redis_cache.cache import ONE_DAY_IN_SECONDS, ONE_YEAR_IN_SECONDS, custom_cache
+from src.api.utils.limiter import limiter
 
 router = APIRouter(
     prefix="/plugin",
@@ -227,7 +228,8 @@ async def read_bundestag_speech(page: int = 1, db: Session = Depends(get_db)):
 
 
 @router.get("/bundestag/sidejobs", response_model=List[schemas.SidejobBundestag])
-def read_politician_sidejobs(db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def read_politician_sidejobs(request: Request, db: Session = Depends(get_db)):
     sidejobs = crud.get_latest_sidejobs(db)
     check_entity_not_found(sidejobs, "Sidejobs")
     return sidejobs
