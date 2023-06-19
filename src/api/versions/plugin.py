@@ -17,7 +17,12 @@ from src.db.connection import Session
 from src.api.utils.error import check_entity_not_found
 from src.api.utils.party_sort import party_sort
 from src.api.utils.polls import get_politcian_ids_by_bundestag_polldata_and_follow_ids
-from src.redis_cache.cache import ONE_DAY_IN_SECONDS, ONE_YEAR_IN_SECONDS, custom_cache
+from src.redis_cache.cache import (
+    ONE_DAY_IN_SECONDS,
+    ONE_MONTH_IN_SECONDS,
+    ONE_YEAR_IN_SECONDS,
+    custom_cache,
+)
 
 router = APIRouter(
     prefix="/plugin",
@@ -41,6 +46,7 @@ def get_db():
     summary="Get detailed information about a specific politician",
     description="Returns detailed information about a politician based on the provided ID, including their party, occupations, side jobs, CVs, and voting records",
 )
+@custom_cache(expire=ONE_DAY_IN_SECONDS)
 def read_politician(
     id: int = Path(
         ..., description="The ID of the politician to retrieve", example=79137
@@ -58,6 +64,7 @@ def read_politician(
     summary="Get a list of all topics",
     description="Returns a list of all topics, including their IDs, names, and descriptions",
 )
+@custom_cache(expire=ONE_MONTH_IN_SECONDS)
 def read_topics(db: Session = Depends(get_db)):
     return crud.get_topics(db)
 
@@ -91,6 +98,7 @@ def read_politicians(
     summary="Get the constituency and politicians associated with a specific politician",
     description="Returns the constituency and a list of politicians representing the same constituency as the politician with the provided ID",
 )
+@custom_cache(expire=ONE_DAY_IN_SECONDS)
 def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
     constituency_politicians = crud.get_politician_by_constituency(db, id)
     check_entity_not_found(constituency_politicians, "ConstituencyPolitician")
@@ -103,6 +111,7 @@ def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
     summary="Get the poisitions associated with a specific politician",
     description="Returns a list of positions associated with the politician with the provided ID",
 )
+@custom_cache(expire=ONE_DAY_IN_SECONDS)
 def read_politician_positions(id: int, db: Session = Depends(get_db)):
     positions = crud.get_entity_by_id(db, models.Politician, id)
     check_entity_not_found(positions, "Position")
@@ -116,6 +125,7 @@ def read_politician_positions(id: int, db: Session = Depends(get_db)):
     summary="Get the sidejobs associated with a specific politician",
     description="Returns a list of sidejobs associated with the politician with the provided ID",
 )
+@custom_cache(expire=ONE_DAY_IN_SECONDS)
 def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)
     check_entity_not_found(sidejobs, "Sidejobs")
@@ -154,6 +164,7 @@ def read_politician_name_search(text: str, db: Session = Depends(get_db)):
     summary="Get the Polls and Votes associated with a specific politician",
     description="Returns a list of Polls and Votes associated with the politician with the provided ID",
 )
+@custom_cache(expire=ONE_DAY_IN_SECONDS)
 def read_politician_votes(
     id: int,
     db: Session = Depends(get_db),
@@ -164,15 +175,13 @@ def read_politician_votes(
     return paginate(votes)
 
 
-# Tested with mockup
-
-
 @router.get(
     "/poll/{id}/details",
     response_model=schemas.PollDetails,
     summary="Get more detailed information about the Poll asssociated with a specific ID",
     description="Returns detailed information about a Poll associated with the provided ID",
 )
+@custom_cache(expire=ONE_DAY_IN_SECONDS)
 def read_poll_details(id: int, db: Session = Depends(get_db)):
     poll_results = crud.get_poll_results_by_poll_id(db, id)
     poll_links = crud.get_poll_links_by_poll_id(db, id)
@@ -295,8 +304,8 @@ async def read_politician_news(id: int):
 # https://uriyyo-fastapi-pagination.netlify.app/
 add_pagination(router)
 
-
-@router.get(
+### Buggy routes
+""" @router.get(
     "/homepagepartydonations", response_model=List[schemas.HomepagePartyDonation]
 )
 def read_party_donations(db: Session = Depends(get_db)):
@@ -311,3 +320,4 @@ def read_party_donations(db: Session = Depends(get_db)):
     party_donations = crud.get_all_party_donations(db)
     check_entity_not_found(party_donations, "Party Donations")
     return party_donations
+ """
