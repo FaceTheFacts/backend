@@ -86,7 +86,9 @@ async def add_security_headers(request: Request, call_next):
 
     return response
 
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 @app.get("/health_check")
 async def health_check(redis_pool: aioredis.Redis = Depends(get_redis)):
