@@ -15,26 +15,21 @@ def clean_text(text: str) -> str:
 
 
 def is_politician_comment(text: str) -> bool:
-    pattern = r"\((Dr\.\s*)?[\w\s]+(\s\[[\w/]+\])?:"
+    pattern = r"\((Dr\.\s*)?[\w\s]+(\s\[[^\[\]]+\])?:"
     return bool(re.search(pattern, text))
 
 
 def extract_comment(text: str) -> str:
-    pattern = r"\((?:Dr\.\s*)?[\w\s]+(?:\s\[[\w/]+\])?:\s*"
-    cleaned_text = re.sub(pattern, "", text)
-    cleaned_text = cleaned_text.strip()
-    if cleaned_text.endswith(")"):
-        cleaned_text = cleaned_text[:-1]
-    return cleaned_text
+    pattern = r"\((?:Dr\.\s*)?[\w\s]+(?:\s\[[^\[\]]+\])?:\s*"
+    cleaned_text = re.sub(pattern, "", text).strip()
+    return cleaned_text.rstrip(")")
 
 
 def extract_politician_name(text: str) -> str:
     # A regex pattern that matches a politician's name, an optional title, and a party name abbreviation
-    pattern = r"\((Dr\.\s*)?([\w\s]+)(\s\[[\w/]+\])?:"
+    pattern = r"\((?:Dr\.\s*)?([\w\s]+)(?:\s\[[^\[\]]+\])?:"
     match = re.match(pattern, text)
-    if match:
-        return match.group(2)
-    return ""
+    return match.group(1) if match else ""
 
 
 PARLIAMENT_PERIOD_TO_ELECTORIAL_PERIOD_DICT = {
