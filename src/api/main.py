@@ -9,6 +9,7 @@ import uvicorn
 from fastapi import FastAPI, Request, Depends, HTTPException, Response
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import schedule
 from fastapi_redis_cache import cache
 from redis import asyncio as aioredis
@@ -85,6 +86,7 @@ async def add_security_headers(request: Request, call_next):
 
     return response
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/health_check")
 async def health_check(redis_pool: aioredis.Redis = Depends(get_redis)):
@@ -99,12 +101,6 @@ async def health_check(redis_pool: aioredis.Redis = Depends(get_redis)):
 @cache(expire=60)
 def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
-
-
-@app.get("/logo.png")
-async def plugin_logo():
-    filename = "logo.png"
-    return FileResponse(filename, media_type="image/png")
 
 
 @app.get("/.well-known/ai-plugin.json")
