@@ -18,7 +18,10 @@ from fastapi_redis_cache.util import deserialize_json
 from src.db.models.politician import Politician
 
 
-LOCAL_REDIS_URL = "redis://redis:6379"
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = os.getenv("REDIS_PORT", "6379")
+REDIS_DB = os.getenv("REDIS_DB", "0")
+redis_url = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 DATETIME_AWARE = "%m/%d/%Y %I:%M:%S %p %z"
 DATE_ONLY = "%m/%d/%Y"
 
@@ -30,7 +33,7 @@ ONE_YEAR_IN_SECONDS = ONE_DAY_IN_SECONDS * 365
 
 
 async def get_redis_pool():
-    return await aioredis.from_url(os.environ.get("REDIS_URL", LOCAL_REDIS_URL))
+    return await aioredis.from_url(redis_url)
 
 
 async def get_redis(redis_pool: aioredis.Redis = Depends(get_redis_pool)):

@@ -7,7 +7,9 @@ import os
 # third-party
 import uvicorn
 from fastapi import FastAPI, Request, Depends, HTTPException, Response
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import schedule
 from fastapi_redis_cache import cache
 from redis import asyncio as aioredis
@@ -15,12 +17,28 @@ from sqlalchemy.orm.session import Session
 
 
 # local
-from src.api.versions import v1
+from src.api.versions import v1, plugin
+from src.api.utils.openapi import api_description, tags_metadata
 import src.cron_jobs.append_db as cron_jobs
-from src.redis_cache.cache import LOCAL_REDIS_URL, CustomFastApiRedisCache, get_redis
+from src.redis_cache.cache import redis_url, CustomFastApiRedisCache, get_redis
 
 
-app = FastAPI()
+app = FastAPI(
+    title="FaceTheFacts API",
+    description=api_description,
+    version="1.0",
+    terms_of_service="https://facethefacts.app/legal-notice",
+    contact={
+        "name": "FaceTheFacts",
+        "url": "https://facethefacts.app/contact",
+        "email": "info@facethefacts.app",
+    },
+    license_info={
+        "name": "GNU GENERAL PUBLIC LICENSE Version 3",
+        "url": "https://www.gnu.org/licenses/gpl-3.0.en.html",
+    },
+    openapi_tags=tags_metadata,
+)
 
 
 # Initialize FastAPI Redis Cache on startup
@@ -28,7 +46,7 @@ app = FastAPI()
 def startup():
     redis_cache = CustomFastApiRedisCache()
     redis_cache.init(
-        host_url=os.environ.get("REDIS_URL", LOCAL_REDIS_URL),
+        host_url=redis_url,
         prefix="FaceTheFacts-cache",
         ignore_arg_types=[Request, Response, Session],
         response_header="X-FaceTheFacts-API-Cache",
@@ -36,11 +54,18 @@ def startup():
 
 
 # List all versions here
+app.include_router(plugin.router)
 app.include_router(v1.router)
 
 # CORS-policy
 # * docs: https://fastapi.tiangolo.com/tutorial/cors/
-app.add_middleware(CORSMiddleware, allow_origins=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_origins=["*"],
+)
 
 
 @app.middleware("http")
@@ -62,6 +87,9 @@ async def add_security_headers(request: Request, call_next):
     return response
 
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
 @app.get("/health_check")
 async def health_check(redis_pool: aioredis.Redis = Depends(get_redis)):
     pong = await redis_pool.ping()
@@ -75,6 +103,13 @@ async def health_check(redis_pool: aioredis.Redis = Depends(get_redis)):
 @cache(expire=60)
 def read_root(name: Optional[str] = "World"):
     return {"Hello": name}
+
+
+@app.get("/.well-known/ai-plugin.json")
+async def plugin_manifest():
+    with open("./.well-known/ai-plugin.json") as f:
+        text = f.read()
+        return Response(text, media_type="application/json")
 
 
 def scheduled_task():
