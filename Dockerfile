@@ -54,7 +54,7 @@ RUN poetry install --no-dev
 # Add files
 COPY --chown=user:user src/ src/
 COPY --chown=user:user .well-known .well-known
-COPY --chown=user:user logo.png logo.png
+COPY --chown=user:user static static
 
 # Run server
 EXPOSE 8000
