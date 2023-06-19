@@ -46,8 +46,7 @@ from src.db.models.politician_weblink import PoliticianWeblink
 from src.db.models.poll_result_per_party import PollResultPerFraction
 from src.db.models.party_donation import PartyDonation
 from src.db.models.party_donation_organization import PartyDonationOrganization
-from src.cron_jobs.utils.clean_donor import clean_donor
-from src.cron_jobs.utils.clean_donations import clean_donations
+from src.cron_jobs.utils.partydonations import clean_donations
 
 import src.db.models as models
 from src.cron_jobs.utils.vote_result import (

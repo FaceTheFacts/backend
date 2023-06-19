@@ -1,14 +1,16 @@
 branch-defaults:
   main:
     environment: Face-The-Facts-Backend-Main
+  redis-integration:
+    environment: Face-The-Facts-Backend-Redis
 environment-defaults:
   Face-The-Facts-Backend-Main:
     branch: null
     repository: null
 global:
-  application_name: Face-The-Facts Backend
+  application_name: Face-The-Facts Backend Redis
   default_ec2_keyname: aws-eb
-  default_platform: Python 3.8 running on 64bit Amazon Linux 2
+  default_platform: Docker running on 64bit Amazon Linux 2
   default_region: eu-central-1
   include_git_submodules: true
   instance_profile: null
