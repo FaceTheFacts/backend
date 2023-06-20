@@ -20,7 +20,7 @@ from src.api.utils.polls import get_politcian_ids_by_bundestag_polldata_and_foll
 from src.redis_cache.cache import (
     ONE_DAY_IN_SECONDS,
     ONE_MONTH_IN_SECONDS,
-    ONE_YEAR_IN_SECONDS,
+    ONE_WEEK_IN_SECONDS,
     custom_cache,
 )
 
@@ -284,11 +284,11 @@ def read_latest_polls(
 
 
 @router.get("/politician/{id}/news", response_model=Page[schemas.PolitrackNewsArticle])
-@custom_cache(expire=ONE_YEAR_IN_SECONDS)
+@custom_cache(expire=ONE_WEEK_IN_SECONDS)
 async def read_politician_news(id: int):
     header = politrack.generate_authenticated_header()
     response = requests.get(
-        os.environ["POLITRACK_API_URL"] + f"/plugin/articles/{id}", headers=header
+        os.environ["POLITRACK_API_URL"] + f"/v1/articles/{id}", headers=header
     )
     if response.status_code == 200:
         articles = response.json()["articles"]
