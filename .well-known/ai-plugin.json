@@ -9,9 +9,9 @@
   },
   "api": {
     "type": "openapi",
-    "url": "http://localhost:8000/openapi.json"
+    "url": "https://api.facethefacts-api.de/openapi.json"
   },
-  "logo_url": "http://localhost:8000/static/logo.png",
+  "logo_url": "https://api.facethefacts-api.de/static/logo.png",
   "contact_email": "info@facethefacts.app",
   "legal_info_url": "https://facethefacts.app/legal-notice"
 }
