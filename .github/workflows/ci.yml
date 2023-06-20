@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [main]
+    branches: [main, development]
   pull_request:
     branches: [main]
 
@@ -42,7 +42,7 @@ jobs:
   cd:
     runs-on: ubuntu-latest
     needs: [ci]
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development') }}
 
     steps:
       - name: Checkout source code
