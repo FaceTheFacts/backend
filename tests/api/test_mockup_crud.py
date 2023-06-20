@@ -143,40 +143,30 @@ class TestCrudFunctions(unittest.TestCase):
 
     # unittest
     @patch(
-        "src.api.utils.speeches.load_json_from_url",
+        "src.api.crud.load_json_from_url",
         return_value={"meta": {"results": {"count": 0, "total": 0}}},
     )
     def test_get_politician_speech_empty(self, empty_data):
-        actual = crud.get_politician_speech(empty_data, 119742, 1)
+        actual = crud.get_politician_speech(119742, 1)
         expected = None
         self.assertEqual(actual, expected)
 
     @patch(
-        "src.api.utils.speeches.load_json_from_url",
+        "src.api.crud.load_json_from_url",
         return_value={
             "meta": {"results": {"count": 1, "total": 10}},
             "data": [
                 {
                     "attributes": {"videoFileURI": "url_1", "dateStart": "2022-01-01"},
                     "relationships": {
-                        "agendaItem": {"data": {"attributes": {"title": "title_1"}}},
-                        "people": {"data": [{"id": 119742}]},
-                    },
-                    "annotations": {
-                        "data": [
-                            {
-                                "attributes": {
-                                    "additionalInformation": {"role": "some_role"}
-                                }
-                            }
-                        ]
+                        "agendaItem": {"data": {"attributes": {"title": "title_1"}}}
                     },
                 }
             ],
         },
     )
-    def test_get_politician_speech(self, mockup_session):
-        actual = crud.get_politician_speech(mockup_session, 119742, 1)
+    def test_get_politician_speech(self, data):
+        actual = crud.get_politician_speech(119742, 1)
         expected = {
             "items": [
                 {"videoFileURI": "url_1", "title": "title_1", "date": "2022-01-01"}
@@ -191,12 +181,9 @@ class TestCrudFunctions(unittest.TestCase):
 
     # integration_test
     def test_integration_test_get_politician_speech(self):
-        actual = crud.get_politician_speech(mockup_session, 119742, 1)
+        actual = crud.get_politician_speech(119742, 1)
         actual_items = actual["items"]
         actual_is_last_page = actual["is_last_page"]
-        total = actual["total"]
-        expected_total = 63
-        self.assertEqual(total, expected_total)
         expected = [
             {
                 "videoFileURI": "https://cldf-od.r53.cdn.tv1.eu/1000153copo/ondemand/app144277506/145293313/7536861/7536861_h264_720_400_2000kb_baseline_de_2192.mp4",

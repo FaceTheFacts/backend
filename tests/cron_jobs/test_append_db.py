@@ -34,11 +34,11 @@ def test_append_sidejobs():
     delete_last_item_and_update() """
 
 
-""" def test_append_votes():
+def test_append_votes():
     def delete_last_item_and_update():
         last_id = return_last_id(models.Vote)
         delete_last_item(last_id, models.Vote, "id")
-        print(len(append_votes()))
+
         assert len(append_votes()) > 0
 
-    delete_last_item_and_update() """
+    delete_last_item_and_update()

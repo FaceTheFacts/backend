@@ -28,17 +28,14 @@ To run this project, you will need to add the following environment variables to
 
 ## Installation/ Run locally
 
-This application uses [poetry](https://python-poetry.org/) for dependency management and packaging in Python, [uvicorn](https://www.uvicorn.org/) as a server and [redis](https://redis.io/download/) as cache. For setting up, run these commands as follows.
+We are using [poetry](https://python-poetry.org/) dependency management and packaging in Python. In addition, we take advantage of [uvicorn](https://www.uvicorn.org/) to implement a server. For setting up, run these commands as follows.
 
-Before you begin, ensure that you have installed:
+One time
 
-- Python 3.8≤
-- [poetry](https://python-poetry.org/docs/#installation)
-- [redis](https://redis.io/download/)
+- Install Python 3.8≤
+- Install [poetry](https://python-poetry.org/docs/#installation)
 
-You can use any Redis client of your choice. If you choose to use the [redis-cli](https://redis.io/docs/ui/cli/), make sure it's installed and running on your local machine.
-
-Once you have installed the prerequisites:
+Every time
 
 ```bash
   # Create a virtual environment
@@ -48,20 +45,6 @@ Once you have installed the prerequisites:
   # Start API server on port = 8000
   $ poetry run uvicorn src.api.main:app --reload
 ```
-
-## Docker
-
-### Prerequisite
-
-Ensure you have Docker Desktop installed on your machine. [Docker Desktop](https://www.docker.com/products/docker-desktop/) is a comprehensive solution for running Docker on Windows and MacOS systems and it includes Docker Compose, which is required to orchestrate our multi-container application.
-
-### Running the Application Locally Using Docker
-
-Build the Docker Images: Execute the command ```docker-compose buil```. This will construct Docker images for the FastAPI application and the Redis service.
-
-Start the Docker Containers: Use the command ```docker-compose up``` to initiate the application and Redis service in separate Docker containers.
-
-Upon successful startup, the FastAPI application will be reachable at localhost:8000 and the Redis service will operate on port 6379. To cease the running services, simply enter the command docker-compose down.
 
 ## API
 

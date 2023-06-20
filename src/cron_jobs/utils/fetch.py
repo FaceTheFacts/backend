@@ -12,27 +12,6 @@ from src.db.connection import Session
 
 PAGE_SIZE = 1000
 
-entity_list = [
-    "politicians",
-    "parties",
-    "electoral-lists",
-    "election-program",
-    "polls",
-    "candidacies-mandates",
-    "committees",
-    "committee-memberships",
-    "parliaments",
-    "parliament-periods",
-    "votes",
-    "fractions",
-    "constituencies",
-    "sidejobs",
-    "sidejob-organizations",
-    "topics",
-    "cities",
-    "countries",
-]
-
 
 class ApiResponse(TypedDict):
     meta: Dict[str, Any]
@@ -49,8 +28,6 @@ def fetch_json(url: str) -> ApiResponse:
 
 
 def fetch_page(entity: str, page_nr: int) -> List[Any]:
-    if entity not in entity_list:
-        raise Exception(f"{entity} is not a valid entity")
     url = f"https://www.abgeordnetenwatch.de/api/v2/{entity}?range_start={page_nr * PAGE_SIZE}&range_end={PAGE_SIZE}"
     result: ApiResponse = fetch_json(url)
     return result["data"]
@@ -58,8 +35,6 @@ def fetch_page(entity: str, page_nr: int) -> List[Any]:
 
 def fetch_entity(entity: str) -> List[Any]:
     time_begin = time.time()
-    if entity not in entity_list:
-        raise Exception(f"{entity} is not a valid entity")
     url = f"https://www.abgeordnetenwatch.de/api/v2/{entity}?range_end=0"
     result = fetch_json(url)
     total = result["meta"]["result"]["total"]
@@ -77,8 +52,6 @@ def fetch_entity(entity: str) -> List[Any]:
 
 
 def fetch_entity_count(entity: str) -> int:
-    if entity not in entity_list:
-        raise Exception(f"{entity} is not a valid entity")
     url = f"https://www.abgeordnetenwatch.de/api/v2/{entity}?range_end=0"
     result = fetch_json(url)
     total = result["meta"]["result"]["total"]
@@ -86,8 +59,6 @@ def fetch_entity_count(entity: str) -> int:
 
 
 def fetch_missing_entity(entity: str, model: Any):
-    if entity not in entity_list:
-        raise Exception(f"{entity} is not a valid entity")
     data_list = []
     total_entity = fetch_entity_count(entity)
     session = Session()
@@ -124,22 +95,22 @@ def fetch_last_id_from_model(model: Any) -> int:
     return last_id
 
 
-def fetch_missing_sub_entity(sub_entity: str, model: Any):
+def fetch_missing_sub_entity(entity: str, model: Any):
     data_list = []
     session = Session()
     # Uncomment line below + Line 86 when you already fetch the data locally
     # file_path = f"src/cron_jobs/data/{entity}.json"
     last_id = session.query(model).order_by(model.id.desc()).first().id
-    print(f"The last id of {sub_entity} is: {last_id}")
+    print(f"The last id of {entity} is: {last_id}")
     result = fetch_json(
-        f"https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?{sub_entity}[gt]={last_id}&range_end=0"
+        f"https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?{entity}[gt]={last_id}&range_end=0"
     )
     total = result["meta"]["result"]["total"]
     if total:
         page_count = math.ceil(total / PAGE_SIZE)
         for page_num in range(page_count):
             fetched_data = fetch_json(
-                f"https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?{sub_entity}[gt]={last_id}&page={page_num}&pager_limit={PAGE_SIZE}"
+                f"https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?{entity}[gt]={last_id}&page={page_num}&pager_limit={PAGE_SIZE}"
             )
             data = fetched_data["data"]
             for item in data:
@@ -147,7 +118,7 @@ def fetch_missing_sub_entity(sub_entity: str, model: Any):
         print(("Fetched {} data entries").format(len(data_list)))
         return data_list
     else:
-        print(f"Table {sub_entity} already updated")
+        print(f"Table {entity} already updated")
 
 
 def load_entity(entity: str) -> List[Any]:
@@ -166,30 +137,6 @@ def load_entity_from_db(model: Any) -> List[Any]:
     session = Session()
     ids = session.query(model).order_by(model.id.desc()).all()
     return ids
-
-
-def load_entity_ids_from_db(model: Any) -> List[Any]:
-    session = Session()
-    ids = session.query(model.id).order_by(model.id.desc()).all()
-    return [id[0] for id in ids]
-
-
-def fetch_entity_data_by_ids(entity: str, ids: List) -> List[Any]:
-    if entity not in entity_list:
-        raise Exception(f"{entity} is not a valid entity")
-    data_list = []
-    for id in ids:
-        fetched_item = fetch_json(
-            f"https://www.abgeordnetenwatch.de/api/v2/{entity}/{id}"
-        )
-        if "data" in fetched_item:
-            if len(fetched_item["data"]) > 0:
-                data_list.append(fetched_item["data"])
-            else:
-                print(f"Id {id} not found")
-
-    print(("Fetched {} data entries").format(len(data_list)))
-    return data_list
 
 
 def check_for_missing_votes_data(model: Any) -> List[Any]:

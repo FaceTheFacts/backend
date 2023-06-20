@@ -12,7 +12,6 @@ from src.db import models
 from src.db.connection import Session
 from src.api.utils.error import check_entity_not_found
 
-
 # Dependency
 def get_db():
     db = Session()

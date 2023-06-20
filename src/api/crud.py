@@ -1,15 +1,18 @@
 from operator import and_
 from typing import List
 import math
+from unittest import result
 import datetime
 from dateutil.relativedelta import relativedelta
 
 # third-party
 from sqlalchemy.orm import Session
 
+
 # local
 import src.db.models as models
 from src.api.schemas import ConstituencyPoliticians
+from src.api.utils.read_url import load_json_from_url
 from src.api.utils.sidejob import convert_income_level
 from src.api.utils.politician import (
     add_image_urls_to_politicians,
@@ -18,22 +21,10 @@ from src.api.utils.politician import (
 )
 from src.api.utils.topic_ids_converter import convert_into_topic_id
 from src.api.utils.party_sort import party_sort
-from src.api.utils.speeches import fetch_speech_data, process_speech_data
 
 
 def get_entity_by_id(db: Session, model, id: int):
     return db.query(model).filter(model.id == id).first()
-
-
-def get_politician_with_mandate_by_name(
-    db: Session, name: str, parliament_period_id: int
-):
-    return (
-        db.query(models.CandidacyMandate)
-        .filter(models.CandidacyMandate.label.ilike(f"%{name}%"))
-        .where(models.CandidacyMandate.parliament_period_id == parliament_period_id)
-        .first()
-    )
 
 
 def get_politicians_by_ids(db: Session, ids: List[int]):
@@ -364,37 +355,79 @@ def get_votes_by_poll_id(db: Session, poll_id: int) -> dict:
     return politician_votes
 
 
-def get_politician_speech(db: Session, abgeordnetenwatch_id: int, page: int):
-    raw_data = fetch_speech_data(page, abgeordnetenwatch_id)
+def get_politician_speech(abgeordnetenwatch_id: int, page: int):
+    raw_data = load_json_from_url(
+        f"https://de.openparliament.tv/api/v1/search/media?abgeordnetenwatchID={abgeordnetenwatch_id}&page={page}&sort=date-desc"
+    )
 
-    if raw_data is None:
+    total = raw_data["meta"]["results"]["total"]
+    if total == 0:
+        return None
+    # openparliament.tv/api retrieves 10 data per a request
+    last_page = math.ceil(total / 10)
+    if last_page < page:
         return None
 
-    fetched_speeches = process_speech_data(
-        db=db,
-        get_entity_by_id_func=get_entity_by_id,
-        get_politician_with_mandate_by_name_func=get_politician_with_mandate_by_name,
-        page=page,
-        raw_data=raw_data,
-        abgeordnetenwatch_id=abgeordnetenwatch_id,
-    )
+    speech_list = []
+    for item in raw_data["data"]:
+        attributes = item["attributes"]
+        speech_item = {
+            "videoFileURI": attributes["videoFileURI"],
+            "title": item["relationships"]["agendaItem"]["data"]["attributes"]["title"],
+            "date": attributes["dateStart"],
+        }
+        speech_list.append(speech_item)
+
+    size = raw_data["meta"]["results"]["count"]
+    is_last_page = last_page == page
+
+    fetched_speeches = {
+        "items": speech_list,
+        "total": total,
+        "page": page,
+        "size": size,
+        "is_last_page": is_last_page,
+        "politician_id": abgeordnetenwatch_id,
+    }
     return fetched_speeches
 
 
 def get_bundestag_speech(db: Session, page: int):
-    raw_data = fetch_speech_data(page)
-
-    if not raw_data:
-        return None
-
-    fetched_speeches = process_speech_data(
-        db=db,
-        get_entity_by_id_func=get_entity_by_id,
-        get_politician_with_mandate_by_name_func=get_politician_with_mandate_by_name,
-        page=page,
-        raw_data=raw_data,
+    raw_data = load_json_from_url(
+        f"https://de.openparliament.tv/api/v1/search/media?parliament=DE&page={page}&sort=date-desc"
     )
 
+    total = raw_data["meta"]["results"]["total"]
+    if total == 0:
+        return None
+    # openparliament.tv/api retrieves 10 data per a request
+    last_page = math.ceil(total / 10)
+    if last_page < page:
+        return None
+    speech_list = []
+    for item in raw_data["data"]:
+        attributes = item["attributes"]
+        politician_id = item["relationships"]["people"]["data"][0]["attributes"][
+            "additionalInformation"
+        ]["abgeordnetenwatchID"]
+        speech_item = {
+            "videoFileURI": attributes["videoFileURI"],
+            "title": item["relationships"]["agendaItem"]["data"]["attributes"]["title"],
+            "date": attributes["dateStart"],
+            "speaker": get_entity_by_id(db, models.Politician, int(politician_id)),
+        }
+        speech_list.append(speech_item)
+
+    size = raw_data["meta"]["results"]["count"]
+    is_last_page = last_page == page
+
+    fetched_speeches = {
+        "items": speech_list,
+        "total": total,
+        "page": page,
+        "size": size,
+        "is_last_page": is_last_page,
+    }
     return fetched_speeches
 
 
@@ -484,123 +517,45 @@ def get_politician_by_constituency(
     return None
 
 
-def get_party_donations_sorted_by_party_and_date(
-    db: Session,
-    party_ids: list,
-    start_of_time_range: datetime,
-    end_of_time_range: datetime,
-):
-    if end_of_time_range < start_of_time_range:
-        raise ValueError("End of time range cannot be before start of time range")
+def get_homepage_party_donations(db: Session):
+    # TODO: implement db method of getting all parties currently present in the Bundestag
+    bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
 
-    sorted_donations = (
+    # get last 8 years of donations from Bundestag parties
+    date_8_years_ago_today = (datetime.datetime.now() - relativedelta(years=8)).date()
+    bundestag_party_donations_last_8_years_query = (
         db.query(models.PartyDonation)
-        .filter(models.PartyDonation.party_id.in_(party_ids))
-        .filter(models.PartyDonation.date >= start_of_time_range)
-        .filter(models.PartyDonation.date < end_of_time_range)
-        .order_by(models.PartyDonation.party_id, models.PartyDonation.date.desc())
-    )
-
-    for donation in sorted_donations.all():
-        print(donation.party_id, donation.date.strftime("%m/%d/%Y"))
-
-    # prints ordered by party ID and desc date, e.g.:
-    # 3 12/18/2015
-    # 4 12/22/2021
-    # 5 05/27/2022
-    # 5 05/19/2022
-
-    # use itertools.groupby() to group by dynamic date ranges?
-
-    return sorted_donations
-
-
-def get_party_donations_for_ids_and_time_range(
-    db: Session,
-    party_ids: list,
-    start_of_time_range: datetime,
-    end_of_time_range: datetime,
-):
-    if end_of_time_range < start_of_time_range:
-        raise ValueError("End of time range cannot be before start of time range")
-
-    return (
-        db.query(models.PartyDonation)
-        .filter(models.PartyDonation.party_id.in_(party_ids))
-        .filter(models.PartyDonation.date >= start_of_time_range)
-        .filter(models.PartyDonation.date < end_of_time_range)
+        .filter(models.PartyDonation.party_id.in_(bundestag_party_ids))
+        .filter(models.PartyDonation.date >= date_8_years_ago_today)
         .order_by(models.PartyDonation.date.asc())
         .all()
     )
 
+    # set up response and helper objects
+    response_donation_data = []
+    donations_over_32_quarters = {}
 
-def build_donation_data_response_object(bundestag_party_ids: list):
-    response_donation_data_container = []
-
-    for party_id in bundestag_party_ids:
+    for id in bundestag_party_ids:
         data = {
-            "id": party_id,
+            "id": id,
             "party": None,
             "donations_over_32_quarters": [],
             "donations_total": 0,
             "largest_quarter": None,
         }
-        response_donation_data_container.append(data)
+        response_donation_data.append(data)
+        donations_over_32_quarters[id] = [0] * 32
 
-    return response_donation_data_container
-
-
-def build_donations_over_time_container(bundestag_party_ids: list, quarters: int):
-    donations_over_quarters = {}
-
-    for party_id in bundestag_party_ids:
-        donations_over_quarters[party_id] = [0] * quarters
-
-    return donations_over_quarters
-
-
-def get_parties_by_id(db: Session, party_ids: list):
-    return db.query(models.Party).filter(models.Party.id.in_(party_ids))
-
-
-def add_party_data_to_donations_response(
-    bundestag_parties_query: list, response_donation_data: list
-):
+    # add party info to response
+    # TODO: remove when db method of getting Bundestag parties is implemented
+    bundestag_parties_query = db.query(models.Party).filter(
+        models.Party.id.in_(bundestag_party_ids)
+    )
     for db_party in bundestag_parties_query:
         for party in response_donation_data:
             if party["id"] == db_party.id:
                 party["party"] = db_party
                 continue
-
-    return response_donation_data
-
-
-def delete_excess_party_data(response_donation_data):
-    for party in response_donation_data:
-        del party["id"]
-
-    return response_donation_data
-
-
-def get_homepage_party_donations(db: Session, bundestag_party_ids: list):
-    date_8_years_ago_today = datetime.datetime.now() - relativedelta(years=8)
-
-    bundestag_party_donations_last_8_years_query = (
-        get_party_donations_for_ids_and_time_range(
-            db, bundestag_party_ids, date_8_years_ago_today, datetime.datetime.now()
-        )
-    )
-
-    response_donation_data = build_donation_data_response_object(bundestag_party_ids)
-    donations_over_32_quarters = build_donations_over_time_container(
-        bundestag_party_ids, 32
-    )
-
-    bundestag_parties_query = get_parties_by_id(db, bundestag_party_ids)
-
-    response_donation_data = add_party_data_to_donations_response(
-        bundestag_parties_query, response_donation_data
-    )
 
     # assign donations to their respective parties
     for donation in bundestag_party_donations_last_8_years_query:
@@ -635,18 +590,10 @@ def get_homepage_party_donations(db: Session, bundestag_party_ids: list):
         party["largest_quarter"] = max(donations_over_32_quarters[party["id"]])
 
     # remove excess data from response object to match schema
-    response_donation_data = delete_excess_party_data(response_donation_data)
+    for party in response_donation_data:
+        del party["id"]
 
     return response_donation_data
-
-
-class PartyDonationResponse:
-    def __init__(
-        self, party_ids: list, time_range_start: datetime, time_range_end: datetime
-    ):
-        self.party_ids = party_ids
-        self.time_range_start = time_range_start
-        self.time_range_end = time_range_end
 
 
 def get_all_party_donations(db: Session):
@@ -655,9 +602,3 @@ def get_all_party_donations(db: Session):
     )
 
     return party_donations
-
-
-def get_topics(db: Session):
-    topics = db.query(models.Topic).all()
-
-    return topics

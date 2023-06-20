@@ -11,6 +11,7 @@ def fetch_json(file_name: str) -> any:
 
 
 def generate_json(data: list, file_name: str) -> None:
+
     with open(
         "src/json/{name}.json".format(name=file_name), "w", encoding="utf-8"
     ) as file:

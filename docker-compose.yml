@@ -1,18 +1,5 @@
-version: '3.9'
 services:
-  api:
+  backend:
     build: .
     ports:
       - "8000:8000"
-    env_file:
-      - .env
-    depends_on:
-      - redis
-    environment:
-      - REDIS_HOST=redis
-  redis:
-    image: "redis:7.0.11"
-    ports:
-      - "6379:6379"
-    command: ["redis-server", "--bind", "0.0.0.0", "--port", "6379"]
-

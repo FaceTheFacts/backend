@@ -114,7 +114,7 @@ def generate_appended_vote_results(session: Session, last_id: int, last_poll_id:
                 "no_show": new_item["no_show"],
                 "poll_id": poll_id,
             }
-            data_list.append(new_dict)
+        data_list.append(new_dict)
     return data_list
 
 

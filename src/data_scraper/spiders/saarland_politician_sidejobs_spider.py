@@ -27,6 +27,7 @@ def remove_elements_from_array__from_first_exception(data, exceptions):
     for index in range(len(data)):
         for exception in exceptions:
             if data[index] == exception:
+
                 if exception is exception[0]:
                     first_exception_location = index
 
@@ -57,6 +58,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
 
     # multiple <p>'s with each sidejob as a separate element
     elif len(html_data) > 1:
+
         data = simple_data
 
         # titles use the <strong> tag
@@ -69,6 +71,7 @@ def sidejob_data_switch(html_data: list[str], response) -> list[str]:
 
     # single <p> ...
     elif len(html_data) == 1:
+
         # ... multiple sidejobs stored in <span>, titles stored in <strong>
         if search_and_locate_element_in_text(html_data[0], "<span>")[0]:
             return simple.css("span::text").getall()
