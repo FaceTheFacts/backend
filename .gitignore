@@ -2,11 +2,14 @@ __pycache__/
 *.pyc
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
-!.elasticbeanstalk/config.yml
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 .env
 .idea
 *.json
+!.well-known/*
+!Dockerrun.aws.json
 .scannerwork
 .DS_Store
+.coverage
+**/.vscode/
