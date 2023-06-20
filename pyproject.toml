@@ -26,6 +26,7 @@ fastapi-redis-cache = "^0.2.5"
 fuzzywuzzy = "^0.18.0"
 python-levenshtein = "^0.20.9"
 aiofiles = "^23.1.0"
+urllib3 = "1.26.15"
 
 [tool.poetry.dev-dependencies]
 black = "22.3"
