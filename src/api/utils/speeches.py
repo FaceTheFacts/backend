@@ -87,10 +87,12 @@ def process_speech_data(
                 }
                 speech_list.append(speech_item)
             else:
-                politician_id = item["relationships"]["people"]["data"][0]["attributes"][
-                    "additionalInformation"
-                ]["abgeordnetenwatchID"]
-                speaker_obj = get_entity_by_id_func(db, models.Politician, int(politician_id))
+                politician_id = item["relationships"]["people"]["data"][0][
+                    "attributes"
+                ]["additionalInformation"]["abgeordnetenwatchID"]
+                speaker_obj = get_entity_by_id_func(
+                    db, models.Politician, int(politician_id)
+                )
                 speaker = {
                     "id": speaker_obj.id,
                     "label": speaker_obj.label,
@@ -102,9 +104,11 @@ def process_speech_data(
                             "display_name": speaker_obj.party.party_style.display_name,
                             "foreground_color": speaker_obj.party.party_style.foreground_color,
                             "background_color": speaker_obj.party.party_style.background_color,
-                            "border_color": speaker_obj.party.party_style.border_color if speaker_obj.party.party_style.border_color else None,
-                        }
-                    }
+                            "border_color": speaker_obj.party.party_style.border_color
+                            if speaker_obj.party.party_style.border_color
+                            else None,
+                        },
+                    },
                 }
                 speech_item = {
                     "id": item["id"][3:],
