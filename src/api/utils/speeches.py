@@ -66,89 +66,105 @@ def process_speech_data(
 ):
     speech_list = []
     for item in raw_data["data"]:
-        if item["annotations"]["data"][0]["attributes"]["additionalInformation"][
-            "role"
-        ] in [
-            "Bundestagspräsidentin",
-            "Bundestagspräsident",
-            "Bundestagsvizepräsidentin",
-            "Bundestagsvizepräsident",
-        ]:
-            continue
-        attributes = item["attributes"]
-        if len(item["relationships"]["people"]["data"]) == 0:
-            continue
-        if abgeordnetenwatch_id:
-            attributes = item["attributes"]
-            speech_item = {
-                "videoFileURI": attributes["videoFileURI"],
-                "title": item["relationships"]["agendaItem"]["data"]["attributes"][
-                    "title"
-                ],
-                "date": attributes["dateStart"],
-            }
-            speech_list.append(speech_item)
-        else:
-            politician_id = item["relationships"]["people"]["data"][0]["attributes"][
-                "additionalInformation"
-            ]["abgeordnetenwatchID"]
-            speaker = get_entity_by_id_func(db, models.Politician, int(politician_id))
-            speech_item = {
-                "id": item["id"][3:],
-                "videoFileURI": attributes["videoFileURI"],
-                "title": item["relationships"]["agendaItem"]["data"]["attributes"][
-                    "title"
-                ],
-                "date": attributes["dateStart"],
-                "politician_id": speaker.id,
-                "session": item["relationships"]["session"]["data"]["id"],
-                "parliament_period_id": PARLIAMENT_PERIOD_TO_ELECTORIAL_PERIOD_DICT[
-                    item["relationships"]["electoralPeriod"]["data"]["attributes"][
-                        "number"
-                    ]
-                ],
-            }
-            speech_item["text"] = []
-            for text in attributes["textContents"][0]["textBody"]:
-                sentence_obj = {}
-                cleaned_text = []
-                if text["type"] == "speech":
-                    last_sentence_index = len(text["sentences"]) - 1
-                    for i, sentence in enumerate(text["sentences"]):
-                        if not sentence_obj:
-                            sentence_obj["start"] = sentence["timeStart"]
-                        # When the current index is the last index, we add the end time
-                        if i == last_sentence_index:
-                            sentence_obj["end"] = sentence["timeEnd"]
-                        cleaned_text.append(clean_text(sentence["text"]))
-                    sentence_obj["text"] = cleaned_text
-                    speech_item["text"].append(sentence_obj)
-                elif text["type"] == "comment":
-                    if is_politician_comment(text["sentences"][0]["text"]):
-                        extracted_comment = extract_comment(
-                            text["sentences"][0]["text"]
-                        )
-                        cleaned_text.append(clean_text(extracted_comment))
-                        sentence_obj["start"] = text["sentences"][0]["timeStart"]
-                        sentence_obj["end"] = text["sentences"][0]["timeEnd"]
-                        sentence_obj["politician_name"] = extract_politician_name(
-                            text["sentences"][0]["text"]
-                        )
-                        politician = get_politician_with_mandate_by_name_func(
-                            db,
-                            sentence_obj["politician_name"],
-                            speech_item["parliament_period_id"],
-                        )
-                        if politician:
-                            sentence_obj["politician_id"] = politician.id
-                        else:
-                            print(sentence_obj["politician_name"])
-                        sentence_obj["text"] = cleaned_text
-                        speech_item["text"].append(sentence_obj)
+        try:
+            attributes = item.get("attributes", {})
+            if attributes.get("role") in [
+                "Bundestagspräsidentin",
+                "Bundestagspräsident",
+                "Bundestagsvizepräsidentin",
+                "Bundestagsvizepräsident",
+            ]:
                 continue
-            file_path = f"{speech_item['politician_id']}_{speech_item['date']}.json"
-            write_json(file_path, speech_item)
-            speech_list.append(speech_item)
+            if not item.get("relationships", {}).get("people", {}).get("data"):
+                continue
+            if abgeordnetenwatch_id:
+                speech_item = {
+                    "videoFileURI": attributes["videoFileURI"],
+                    "title": item["relationships"]["agendaItem"]["data"]["attributes"][
+                        "title"
+                    ],
+                    "date": attributes["dateStart"],
+                }
+                speech_list.append(speech_item)
+            else:
+                politician_id = item["relationships"]["people"]["data"][0]["attributes"][
+                    "additionalInformation"
+                ]["abgeordnetenwatchID"]
+                speaker_obj = get_entity_by_id_func(db, models.Politician, int(politician_id))
+                speaker = {
+                    "id": speaker_obj.id,
+                    "label": speaker_obj.label,
+                    "party": {
+                        "id": speaker_obj.party.id,
+                        "label": speaker_obj.party.label,
+                        "party_style": {
+                            "id": speaker_obj.party.party_style.id,
+                            "display_name": speaker_obj.party.party_style.display_name,
+                            "foreground_color": speaker_obj.party.party_style.foreground_color,
+                            "background_color": speaker_obj.party.party_style.background_color,
+                            "border_color": speaker_obj.party.party_style.border_color if speaker_obj.party.party_style.border_color else None,
+                        }
+                    }
+                }
+                speech_item = {
+                    "id": item["id"][3:],
+                    "videoFileURI": attributes["videoFileURI"],
+                    "title": item["relationships"]["agendaItem"]["data"]["attributes"][
+                        "title"
+                    ],
+                    "date": attributes["dateStart"],
+                    "speaker": speaker,
+                    "session": item["relationships"]["session"]["data"]["id"],
+                    "parliament_period_id": PARLIAMENT_PERIOD_TO_ELECTORIAL_PERIOD_DICT[
+                        item["relationships"]["electoralPeriod"]["data"]["attributes"][
+                            "number"
+                        ]
+                    ],
+                }
+                """ speech_item["text"] = []
+                if attributes.get("textContents"):
+                    for text in attributes["textContents"][0]["textBody"]:
+                        sentence_obj = {}
+                        cleaned_text = []
+                        if text["type"] == "speech":
+                            last_sentence_index = len(text["sentences"]) - 1
+                            for i, sentence in enumerate(text["sentences"]):
+                                if not sentence_obj:
+                                    sentence_obj["start"] = sentence["timeStart"]
+                                # When the current index is the last index, we add the end time
+                                if i == last_sentence_index:
+                                    sentence_obj["end"] = sentence["timeEnd"]
+                                cleaned_text.append(clean_text(sentence["text"]))
+                            sentence_obj["text"] = cleaned_text
+                            speech_item["text"].append(sentence_obj)
+                        elif text["type"] == "comment":
+                            if is_politician_comment(text["sentences"][0]["text"]):
+                                extracted_comment = extract_comment(
+                                    text["sentences"][0]["text"]
+                                )
+                                cleaned_text.append(clean_text(extracted_comment))
+                                sentence_obj["start"] = text["sentences"][0]["timeStart"]
+                                sentence_obj["end"] = text["sentences"][0]["timeEnd"]
+                                sentence_obj["politician_name"] = extract_politician_name(
+                                    text["sentences"][0]["text"]
+                                )
+                                politician = get_politician_with_mandate_by_name_func(
+                                    db,
+                                    sentence_obj["politician_name"],
+                                    speech_item["parliament_period_id"],
+                                )
+                                if politician:
+                                    sentence_obj["politician_id"] = politician.id
+                                else:
+                                    print(sentence_obj["politician_name"])
+                                sentence_obj["text"] = cleaned_text
+                                speech_item["text"].append(sentence_obj)
+                        continue
+                file_path = f"{speech_item['politician_id']}_{speech_item['date']}.json"
+                write_json(file_path, speech_item) """
+                speech_list.append(speech_item)
+        except KeyError as e:
+            print(f"Key error occurred: {e}")
 
     size = raw_data["meta"]["results"]["count"]
     last_page = math.ceil(raw_data["meta"]["results"]["total"] / 40)
