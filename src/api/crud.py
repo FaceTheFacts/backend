@@ -5,7 +5,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 # third-party
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 # local
 import src.db.models as models
@@ -250,6 +250,39 @@ def get_all_bundestag_polls(db: Session, size: int, topic_ids: List[int] = None)
         )
 
 
+def get_bundestag_polls_by_topic(db: Session, topic_ids: List[int] = None):
+    if topic_ids:
+        return (
+            db.query(models.Poll)
+            .options(joinedload(models.Poll.vote_result))
+            .filter(
+                (models.Poll.field_legislature_id == 111)
+                | (models.Poll.field_legislature_id == 132)
+            )
+            .filter(
+                (models.Topic.id.in_(topic_ids))
+                | (models.Topic.parent_id.in_(topic_ids))
+            )
+            .filter(
+                (models.PollHasTopic.topic_id == models.Topic.id)
+                & (models.Poll.id == models.PollHasTopic.poll_id)
+            )
+            .order_by(models.Poll.field_poll_date.desc())
+            .all()
+        )
+    else:
+        return (
+            db.query(models.Poll)
+            .options(joinedload(models.Poll.vote_result))
+            .filter(
+                (models.Poll.field_legislature_id == 111)
+                | (models.Poll.field_legislature_id == 132)
+            )
+            .order_by(models.Poll.field_poll_date.desc())
+            .all()
+        )
+
+
 # Tested with mockup
 def get_vote_result_by_poll_id(db: Session, poll_id: int):
     return (
@@ -364,9 +397,10 @@ def get_votes_by_poll_id(db: Session, poll_id: int) -> dict:
     return politician_votes
 
 
-def get_politician_speech(db: Session, abgeordnetenwatch_id: int, page: int):
+def get_politician_speech(
+    db: Session, abgeordnetenwatch_id: int, page: int, plugin: bool = False
+):
     raw_data = fetch_speech_data(page, abgeordnetenwatch_id)
-
     if raw_data is None:
         return None
 
@@ -377,11 +411,12 @@ def get_politician_speech(db: Session, abgeordnetenwatch_id: int, page: int):
         page=page,
         raw_data=raw_data,
         abgeordnetenwatch_id=abgeordnetenwatch_id,
+        plugin=plugin,
     )
     return fetched_speeches
 
 
-def get_bundestag_speech(db: Session, page: int):
+def get_bundestag_speech(db: Session, page: int, plugin: bool = False):
     raw_data = fetch_speech_data(page)
 
     if not raw_data:
@@ -393,6 +428,7 @@ def get_bundestag_speech(db: Session, page: int):
         get_politician_with_mandate_by_name_func=get_politician_with_mandate_by_name,
         page=page,
         raw_data=raw_data,
+        plugin=plugin,
     )
 
     return fetched_speeches
@@ -649,10 +685,20 @@ class PartyDonationResponse:
         self.time_range_end = time_range_end
 
 
-def get_all_party_donations(db: Session):
-    party_donations = (
-        db.query(models.PartyDonation).order_by(models.PartyDonation.date.desc()).all()
-    )
+def get_all_party_donations(db: Session, party_ids: list = None):
+    if party_ids:
+        party_donations = (
+            db.query(models.PartyDonation)
+            .filter(models.PartyDonation.party_id.in_(party_ids))
+            .order_by(models.PartyDonation.date.desc())
+            .all()
+        )
+    else:
+        party_donations = (
+            db.query(models.PartyDonation)
+            .order_by(models.PartyDonation.date.desc())
+            .all()
+        )
 
     return party_donations
 
@@ -661,3 +707,9 @@ def get_topics(db: Session):
     topics = db.query(models.Topic).all()
 
     return topics
+
+
+def get_parties(db: Session):
+    parties = db.query(models.Party).order_by(models.Party.id.asc()).all()
+
+    return parties
