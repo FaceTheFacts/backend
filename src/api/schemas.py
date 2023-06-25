@@ -701,3 +701,42 @@ class HomepagePartyDonation(FTFBaseModel):
 class PluginPoll(FTFBaseModel):
     poll: Poll
     result: VoteResult
+
+class PluginSidejob(FTFBaseModel):
+    id: int
+    entity_type: str
+    label: str
+    job_title_extra: Optional[str]
+    income_level: Optional[str]
+    interval: Optional[str]
+    additional_information: Optional[str]
+    created: date
+    sidejob_organization: Optional[SidejobOrganization]
+
+
+class PluginParty(FTFBaseModel):
+    id: int
+    label: str
+
+class PluginPoliticianHeader(FTFBaseModel):
+    id: int
+    label: str
+    party: PluginParty
+
+class PluginSidejobBundestag(FTFBaseModel):
+    sidejob: PluginSidejob
+    politician: PluginPoliticianHeader
+
+
+
+class PluginPolitician(FTFBaseModel):
+    id: int
+    label: str
+    party: PluginParty
+    occupations: Optional[List[str]]
+    sidejobs: Optional[List[PluginSidejob]]
+    cvs: Optional[List]
+    abgeordnetenwatch_url: str
+    weblinks: Optional[List]
+    votes_and_polls: Optional[List[VoteAndPoll]]
+    topic_ids_of_latest_committee: Optional[List[int]]
