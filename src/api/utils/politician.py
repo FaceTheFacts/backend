@@ -154,6 +154,7 @@ def get_politician_profile(
     db: Session = Depends(get_db),
     votes_start: int = None,
     votes_end: int = 6,
+    plugin: bool = False,
 ):
     politician = crud.get_entity_by_id(db, models.Politician, id)
     check_entity_not_found(politician, "Politician")
@@ -163,7 +164,7 @@ def get_politician_profile(
     )
 
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)
-    politician.__dict__["sidejobs"] = sidejobs
+    politician.__dict__["sidejobs"] = sidejobs if not plugin else sidejobs[:5]
 
     votes_and_polls = crud.get_votes_and_polls_by_politician_id(
         db, id, (votes_start, votes_end)
