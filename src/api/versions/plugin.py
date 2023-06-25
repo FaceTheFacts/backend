@@ -240,7 +240,7 @@ async def read_bundestag_speech(page: int = 1, db: Session = Depends(get_db)):
     summary="Get the latest sidejobs from the parliament",
     description="Returns a list of the latest bundestag sidejobs and the associated politiican",
 )
-@custom_cache(expire=ONE_WEEK_IN_SECONDS, ignore_args=["db"])
+@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 async def read_politician_sidejobs(db: Session = Depends(get_db)):
     sidejobs = crud.get_all_sidejobs(db)
     check_entity_not_found(sidejobs, "Sidejobs")
