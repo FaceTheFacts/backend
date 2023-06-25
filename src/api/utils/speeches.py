@@ -63,6 +63,7 @@ def process_speech_data(
     page: int,
     raw_data,
     abgeordnetenwatch_id: Optional[int] = None,
+    plugin: bool = False,
 ):
     speech_list = []
     for item in raw_data["data"]:
@@ -79,7 +80,9 @@ def process_speech_data(
                 continue
             if abgeordnetenwatch_id:
                 speech_item = {
-                    "videoFileURI": attributes["videoFileURI"],
+                    "videoFileURI": attributes["sourcePage"]
+                    if plugin
+                    else attributes["videoFileURI"],
                     "title": item["relationships"]["agendaItem"]["data"]["attributes"][
                         "title"
                     ],
@@ -112,7 +115,9 @@ def process_speech_data(
                 }
                 speech_item = {
                     "id": item["id"][3:],
-                    "videoFileURI": attributes["videoFileURI"],
+                    "videoFileURI": attributes["sourcePage"]
+                    if plugin
+                    else attributes["videoFileURI"],
                     "title": item["relationships"]["agendaItem"]["data"]["attributes"][
                         "title"
                     ],
@@ -124,6 +129,7 @@ def process_speech_data(
                             "number"
                         ]
                     ],
+                    "source": attributes["sourcePage"],
                 }
                 """ speech_item["text"] = []
                 if attributes.get("textContents"):
