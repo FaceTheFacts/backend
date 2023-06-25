@@ -702,6 +702,7 @@ class PluginPoll(FTFBaseModel):
     poll: Poll
     result: VoteResult
 
+
 class PluginSidejob(FTFBaseModel):
     id: int
     entity_type: str
@@ -718,15 +719,16 @@ class PluginParty(FTFBaseModel):
     id: int
     label: str
 
+
 class PluginPoliticianHeader(FTFBaseModel):
     id: int
     label: str
     party: PluginParty
 
+
 class PluginSidejobBundestag(FTFBaseModel):
     sidejob: PluginSidejob
     politician: PluginPoliticianHeader
-
 
 
 class PluginPolitician(FTFBaseModel):
