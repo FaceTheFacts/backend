@@ -49,7 +49,7 @@ def read_politician(
     votes_start: int = Query(None, description="Starting index of votes", example=0),
     votes_end: int = Query(6, description="Ending index of votes", example=6),
 ):
-    return get_politician_profile(id, db, votes_start, votes_end)
+    return get_politician_profile(id, db, votes_start, votes_end, "v1")
 
 
 @router.get(
@@ -128,7 +128,7 @@ def read_politician_positions(id: int, db: Session = Depends(get_db)):
     description="Returns a list of sidejobs associated with the politician with the provided ID",
 )
 def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
-    sidejobs = crud.get_sidejobs_by_politician_id(db, id)
+    sidejobs = crud.get_sidejobs_by_politician_id(db, id, "v1")
     check_entity_not_found(sidejobs, "Sidejobs")
     return paginate(sidejobs)
 
@@ -259,14 +259,14 @@ async def read_bundestag_speech(page: int = 1, db: Session = Depends(get_db)):
 
 @router.get("/bundestag/sidejobs", response_model=List[schemas.SidejobBundestag])
 def read_politician_sidejobs(db: Session = Depends(get_db)):
-    sidejobs = crud.get_latest_sidejobs(db)
+    sidejobs = crud.get_latest_sidejobs(db, "v1")
     check_entity_not_found(sidejobs, "Sidejobs")
     return sidejobs
 
 
 @router.get("/bundestag/allsidejobs", response_model=Page[schemas.SidejobBundestag])
 def read_politician_sidejobs(db: Session = Depends(get_db)):
-    sidejobs = crud.get_all_sidejobs(db)
+    sidejobs = crud.get_all_sidejobs(db, "v1")
     check_entity_not_found(sidejobs, "Sidejobs")
     return paginate(sidejobs)
 
