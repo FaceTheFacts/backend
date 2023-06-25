@@ -11,7 +11,7 @@ from fastapi_pagination import Page, add_pagination, paginate
 import src.api.crud as crud
 import src.api.schemas as schemas
 from src.api.utils import politrack
-from src.api.utils.politician import get_politician_profile
+from src.api.utils.politician import did_vote_pass, get_politician_profile
 from src.db import models
 from src.db.connection import Session
 from src.api.utils.error import check_entity_not_found
@@ -30,6 +30,7 @@ router = APIRouter(
     responses={404: {"description": "plugin Not found"}},
 )
 
+Page_custom = Page.with_custom_options(size=25)
 
 # Dependency
 def get_db():
@@ -44,7 +45,7 @@ def get_db():
     "/politician/{id}",
     response_model=schemas.Politician,
     summary="Get detailed information about a specific politician",
-    description="Returns detailed information about a politician based on the provided ID, including their party, occupations, side jobs, CVs, and voting records",
+    description="Returns detailed information about a politician based on the provided ID, including their party, occupations, side jobs, CVs, committee-membership and voting records",
 )
 @custom_cache(expire=ONE_DAY_IN_SECONDS)
 def read_politician(
@@ -98,7 +99,6 @@ def read_politicians(
     summary="Get the constituency and politicians associated with a specific politician",
     description="Returns the constituency and a list of politicians representing the same constituency as the politician with the provided ID",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS)
 def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
     constituency_politicians = crud.get_politician_by_constituency(db, id)
     check_entity_not_found(constituency_politicians, "ConstituencyPolitician")
@@ -111,7 +111,6 @@ def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
     summary="Get the poisitions associated with a specific politician",
     description="Returns a list of positions associated with the politician with the provided ID",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS)
 def read_politician_positions(id: int, db: Session = Depends(get_db)):
     positions = crud.get_entity_by_id(db, models.Politician, id)
     check_entity_not_found(positions, "Position")
@@ -121,11 +120,11 @@ def read_politician_positions(id: int, db: Session = Depends(get_db)):
 # Tested with mockup
 @router.get(
     "/politician/{id}/sidejobs",
-    response_model=Page[schemas.Sidejob],
+    response_model=Page_custom[schemas.Sidejob],
     summary="Get the sidejobs associated with a specific politician",
     description="Returns a list of sidejobs associated with the politician with the provided ID",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS)
+@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     sidejobs = crud.get_sidejobs_by_politician_id(db, id)
     check_entity_not_found(sidejobs, "Sidejobs")
@@ -160,11 +159,11 @@ def read_politician_name_search(text: str, db: Session = Depends(get_db)):
 
 @router.get(
     "/politician/{id}/votes",
-    response_model=Page[schemas.VoteAndPoll],
+    response_model=Page_custom[schemas.VoteAndPoll],
     summary="Get the Polls and Votes associated with a specific politician",
-    description="Returns a list of Polls and Votes associated with the politician with the provided ID",
+    description="Returns a list of Polls and Votes associated with the politician with the provided ID and option to filter by topic",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS)
+@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 def read_politician_votes(
     id: int,
     db: Session = Depends(get_db),
@@ -178,10 +177,9 @@ def read_politician_votes(
 @router.get(
     "/poll/{id}/details",
     response_model=schemas.PollDetails,
-    summary="Get more detailed information about the Poll asssociated with a specific ID",
-    description="Returns detailed information about a Poll associated with the provided ID",
+    summary="Get more detailed information about the Poll asssociated with a specific poll ID",
+    description="Returns detailed information about voting behaviour of each fraction and links with additional information for a Poll associated with the provided ID",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS)
 def read_poll_details(id: int, db: Session = Depends(get_db)):
     poll_results = crud.get_poll_results_by_poll_id(db, id)
     poll_links = crud.get_poll_links_by_poll_id(db, id)
@@ -193,8 +191,8 @@ def read_poll_details(id: int, db: Session = Depends(get_db)):
 @router.get(
     "/poll/{id}/votes",
     response_model=schemas.PollVotes,
-    summary="Get the votes associated with the specific ID",
-    description="Returns the yes, no, abstain and no show votes as a List of politicians associate with the specific ID",
+    summary="Get the voting associated with the specific poll ID",
+    description="Returns the yes, no, abstain and no show votes as a List of politicians associate with the specific poll ID",
 )
 def read_poll_votes(id: int, db: Session = Depends(get_db)):
     vote_results = crud.get_votes_by_poll_id(db, id)
@@ -202,19 +200,15 @@ def read_poll_votes(id: int, db: Session = Depends(get_db)):
     return vote_results
 
 
-@router.get("/polls/{id}", response_model=List[schemas.VoteAndPoll])
-def read_polls(
-    id: int, db: Session = Depends(get_db), filters: List[int] = Query(None)
-):
-    polls = crud.get_votes_and_polls_by_politician_id(db, id, (None, None), filters)
-    check_entity_not_found(polls, "Polls")
-    return polls
-
-
-@router.get("/politician/{id}/speeches", response_model=schemas.PoliticianSpeechData)
+@router.get(
+    "/politician/{id}/speeches",
+    response_model=schemas.PoliticianSpeechData,
+    summary="Get the speeches associated with a specific politician ID",
+    description="Returns a list of speeches associated with the politician with the provided ID",
+)
 @custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 async def read_politician_speech(id: int, page: int = 1, db: Session = Depends(get_db)):
-    politician_speech = crud.get_politician_speech(db, id, page)
+    politician_speech = crud.get_politician_speech(db, id, page, True)
     if not politician_speech:
         return {
             "items": [],
@@ -227,64 +221,75 @@ async def read_politician_speech(id: int, page: int = 1, db: Session = Depends(g
     return politician_speech
 
 
-@router.get("/bundestag/speeches", response_model=schemas.ParliamentSpeechData)
-@custom_cache(expire=ONE_DAY_IN_SECONDS * 6, ignore_args=["db"])
+@router.get(
+    "/bundestag/speeches",
+    response_model=schemas.ParliamentSpeechData,
+    summary="Get the latest speeches from the parliament",
+    description="Returns a list of the latest bundestag speeches including title, date, speaker and link to video",
+)
+@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 async def read_bundestag_speech(page: int = 1, db: Session = Depends(get_db)):
-    politician_speech = crud.get_bundestag_speech(db, page)
+    politician_speech = crud.get_bundestag_speech(db, page, True)
     check_entity_not_found(politician_speech, "Politician Speech")
     return politician_speech
 
 
-@router.get("/bundestag/sidejobs", response_model=List[schemas.SidejobBundestag])
-def read_politician_sidejobs(db: Session = Depends(get_db)):
-    sidejobs = crud.get_latest_sidejobs(db)
-    check_entity_not_found(sidejobs, "Sidejobs")
-    return sidejobs
-
-
-@router.get("/bundestag/allsidejobs", response_model=Page[schemas.SidejobBundestag])
-def read_politician_sidejobs(db: Session = Depends(get_db)):
+@router.get(
+    "/bundestag/sidejobs",
+    response_model=Page_custom[schemas.SidejobBundestag],
+    summary="Get the latest sidejobs from the parliament",
+    description="Returns a list of the latest bundestag sidejobs and the associated politiican",
+)
+@custom_cache(expire=ONE_WEEK_IN_SECONDS, ignore_args=["db"])
+async def read_politician_sidejobs(db: Session = Depends(get_db)):
     sidejobs = crud.get_all_sidejobs(db)
     check_entity_not_found(sidejobs, "Sidejobs")
     return paginate(sidejobs)
 
 
 @router.get(
-    "/bundestag/polls", response_model=List[schemas.BundestagPollDataWithPoliticians]
+    "/bundestag/polls",
+    response_model=Page_custom[schemas.PluginPoll],
+    summary="Get the latest polls from the parliament",
+    description="Returns a list of the latest bundestag polls and the associated result",
 )
-def read_latest_polls(
-    follow_ids: List[int] = Query(None), db: Session = Depends(get_db)
-):
-    polls = crud.get_polls_total(db)
-    latest_polls = get_politcian_ids_by_bundestag_polldata_and_follow_ids(
-        polls, db, follow_ids
-    )
-    check_entity_not_found(latest_polls, "Polls")
-    return latest_polls
-
-
-@router.get("/bundestag/allpolls", response_model=schemas.BundestagPoll)
-def read_latest_polls(
+@custom_cache(expire=ONE_DAY_IN_SECONDS * 3, ignore_args=["db"])
+async def read_latest_polls(
     filters: List[int] = Query(None),
     db: Session = Depends(get_db),
-    page: int = Query(1),
 ):
-    size = page * 10
-    filtered_polls = crud.get_all_polls_total(db, size, filters)
-    polls = {}
-    polls["data"] = get_politcian_ids_by_bundestag_polldata_and_follow_ids(
-        filtered_polls, db
-    )
-    if len(polls["data"]) < 10:
-        polls["last_page"] = True
-    else:
-        polls["last_page"] = False
-    check_entity_not_found(polls, "Polls")
-    return polls
+    polls_with_results = crud.get_bundestag_polls_by_topic(db, filters)
+    plugin_polls = [
+        schemas.PluginPoll(
+            poll=schemas.Poll(
+                id=p.id,
+                label=p.label,
+                field_intro=p.field_intro,
+                field_poll_date=p.field_poll_date,
+                poll_passed=did_vote_pass(
+                    {
+                        "yes": p.vote_result.yes,
+                        "no": p.vote_result.no,
+                        "no_show": p.vote_result.no_show,
+                        "abstain": p.vote_result.abstain,
+                    }
+                ),
+            ),
+            result=p.vote_result,
+        )
+        for p in polls_with_results
+    ]
+    check_entity_not_found(plugin_polls, "PluginPoll")
+    return paginate(plugin_polls)
 
 
-@router.get("/politician/{id}/news", response_model=Page[schemas.PolitrackNewsArticle])
-@custom_cache(expire=ONE_WEEK_IN_SECONDS)
+@router.get(
+    "/politician/{id}/news",
+    response_model=Page_custom[schemas.PolitrackNewsArticle],
+    summary="Get the latest news articles associated with a specific politician ID",
+    description="Returns a list of news articles associated with the politician with the provided ID",
+)
+@custom_cache(expire=ONE_DAY_IN_SECONDS * 3)
 async def read_politician_news(id: int):
     header = politrack.generate_authenticated_header()
     response = requests.get(
@@ -301,6 +306,29 @@ async def read_politician_news(id: int):
         raise HTTPException(status_code=response.status_code, detail=detail)
 
 
+@router.get("/parties", response_model=Page_custom[schemas.Party])
+@custom_cache(expire=ONE_WEEK_IN_SECONDS, ignore_args=["db"])
+async def get_parties(db: Session = Depends(get_db)):
+    parties = crud.get_parties(db)
+    check_entity_not_found(parties, "Parties")
+    return paginate(parties)
+
+
+@router.get(
+    "/partydonations",
+    response_model=Page_custom[schemas.PluginPartyDonation],
+    summary="Get the latest party donations",
+    description="Returns a list of the latest party donations and the organization with the option to filter after party id",
+)
+@custom_cache(expire=ONE_DAY_IN_SECONDS * 3, ignore_args=["db"])
+async def read_party_donations(
+    db: Session = Depends(get_db), filters: List[int] = Query(None)
+):
+    party_donations = crud.get_all_party_donations(db, filters)
+    check_entity_not_found(party_donations, "Party Donations")
+    return paginate(party_donations)
+
+
 # https://uriyyo-fastapi-pagination.netlify.app/
 add_pagination(router)
 
@@ -312,12 +340,5 @@ def read_party_donations(db: Session = Depends(get_db)):
     bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
     party_donations = crud.get_homepage_party_donations(db, bundestag_party_ids)
 
-    return party_donations
-
-
-@router.get("/partydonations", response_model=List[schemas.PartyDonation])
-def read_party_donations(db: Session = Depends(get_db)):
-    party_donations = crud.get_all_party_donations(db)
-    check_entity_not_found(party_donations, "Party Donations")
     return party_donations
  """
