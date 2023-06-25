@@ -659,6 +659,13 @@ class SidejobBundestag(FTFBaseModel):
     politician: PoliticianHeader
 
 
+class PrivatePartyDonationOrganization(FTFBaseModel):
+    id: int
+    donor_name: str
+    donor_city: str
+    donor_foreign: bool
+
+
 class PartyDonationOrganization(FTFBaseModel):
     id: int
     donor_name: str
@@ -676,8 +683,21 @@ class PartyDonation(FTFBaseModel):
     party_donation_organization: PartyDonationOrganization
 
 
+class PluginPartyDonation(FTFBaseModel):
+    id: int
+    party: Party
+    amount: float
+    date: date
+    party_donation_organization: PrivatePartyDonationOrganization
+
+
 class HomepagePartyDonation(FTFBaseModel):
     party: Party
     donations_over_32_quarters: List[float]
     donations_total: float
     largest_quarter: float
+
+
+class PluginPoll(FTFBaseModel):
+    poll: Poll
+    result: VoteResult
