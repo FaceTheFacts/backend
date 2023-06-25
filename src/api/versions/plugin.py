@@ -43,7 +43,7 @@ def get_db():
 
 @router.get(
     "/politician/{id}",
-    response_model=schemas.Politician,
+    response_model=schemas.PluginPolitician,
     summary="Get detailed information about a specific politician",
     description="Returns detailed information about a politician based on the provided ID, including their party, occupations, side jobs, CVs, committee-membership and voting records",
 )
@@ -120,7 +120,7 @@ def read_politician_positions(id: int, db: Session = Depends(get_db)):
 # Tested with mockup
 @router.get(
     "/politician/{id}/sidejobs",
-    response_model=Page_custom[schemas.Sidejob],
+    response_model=Page_custom[schemas.PluginSidejob],
     summary="Get the sidejobs associated with a specific politician",
     description="Returns a list of sidejobs associated with the politician with the provided ID",
 )
@@ -236,11 +236,10 @@ async def read_bundestag_speech(page: int = 1, db: Session = Depends(get_db)):
 
 @router.get(
     "/bundestag/sidejobs",
-    response_model=Page_custom[schemas.SidejobBundestag],
+    response_model=Page_custom[schemas.PluginSidejobBundestag],
     summary="Get the latest sidejobs from the parliament",
     description="Returns a list of the latest bundestag sidejobs and the associated politiican",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 async def read_politician_sidejobs(db: Session = Depends(get_db)):
     sidejobs = crud.get_all_sidejobs(db)
     check_entity_not_found(sidejobs, "Sidejobs")
