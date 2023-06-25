@@ -100,17 +100,32 @@ def get_candidacy_mandate_ids_by_politician_id(db: Session, id: int) -> List[int
 
 
 # Tested with mockup
-def get_sidejobs_by_politician_id(db: Session, id: int):
-    sidejobs = (
-        db.query(models.Sidejob)
-        .filter(models.Politician.id == id)
-        .filter(models.Politician.id == models.CandidacyMandate.politician_id)
-        .filter(
-            models.CandidacyMandate.id == models.SidejobHasMandate.candidacy_mandate_id
+def get_sidejobs_by_politician_id(db: Session, id: int, version: str = "v2"):
+    if version == "v1":
+        sidejobs = (
+            db.query(models.Sidejob)
+            .filter(models.Politician.id == id)
+            .filter(models.Politician.id == models.CandidacyMandate.politician_id)
+            .filter(
+                models.CandidacyMandate.id
+                == models.SidejobHasMandate.candidacy_mandate_id
+            )
+            .filter(models.SidejobHasMandate.sidejob_id == models.Sidejob.id)
+            .filter(models.Sidejob.id < 11701)
+            .all()
         )
-        .filter(models.SidejobHasMandate.sidejob_id == models.Sidejob.id)
-        .all()
-    )
+    else:
+        sidejobs = (
+            db.query(models.Sidejob)
+            .filter(models.Politician.id == id)
+            .filter(models.Politician.id == models.CandidacyMandate.politician_id)
+            .filter(
+                models.CandidacyMandate.id
+                == models.SidejobHasMandate.candidacy_mandate_id
+            )
+            .filter(models.SidejobHasMandate.sidejob_id == models.Sidejob.id)
+            .all()
+        )
 
     for item in sidejobs:
         item.__dict__["income_level"] = convert_income_level(
@@ -120,16 +135,28 @@ def get_sidejobs_by_politician_id(db: Session, id: int):
     return sidejobs
 
 
-def get_latest_sidejobs(db: Session):
-    query_data = (
-        db.query(models.Sidejob, models.Politician)
-        .order_by(models.Sidejob.id.desc())
-        .join(models.SidejobHasMandate)
-        .join(models.CandidacyMandate)
-        .join(models.Politician)
-        .limit(5)
-        .all()
-    )
+def get_latest_sidejobs(db: Session, version: str = "v2"):
+    if version == "v1":
+        query_data = (
+            db.query(models.Sidejob, models.Politician)
+            .filter(models.Sidejob.id < 11701)
+            .order_by(models.Sidejob.id.desc())
+            .join(models.SidejobHasMandate)
+            .join(models.CandidacyMandate)
+            .join(models.Politician)
+            .limit(5)
+            .all()
+        )
+    else:
+        query_data = (
+            db.query(models.Sidejob, models.Politician)
+            .order_by(models.Sidejob.id.desc())
+            .join(models.SidejobHasMandate)
+            .join(models.CandidacyMandate)
+            .join(models.Politician)
+            .limit(5)
+            .all()
+        )
     sidejobs = []
 
     for query_object in query_data:
@@ -143,16 +170,28 @@ def get_latest_sidejobs(db: Session):
     return sidejobs
 
 
-def get_all_sidejobs(db: Session):
-    query_data = (
-        db.query(models.Sidejob, models.Politician)
-        .order_by(models.Sidejob.id.desc())
-        .join(models.SidejobHasMandate)
-        .join(models.CandidacyMandate)
-        .join(models.Politician)
-        .limit(1000)
-        .all()
-    )
+def get_all_sidejobs(db: Session, version: str = "v2"):
+    if version == "v1":
+        query_data = (
+            db.query(models.Sidejob, models.Politician)
+            .filter(models.Sidejob.id < 11701)
+            .order_by(models.Sidejob.id.desc())
+            .join(models.SidejobHasMandate)
+            .join(models.CandidacyMandate)
+            .join(models.Politician)
+            .limit(1000)
+            .all()
+        )
+    else:
+        query_data = (
+            db.query(models.Sidejob, models.Politician)
+            .order_by(models.Sidejob.id.desc())
+            .join(models.SidejobHasMandate)
+            .join(models.CandidacyMandate)
+            .join(models.Politician)
+            .limit(1000)
+            .all()
+        )
     sidejobs = []
 
     for query_object in query_data:
