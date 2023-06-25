@@ -604,5 +604,88 @@ def append_partydonation_organization() -> None:
     print("Successfully retrieved party donation organizations")
 
 
+def append_cities() -> None:
+    missing_cities = fetch_missing_entity("cities", models.City)
+    if missing_cities:
+        cities = [
+            {
+                "id": api_city["id"],
+                "entity_type": api_city["entity_type"],
+                "label": api_city["label"],
+                "api_url": api_city["api_url"],
+            }
+            for api_city in missing_cities
+        ]
+        insert_and_update(models.City, cities)
+        print("Successfully appended cities")
+    else:
+        print("No new cities to append")
+
+
+def append_sidejob_organizations() -> List:
+    missing_sidejob_organizations = fetch_missing_entity(
+        "sidejob-organizations", models.SidejobOrganization
+    )
+    write_json(
+        "src/cron_jobs/data/sidejob_organizations.json", missing_sidejob_organizations
+    )
+    if missing_sidejob_organizations:
+        sidejob_organizations = [
+            {
+                "id": api_sidejob_organization["id"],
+                "entity_type": api_sidejob_organization["entity_type"],
+                "label": api_sidejob_organization["label"],
+                "api_url": api_sidejob_organization["api_url"],
+                "field_city_id": api_sidejob_organization["field_city"]["id"]
+                if api_sidejob_organization["field_city"]
+                else None,
+                "field_country_id": api_sidejob_organization["field_country"]["id"]
+                if api_sidejob_organization["field_country"]
+                else None,
+            }
+            for api_sidejob_organization in missing_sidejob_organizations
+        ]
+        write_json(
+            "src/cron_jobs/data/sidejob_organizations_1.json", sidejob_organizations
+        )
+        insert_and_update(models.SidejobOrganization, sidejob_organizations)
+        print("Successfully retrieved sidejob organizations")
+        organization_topics = []
+        for api_sidejob_organization in missing_sidejob_organizations:
+            field_topics = api_sidejob_organization["field_topics"]
+            if field_topics:
+                for topic in field_topics:
+                    organization_topic = {
+                        "sidejob_organization_id": api_sidejob_organization["id"],
+                        "topic_id": topic["id"],
+                    }
+                    organization_topics.append(organization_topic)
+        if organization_topics:
+            insert_only(models.SidejobOrganizationHasTopic, organization_topics)
+            print("Successfully retrieved sidejob organization topics")
+        return sidejob_organizations
+    else:
+        print("Nothing to fetch for sidejob organizations")
+
+
+def append_countries() -> None:
+    missing_countries = fetch_missing_entity("countries", models.Country)
+    if missing_countries:
+        countries = [
+            {
+                "id": api_country["id"],
+                "entity_type": api_country["entity_type"],
+                "label": api_country["label"],
+                "api_url": api_country["api_url"],
+            }
+            for api_country in missing_countries
+        ]
+        insert_and_update(models.Country, countries)
+        print("Successfully appended countries")
+    else:
+        print("No new countries to append")
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
+    append_sidejob_organizations()
