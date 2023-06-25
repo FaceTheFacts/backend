@@ -306,7 +306,12 @@ async def read_politician_news(id: int):
         raise HTTPException(status_code=response.status_code, detail=detail)
 
 
-@router.get("/parties", response_model=Page_custom[schemas.Party])
+@router.get(
+    "/parties",
+    response_model=Page_custom[schemas.Party],
+    summary="Get all politicial parties of Germany",
+    description="Returns a list of all politicial parties of Germany",
+)
 @custom_cache(expire=ONE_WEEK_IN_SECONDS, ignore_args=["db"])
 async def get_parties(db: Session = Depends(get_db)):
     parties = crud.get_parties(db)
