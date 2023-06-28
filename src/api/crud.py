@@ -124,6 +124,7 @@ def get_sidejobs_by_politician_id(db: Session, id: int, version: str = "v2"):
                 == models.SidejobHasMandate.candidacy_mandate_id
             )
             .filter(models.SidejobHasMandate.sidejob_id == models.Sidejob.id)
+            .order_by(models.Sidejob.id.desc())
             .all()
         )
 
