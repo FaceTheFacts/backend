@@ -26,6 +26,8 @@ To run this project, you will need to add the following environment variables to
 
 `POLITRACK_SECRET_PASSWORD`
 
+`ENV`
+
 ## Installation/ Run locally
 
 This application uses [poetry](https://python-poetry.org/) for dependency management and packaging in Python, [uvicorn](https://www.uvicorn.org/) as a server and [redis](https://redis.io/download/) as cache. For setting up, run these commands as follows.
