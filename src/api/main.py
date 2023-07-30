@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 import schedule
 from fastapi_redis_cache import cache
 from redis import asyncio as aioredis
@@ -70,6 +71,7 @@ app.add_middleware(
 
 if os.environ.get('ENV') == 'production':
     app.add_middleware(HTTPSRedirectMiddleware)
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=["api.facethefacts-api.de"])
 
 
 @app.middleware("http")
