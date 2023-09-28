@@ -50,7 +50,7 @@ def read_politician(
     votes_start: int = Query(None, description="Starting index of votes", example=0),
     votes_end: int = Query(6, description="Ending index of votes", example=6),
 ):
-    return get_politician_profile(id, db, votes_start, votes_end, "v1")
+    return get_politician_profile(id, db, votes_start, votes_end)
 
 
 @router.get(
