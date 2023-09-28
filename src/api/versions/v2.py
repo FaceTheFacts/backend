@@ -37,7 +37,7 @@ def get_db():
 
 @router.get(
     "/politician/{id}",
-    response_model=schemas.PoliticianwithSource,
+    response_model=schemas.PoliticianWithSource,
     summary="Get detailed information about a specific politician",
     description="Returns detailed information about a politician based on the provided ID, including their party, occupations, side jobs, CVs, and voting records",
 )
