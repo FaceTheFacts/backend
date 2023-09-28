@@ -17,7 +17,7 @@ from sqlalchemy.orm.session import Session
 
 
 # local
-from src.api.versions import v1, plugin
+from src.api.versions import v2, v1, plugin
 from src.api.utils.openapi import api_description, tags_metadata
 import src.cron_jobs.append_db as cron_jobs
 from src.redis_cache.cache import redis_url, CustomFastApiRedisCache, get_redis
@@ -26,7 +26,7 @@ from src.redis_cache.cache import redis_url, CustomFastApiRedisCache, get_redis
 app = FastAPI(
     title="FaceTheFacts API",
     description=api_description,
-    version="1.0",
+    version="2.0",
     terms_of_service="https://facethefacts.app/legal-notice",
     contact={
         "name": "FaceTheFacts",
@@ -56,6 +56,7 @@ def startup():
 # List all versions here
 app.include_router(plugin.router)
 app.include_router(v1.router)
+app.include_router(v2.router)
 
 # CORS-policy
 # * docs: https://fastapi.tiangolo.com/tutorial/cors/
