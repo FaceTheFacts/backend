@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [main, development, feature/185/cloud-migration]
+    branches: [main, development]
   pull_request:
     branches: [main]
 
@@ -21,6 +21,9 @@ jobs:
       - name: Lint
         run: poetry run python -m black --check .
 
+      - name: Test
+        run: poetry run python -m pytest
+
       - name: SonarCloud Analysis
         uses: sonarsource/sonarcloud-github-action@master
         env:
@@ -30,7 +33,7 @@ jobs:
   cd:
     runs-on: ubuntu-latest
     needs: [ci]
-    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || github.ref == 'refs/heads/feature/185/cloud-migration' ) }}
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development')  }}
 
     steps:
       - name: Checkout source code
