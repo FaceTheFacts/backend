@@ -22,6 +22,8 @@ PERIOD_POSITION_TABLE = {
     130: "mecklenburg-vorpommern",
     129: "berlin",
     128: "general",
+    147: "bayern",
+    148: "hessen",
 }
 
 
