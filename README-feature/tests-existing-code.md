@@ -3,6 +3,7 @@
 ## Here is what I have done
 
 - Conducted unit tests for Party, PartyDonation, and PartyDonationOrganization tables using SQLite.
+- Conducted unit tests for get_all_party_donations used by **/partydonations**.
 
 ## Description
 
