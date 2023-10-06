@@ -1,3 +1,6 @@
+"""DEPRECATED: This scraper is deprecated because the data is not up to date."""
+
+
 from abc import ABC
 
 import scrapy
