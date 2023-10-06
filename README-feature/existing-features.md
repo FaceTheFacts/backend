@@ -31,7 +31,7 @@ Database management in the project relies on SQLAlchemy. All database classes in
 
 ## Repository patterns
 
-In the current implementation of the project's src/cron_jobs/crud.py module, database operations are handled directly within the functions. While this approach can work effectively for smaller projects, a more structured and scalable approach could be to adopt the Repository Pattern.
+In the current implementation of the project's crud.py module, database operations are handled directly within the functions. While this approach can work effectively for smaller projects, a more structured and scalable approach could be to adopt the Repository Pattern.
 
 Here is benefits:
 
