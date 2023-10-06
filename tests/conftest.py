@@ -1,18 +1,23 @@
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, clear_mappers
+from sqlalchemy.orm import sessionmaker
 
 from src.db.connection import Base
 
 
-@pytest.fixture
+# Arrange
+@pytest.fixture(scope="module")
 def in_memory_db():
     engine = create_engine("sqlite:///:memory:")
     Base.metadata.create_all(engine)
     return engine
 
 
+# Arrange
 @pytest.fixture
 def session(in_memory_db):
-    yield sessionmaker(bind=in_memory_db)()
-    clear_mappers()
+    session = sessionmaker(bind=in_memory_db)()
+    yield session
+    # Clean up
+    session.rollback()
+    session.close()
