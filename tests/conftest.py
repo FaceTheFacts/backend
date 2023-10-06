@@ -45,7 +45,7 @@ def setup_party_donations(session):
 
     yield session
 
-    # Clean Up
+    # Cleanup
     for party_donation in party_donations:
         session.delete(party_donation)
     session.commit()

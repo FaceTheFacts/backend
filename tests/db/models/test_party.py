@@ -23,6 +23,8 @@ class TestParty:
         assert result.api_url == "https://www.abgeordnetenwatch.de/api/parties/1"
         assert result.full_name == "Christlich Demokratische Union Deutschlands"
         assert result.short_name == "CDU"
+        # Cleanup
+        session.delete(party)
 
     @pytest.mark.xfail(raises=Exception)
     def test_insert_party_only_id_and_entity_invalid(self, session):

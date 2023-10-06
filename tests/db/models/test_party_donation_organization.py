@@ -28,6 +28,9 @@ class TestPartyDonationOrganization:
         assert result.donor_city == "Test City"
         assert result.donor_foreign == True
 
+        # Cleanup
+        session.delete(party_donation_organization)
+
     @pytest.mark.xfail(raises=Exception)
     def test_insert_party_donation_organization_no_donor_name_invalid(self, session):
         try:
