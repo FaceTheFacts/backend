@@ -1,3 +1,5 @@
+"""DEPRECATED: This scraper is deprecated because the data is not up to date."""
+
 import copy
 
 from scrapy.crawler import CrawlerProcess
