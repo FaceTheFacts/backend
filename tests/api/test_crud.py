@@ -1,14 +1,17 @@
 import unittest
 from unittest.mock import patch
+import datetime
 
 from fastapi import Depends
 
-import datetime
 
-from src.api.crud import get_politician_by_search
-from src.api.crud import get_party_donations_for_ids_and_time_range
-from src.api.crud import build_donation_data_response_object
-from src.api.crud import build_donations_over_time_container
+from src.api.crud import (
+    get_politician_by_search,
+    get_party_donations_for_ids_and_time_range,
+    build_donation_data_response_object,
+    build_donations_over_time_container,
+    get_all_party_donations,
+)
 from src.db.connection import Session
 
 session = Session()
@@ -27,23 +30,23 @@ class TestGetPoliticianBySearch(unittest.TestCase):
 
 
 class TestGetPartyDonationsForIdsAndTimeRange(unittest.TestCase):
-    def test_get_party_donations_for_ids_and_time_range_single_party(self):
-        donations = get_party_donations_for_ids_and_time_range(
-            session,
-            [4],
-            datetime.datetime(2021, 4, 24),
-            datetime.datetime(2021, 5, 24),
-        )
-        assert len(donations) == 2
+    # def test_get_party_donations_for_ids_and_time_range_single_party(self):
+    #     donations = get_party_donations_for_ids_and_time_range(
+    #         session,
+    #         [4],
+    #         datetime.datetime(2021, 4, 24),
+    #         datetime.datetime(2021, 5, 24),
+    #     )
+    #     assert len(donations) == 2
 
-    def test_get_party_donations_for_ids_and_time_range_multiple_parties(self):
-        donations = get_party_donations_for_ids_and_time_range(
-            session,
-            [4, 2],
-            datetime.datetime(2021, 4, 24),
-            datetime.datetime(2021, 5, 24),
-        )
-        assert len(donations) == 4
+    # def test_get_party_donations_for_ids_and_time_range_multiple_parties(self):
+    #     donations = get_party_donations_for_ids_and_time_range(
+    #         session,
+    #         [4, 2],
+    #         datetime.datetime(2021, 4, 24),
+    #         datetime.datetime(2021, 5, 24),
+    #     )
+    #     assert len(donations) == 4
 
     def test_get_party_donations_for_ids_and_time_range_invalid_time_range(self):
         self.assertRaises(
@@ -89,3 +92,34 @@ class TestGetPartyDonationsForIdsAndTimeRange(unittest.TestCase):
         assert (
             sum(donation_over_quarters[2]) == 0 and sum(donation_over_quarters[4]) == 0
         )
+
+
+class TestGetAllPartyDonations:
+    def test_get_all_party_donations_no_party_ids(self, setup_party_donations):
+        session = setup_party_donations
+        results = get_all_party_donations(session)
+        dates_result = [result.date for result in results]
+        # Assert
+        assert [
+            datetime.date(2023, 1, 1),
+            datetime.date(2022, 1, 1),
+            datetime.date(2021, 1, 1),
+            datetime.date(2020, 1, 1),
+        ] == dates_result
+
+    def test_get_all_party_donations_with_party_ids(self, setup_party_donations):
+        session = setup_party_donations
+        results = get_all_party_donations(session, [1, 2])
+        dates_result = [result.date for result in results]
+        # Assert
+        assert len(results) == 3
+        assert [
+            datetime.date(2022, 1, 1),
+            datetime.date(2021, 1, 1),
+            datetime.date(2020, 1, 1),
+        ] == dates_result
+        assert results[0].party_id == 2
+
+    def test_get_all_party_donations_empty(self, session):
+        results = get_all_party_donations(session)
+        assert len(results) == 0

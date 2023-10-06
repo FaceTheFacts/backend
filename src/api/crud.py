@@ -1,5 +1,5 @@
 from operator import and_
-from typing import List
+from typing import List, Optional
 import math
 import datetime
 from dateutil.relativedelta import relativedelta
@@ -725,7 +725,7 @@ class PartyDonationResponse:
         self.time_range_end = time_range_end
 
 
-def get_all_party_donations(db: Session, party_ids: list = None):
+def get_all_party_donations(db: Session, party_ids: Optional[List] = None):
     if party_ids:
         party_donations = (
             db.query(models.PartyDonation)
