@@ -1,50 +1,77 @@
 from datetime import date
 
 import pytest
+from sqlalchemy import text
 
 from src.api.repository import SqlAlchemyRepository
 import src.db.models as models
 
 
 class TestSqlAlchemyRepository:
-    def test_insert_party_donation_valid(self, session):
-        repository = SqlAlchemyRepository(session)
+    # add
+    def test_repository_can_save_a_party_donation(self, session):
+        repo = SqlAlchemyRepository(session)
         party_donation = models.PartyDonation(
             id=1, amount=1000.0, date=date(2020, 1, 1), party_id=1
         )
         # Act
-        repository.add(party_donation=party_donation)
+        repo.add(party_donation=party_donation)
         session.commit()
+        rows = session.execute(
+            text("SELECT * FROM party_donation WHERE id = :id"), {"id": 1}
+        )
         # Assert
-        assert session.query(models.PartyDonation).count() == 1
+        assert list(rows) == [(1, 1, 1000.0, "2020-01-01", None)]
         # Cleanup
-        session.delete(party_donation)
+        session.execute(text("DELETE FROM party_donation WHERE id = :id"), {"id": 1})
         session.commit()
 
+    # add
     @pytest.mark.xfail(raises=Exception)
-    def test_insert_party_donation_no_date_invalid(self, session):
+    def test_repository_cannot_save_a_party_donation_no_date(self, session):
         try:
-            repository = SqlAlchemyRepository(session)
+            repo = SqlAlchemyRepository(session)
             # Act
             party_donation = models.PartyDonation(
                 id=1,
                 amount=1000.0,
             )
-            repository.add(party_donation=party_donation)
+            repo.add(party_donation=party_donation)
             session.commit()
 
         except Exception:
             session.rollback()
 
-    def test_get_party_donation(self, session):
-        repository = SqlAlchemyRepository(session)
-        party_donation = models.PartyDonation(
-            id=2, amount=1000.0, date=date(2020, 1, 1), party_id=2
+    def insert_party_donation(self, session):
+        session.execute(
+            text(
+                "INSERT INTO party_donation (id, amount, date, party_id) "
+                "VALUES (:id, :amount, :date, :party_id)"
+            ),
+            {"id": 2, "amount": 1000.0, "date": date(2020, 1, 1), "party_id": 1},
         )
-        session.add(party_donation)
-        session.commit()
-        # Act and Assert
-        assert repository.get("id", 2) == party_donation
-        assert repository.get("party_id", 2) == party_donation
-        session.delete(party_donation)
+        [[party_donation_id]] = session.execute(
+            text("SELECT id FROM party_donation WHERE id = :id"), {"id": 2}
+        )
+        return party_donation_id
+
+    # get
+    def test_repository_can_retrieve_a_party_donation(self, session):
+        party_donation_id = self.insert_party_donation(session)
+        repo = SqlAlchemyRepository(session)
+        # Act
+        retrieved = repo.get("id", party_donation_id)
+        expected = models.PartyDonation(
+            id=2, amount=1000.0, date=date(2020, 1, 1), party_id=1
+        )
+        # Assert
+        if retrieved is None:
+            raise Exception("PartyDonation not found")
+        assert retrieved.id == expected.id
+        assert retrieved.amount == expected.amount
+        assert retrieved.date == expected.date
+        # Cleanup
+        session.execute(
+            text("DELETE FROM party_donation WHERE id = :id"), {"id": party_donation_id}
+        )
         session.commit()
