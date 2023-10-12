@@ -1,5 +1,5 @@
 import abc
-from typing import Optional
+from typing import Optional, List
 import src.db.models as models
 
 
@@ -39,6 +39,21 @@ class SqlAlchemyPartyDonationRepository(SqlAlchemyBaseRepository):
 
     def __init__(self, session):
         super().__init__(session, models.PartyDonation)
+
+    def list(self, party_ids: Optional[List[int]] = None) -> List[models.PartyDonation]:
+        if party_ids is None:
+            return (
+                self.session.query(self.model_class)
+                .order_by(self.model_class.date.desc())
+                .all()
+            )
+        else:
+            return (
+                self.session.query(self.model_class)
+                .where(self.model_class.party_id.in_(party_ids))
+                .order_by(self.model_class.date.desc())
+                .all()
+            )
 
 
 class SqlAlchemyPartyRepository(SqlAlchemyBaseRepository):
