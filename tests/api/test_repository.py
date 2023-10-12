@@ -7,7 +7,7 @@ from src.api.repository import SqlAlchemyFactory
 import src.db.models as models
 
 
-class TestSqlAlchemyRepository:
+class TestSqlAlchemyPartyDonationRepository:
     # add
     def test_repository_can_save_a_party_donation(self, session):
         factory = SqlAlchemyFactory(session)
