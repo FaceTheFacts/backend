@@ -3,19 +3,20 @@ from datetime import date
 import pytest
 from sqlalchemy import text
 
-from src.api.repository import SqlAlchemyRepository
+from src.api.repository import SqlAlchemyFactory
 import src.db.models as models
 
 
 class TestSqlAlchemyRepository:
     # add
     def test_repository_can_save_a_party_donation(self, session):
-        repo = SqlAlchemyRepository(session)
+        factory = SqlAlchemyFactory(session)
+        repo = factory.create_party_donation_repository()
         party_donation = models.PartyDonation(
             id=1, amount=1000.0, date=date(2020, 1, 1), party_id=1
         )
         # Act
-        repo.add(party_donation=party_donation)
+        repo.add(party_donation)
         session.commit()
         rows = session.execute(
             text("SELECT * FROM party_donation WHERE id = :id"), {"id": 1}
@@ -30,13 +31,14 @@ class TestSqlAlchemyRepository:
     @pytest.mark.xfail(raises=Exception)
     def test_repository_cannot_save_a_party_donation_no_date(self, session):
         try:
-            repo = SqlAlchemyRepository(session)
+            factory = SqlAlchemyFactory(session)
+            repo = factory.create_party_donation_repository()
             # Act
             party_donation = models.PartyDonation(
                 id=1,
                 amount=1000.0,
             )
-            repo.add(party_donation=party_donation)
+            repo.add(party_donation)
             session.commit()
 
         except Exception:
@@ -58,7 +60,8 @@ class TestSqlAlchemyRepository:
     # get
     def test_repository_can_retrieve_a_party_donation(self, session):
         party_donation_id = self.insert_party_donation(session)
-        repo = SqlAlchemyRepository(session)
+        factory = SqlAlchemyFactory(session)
+        repo = factory.create_party_donation_repository()
         # Act
         retrieved = repo.get("id", party_donation_id)
         expected = models.PartyDonation(
