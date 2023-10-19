@@ -90,6 +90,7 @@ def postgres_session(postgres_db):
 # Arrange
 @pytest.fixture
 def setup_postgres_party_related_tables(postgres_session):
+    """Create a postgres session with party related tables for testing."""
     # PartyStyle
     party_style_data = [
         (1, "CDU", "#000000", "#FFFFFF", "#000000"),

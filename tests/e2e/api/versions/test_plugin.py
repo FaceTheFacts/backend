@@ -13,6 +13,7 @@ class TestPartyDonations:
     def test_get_party_donations_with_party_ids(
         self, setup_postgres_party_related_tables
     ):
+        """Test that the endpoint returns the correct data for the given party ids."""
         party_ids = [1, 100]
         response = client.get(
             self.endpoint + f"?filters={party_ids[0]}" + f"&filters={party_ids[1]}"
@@ -27,6 +28,7 @@ class TestPartyDonations:
     def test_get_party_donations_with_invalid_party_id(
         self, setup_postgres_party_related_tables
     ):
+        """Test that the endpoint returns 404 if the party id is invalid."""
         party_ids = [100]
         response = client.get(self.endpoint + f"?filters={party_ids[0]}")
         # Assert
@@ -35,6 +37,7 @@ class TestPartyDonations:
     def test_get_party_donations_without_party_ids(
         self, setup_postgres_party_related_tables
     ):
+        """Test that the endpoint returns the correct data."""
         party_ids = [1, 100]
         response = client.get(self.endpoint)
         # Assert
@@ -49,6 +52,7 @@ class TestParty:
     endpoint = "/plugin/parties"
 
     def test_get_parties(self, setup_postgres_party_related_tables):
+        """Test that the endpoint returns the correct data."""
         response = client.get(self.endpoint)
         # Assert
         assert response.status_code == 200
