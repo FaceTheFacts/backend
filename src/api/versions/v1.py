@@ -9,6 +9,7 @@ from fastapi_pagination import Page, add_pagination, paginate
 
 # local
 import src.api.crud as crud
+from src.api.repository import SqlAlchemyFactory
 import src.api.schemas as schemas
 from src.api.utils import politrack
 from src.api.utils.politician import get_politician_profile
@@ -339,6 +340,8 @@ def read_homepage_party_donations(db: Session = Depends(get_db)):
 
 @router.get("/partydonations", response_model=List[schemas.PartyDonation])
 def read_party_donations(db: Session = Depends(get_db)):
-    party_donations = crud.get_all_party_donations(db)
+    factory = SqlAlchemyFactory(db)
+    repo = factory.create_party_donation_repository()
+    party_donations = repo.list()
     check_entity_not_found(party_donations, "Party Donations")
     return party_donations
