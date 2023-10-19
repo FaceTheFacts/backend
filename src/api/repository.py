@@ -62,6 +62,13 @@ class SqlAlchemyPartyRepository(SqlAlchemyBaseRepository):
     def __init__(self, session):
         super().__init__(session, models.Party)
 
+    def list(self) -> List[models.Party]:
+        return (
+            self.session.query(self.model_class)
+            .order_by(self.model_class.id.asc())
+            .all()
+        )
+
 
 class SqlAlchemyFactory:
     """Factory class to create repositories"""

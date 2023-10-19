@@ -316,7 +316,9 @@ async def read_politician_news(id: int):
 )
 @custom_cache(expire=ONE_WEEK_IN_SECONDS, ignore_args=["db"])
 async def get_parties(db: Session = Depends(get_db)):
-    parties = crud.get_parties(db)
+    factory = SqlAlchemyFactory(db)
+    repo = factory.create_party_repository()
+    parties = repo.list()
     check_entity_not_found(parties, "Parties")
     return paginate(parties)
 
