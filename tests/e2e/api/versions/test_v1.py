@@ -40,3 +40,40 @@ class TestPartyDonations:
         # Assert that the response is sorted by date
         assert response.json()[0]["date"] == "2023-01-01"
         assert response.json()[-1]["date"] == "2020-01-01"
+
+    def test_plugin__get_party_donations_with_party_ids(
+        self, setup_postgres_party_related_tables
+    ):
+        party_ids = [1, 100]
+        response = client.get(
+            "/plugin"
+            + self.endpoint
+            + f"?filters={party_ids[0]}"
+            + f"&filters={party_ids[1]}"
+        )
+        # Assert
+        assert response.status_code == 200
+        assert len(response.json()["items"]) == 2
+        # Assert that the response is sorted by date
+        assert response.json()["items"][0]["date"] == "2021-01-01"
+        assert response.json()["items"][-1]["date"] == "2020-01-01"
+
+    def test_plugin__get_party_donations_with_invalid_party_id(
+        self, setup_postgres_party_related_tables
+    ):
+        party_ids = [100]
+        response = client.get("/plugin" + self.endpoint + f"?filters={party_ids[0]}")
+        # Assert
+        assert response.status_code == 404
+
+    def test_plugin__get_party_donations_without_party_ids(
+        self, setup_postgres_party_related_tables
+    ):
+        party_ids = [1, 100]
+        response = client.get("/plugin" + self.endpoint)
+        # Assert
+        assert response.status_code == 200
+        assert len(response.json()["items"]) == 4
+        # Assert that the response is sorted by date
+        assert response.json()["items"][0]["date"] == "2023-01-01"
+        assert response.json()["items"][-1]["date"] == "2020-01-01"
