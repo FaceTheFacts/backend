@@ -77,3 +77,17 @@ class TestPartyDonations:
         # Assert that the response is sorted by date
         assert response.json()["items"][0]["date"] == "2023-01-01"
         assert response.json()["items"][-1]["date"] == "2020-01-01"
+
+
+class TestParty:
+    endpoint = "/parties"
+
+    def test_v1_parties(self, setup_postgres_party_related_tables):
+        response = client.get("/plugin" + self.endpoint)
+        # Assert
+        assert response.status_code == 200
+        items = response.json()["items"]
+        assert len(items) == 4
+        # Assert that the response is sorted by party_id
+        assert items[0]["id"] == 1
+        assert items[-1]["id"] == 4
