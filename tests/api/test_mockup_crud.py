@@ -195,7 +195,7 @@ class TestCrudFunctions(unittest.TestCase):
         actual_items = actual["items"]
         actual_is_last_page = actual["is_last_page"]
         total = actual["total"]
-        expected_total = 63
+        expected_total = 65
         self.assertEqual(total, expected_total)
         expected = [
             {
