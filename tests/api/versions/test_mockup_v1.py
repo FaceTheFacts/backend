@@ -10,10 +10,12 @@ import datetime
 
 # Third-party
 from fastapi.testclient import TestClient
+import pytest
 
 client = TestClient(app)
 
 
+@pytest.mark.e2e
 class TestV1Routes(unittest.TestCase):
     # unittest
     @patch(

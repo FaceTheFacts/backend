@@ -5,7 +5,7 @@ from src.db.models.party_donation_organization import PartyDonationOrganization
 
 
 def insert_party_donation_organization(session):
-    # Act
+    # Arrange
     party_donation_organization = PartyDonationOrganization(
         id=1,
         donor_name="Test Donor",
@@ -26,6 +26,8 @@ def delete_party_donation_organization(session):
 
 class TestPartyDonationOrganization:
     def test_insert_party_donation_organization_valid(self, session):
+        # Arrange
+        insert_party_donation_organization(session)
         result = (
             session.query(PartyDonationOrganization)
             .filter(PartyDonationOrganization.id == 1)
@@ -44,6 +46,7 @@ class TestPartyDonationOrganization:
     @pytest.mark.xfail(raises=Exception)
     def test_insert_party_donation_organization_no_donor_name_invalid(self, session):
         try:
+            # Arrange
             insert_party_donation_organization(session)
         except Exception:
             session.rollback()
