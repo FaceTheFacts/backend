@@ -37,7 +37,8 @@ jobs:
           POLITRACK_USERNAME: ${{ secrets.POLITRACK_USERNAME}}
           POLITRACK_SECRET_PASSWORD: ${{ secrets.POLITRACK_SECRET_PASSWORD}}
           REDIS_HOST: ${{ secrets.REDIS_HOST}}
-        run: poetry run pytest
+        # Exempt tests/e2e because tests/api uses production database to test whereas tests/e2e uses localhost == avoid conflicts
+        run: poetry run pytest -k "not tests/e2e"
 
   cd:
     runs-on: ubuntu-latest
