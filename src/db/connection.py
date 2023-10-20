@@ -12,16 +12,16 @@ load_dotenv()
 
 database_connections = {
     "testing": {
-        "database_user": os.environ["TESTING_DATABASE_USER"],
-        "database_password": os.environ["TESTING_DATABASE_PASSWORD"],
-        "database_host": os.environ["TESTING_DATABASE_HOST"],
-        "database_name": os.environ["TESTING_DATABASE_NAME"],
+        "database_user": os.environ.get("TESTING_DATABASE_USER", "postgres"),
+        "database_password": os.environ.get("TESTING_DATABASE_PASSWORD", "password"),
+        "database_host": os.environ.get("TESTING_DATABASE_HOST", "localhost"),
+        "database_name": os.environ.get("TESTING_DATABASE_NAME", "ftf_test_db"),
     },
     "production": {
-        "database_user": os.environ["DATABASE_USER"],
-        "database_password": os.environ["DATABASE_PASSWORD"],
-        "database_host": os.environ["DATABASE_HOST"],
-        "database_name": os.environ["DATABASE_NAME"],
+        "database_user": os.environ.get("DATABASE_USER"),
+        "database_password": os.environ.get("DATABASE_PASSWORD"),
+        "database_host": os.environ.get("DATABASE_HOST"),
+        "database_name": os.environ.get("DATABASE_NAME"),
     },
 }
 
