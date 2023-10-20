@@ -7,6 +7,7 @@ from src.api.main import app
 client = TestClient(app)
 
 
+@pytest.mark.e2e
 class TestPartyDonations:
     endpoint = "/v1/partydonations"
 

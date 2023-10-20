@@ -7,6 +7,7 @@ from src.api.main import app
 client = TestClient(app)
 
 
+@pytest.mark.e2e
 class TestPartyDonations:
     endpoint = "/plugin/partydonations"
 
@@ -48,6 +49,7 @@ class TestPartyDonations:
         assert response.json()["items"][-1]["date"] == "2020-01-01"
 
 
+@pytest.mark.e2e
 class TestParty:
     endpoint = "/plugin/parties"
 
