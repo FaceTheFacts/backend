@@ -2,9 +2,15 @@ from datetime import date
 
 import pytest
 from sqlalchemy import text
+from sqlalchemy.orm.exc import NoResultFound
 
 from src.api.repository import SqlAlchemyFactory
 import src.db.models as models
+
+
+def delete_party_donation(session):
+    session.execute(text("DELETE FROM party_donation"))
+    session.commit()
 
 
 class TestSqlAlchemyPartyDonationRepository:
@@ -24,8 +30,7 @@ class TestSqlAlchemyPartyDonationRepository:
         # Assert
         assert list(rows) == [(1, 1, 1000.0, "2020-01-01", None)]
         # Cleanup
-        session.execute(text("DELETE FROM party_donation WHERE id = :id"), {"id": 1})
-        session.commit()
+        delete_party_donation(session)
 
     # add
     @pytest.mark.xfail(raises=Exception)
@@ -44,8 +49,7 @@ class TestSqlAlchemyPartyDonationRepository:
             pass  # Handle the expected exception
 
         # Cleanup (outside the try-except block)
-        session.execute(text("DELETE FROM party_donation WHERE id = :id"), {"id": 1})
-        session.commit()
+        delete_party_donation(session)
 
     def insert_party_donation(self, session):
         session.execute(
@@ -83,13 +87,15 @@ class TestSqlAlchemyPartyDonationRepository:
         factory = SqlAlchemyFactory(session)
         repo = factory.create_party_donation_repository()
         # Act
-        retrieved = repo.get("id", party_donation_id)
+        try:
+            retrieved = repo.get("id", party_donation_id)
+        except NoResultFound:
+            raise NoResultFound("PartyDonation not found")
+
         expected = models.PartyDonation(
             id=2, amount=1000.0, date=date(2020, 1, 1), party_id=1
         )
         # Assert
-        if retrieved is None:
-            raise Exception("PartyDonation not found")
         assert retrieved.id == expected.id
         assert retrieved.amount == expected.amount
         assert retrieved.date == expected.date

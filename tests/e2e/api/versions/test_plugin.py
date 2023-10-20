@@ -39,7 +39,6 @@ class TestPartyDonations:
         self, setup_postgres_party_related_tables
     ):
         """Test that the endpoint returns the correct data."""
-        party_ids = [1, 100]
         response = client.get(self.endpoint)
         # Assert
         assert response.status_code == 200
