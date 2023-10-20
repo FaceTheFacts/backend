@@ -118,8 +118,7 @@ class TestSqlAlchemyPartyDonationRepository:
         assert retrieved_list[0].date == date(2020, 1, 6)
         assert retrieved_list[-1].date == date(2020, 1, 1)
         # Cleanup
-        session.execute(text("DELETE FROM party_donation"))
-        session.commit()
+        delete_party_donation(session)
 
     # list
     def test_repository_can_list_all_party_donations_with_party_ids(self, session):
@@ -133,5 +132,4 @@ class TestSqlAlchemyPartyDonationRepository:
         assert retrieved_list[0].date == date(2020, 1, 4)
         assert retrieved_list[-1].date == date(2020, 1, 1)
         # Cleanup
-        session.execute(text("DELETE FROM party_donation"))
-        session.commit()
+        delete_party_donation(session)
