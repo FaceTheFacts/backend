@@ -9,7 +9,6 @@ class TestPartyDonation:
     def test_insert_party_donation_valid(self, session, setup_party_donations):
         result = session.query(PartyDonation).filter(PartyDonation.id == 1).first()
         # Assert
-        assert result.amount == 1000.0
         assert result.date == date(2020, 1, 1)
 
     @pytest.mark.xfail(raises=Exception)

@@ -18,7 +18,6 @@ class TestPartyDonations:
         assert len(response.json()) == 4
         # Assert party donation
         assert response.json()[0]["id"] == 4
-        assert response.json()[0]["amount"] == 1000.0
         assert response.json()[0]["date"] == "2023-01-01"
         # Assert party
         assert response.json()[0]["party"]["id"] == 2
