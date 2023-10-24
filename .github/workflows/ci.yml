@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [main, development]
+    branches: [main, development, feature/impl-factory_pattern_repos]
   pull_request:
     branches: [main]
 
@@ -57,8 +57,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: Face-The-Facts Backend
-          environment_name: ${{ github.ref == 'refs/heads/main' && 'Face-The-Facts-Backend-Main' || 'Face-The-FactsBackend-Development' }}
+          application_name: ${{ github.ref == 'refs/heads/main' && 'backend-production' || 'backend-development' }}
+          environment_name: ${{ github.ref == 'refs/heads/main' && 'Backend-production-env' || 'Backend-development-env' }}
           version_label: ${{ github.sha }}
           use_existing_version_if_available: true
           region: eu-central-1
