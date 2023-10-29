@@ -3,7 +3,9 @@ import re
 import json
 from typing import List, Optional
 
+
 # local
+from src.cron_jobs.utils.partydonation_organisation import clean_donor
 from src.cron_jobs.utils.match_topic import match_topic
 from src.cron_jobs.utils.parser import gen_positions
 from src.cron_jobs.crud_db import populate_poll_results_per_fraction
@@ -21,7 +23,6 @@ from src.cron_jobs.utils.fetch import (
 )
 from src.db.connection import engine, Base, Session
 import src.db.models as models
-from src.api.schemas import PartyDonation
 from src.cron_jobs.utils.partydonations import clean_donations
 from src.cron_jobs.utils.file import read_json, write_json
 
@@ -641,11 +642,15 @@ def append_partydonation(json_data: str) -> None:
         donations_to_append.append(donation_to_append)
 
     # Insert the cleaned donations into the database
-    insert_and_update(PartyDonation, donations_to_append)
+    insert_and_update(models.PartyDonation, donations_to_append)
     print("Successfully retrieved party donations")
 
 
 def append_partydonation_organization() -> None:
+    api_party_donation_organizations = load_entity("partydonation")
+    clean_api_party_donation_organizations = clean_donor(
+        api_party_donation_organizations
+    )
     party_donation_organizations = fetch_missing_entity(
         "party_donation_organizations", models.PartyDonationOrganization
     )
