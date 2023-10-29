@@ -70,6 +70,22 @@ def get_party_id(donation_party, parties):
 
 def reformat_date(original_date):
     split_date = original_date.split(".")
-    new_date = split_date[2] + "-" + split_date[1] + "-" + split_date[0]
+    if len(split_date) == 3 and not split_date[2]:
+        year = "2022"
+    else:
+        year = split_date[2]
+    new_date = year + "-" + split_date[1] + "-" + split_date[0]
 
     return new_date
+
+
+def donation_exists(donation, existing_donations):
+    for existing_donation in existing_donations:
+        if (
+            existing_donation.party_id == donation["party_id"]
+            and existing_donation.date == donation["date"]
+            and existing_donation.donor_organization_id
+            == donation["donor_organization_id"]
+        ):
+            return True
+    return False
