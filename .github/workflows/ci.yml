@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [main, development, feature/impl-factory_pattern_repos]
+    branches: [main, development, hotfix/cd-pipeline]
   pull_request:
     branches: [main]
 
@@ -43,7 +43,7 @@ jobs:
   cd:
     runs-on: ubuntu-latest
     needs: [ci]
-    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development'|| github.ref == 'feature/impl-factory_pattern_repos') }}
+    if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development'|| github.ref == 'refs/heads/hotfix/cd-pipeline') }}
 
     steps:
       - name: Checkout source code
