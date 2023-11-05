@@ -1,5 +1,6 @@
 import datetime
 
+
 def get_last_day_of_the_month():
     last_day_of_the_month = None
 
