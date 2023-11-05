@@ -1,6 +1,9 @@
 branch-defaults:
   main:
-    environment: Face-The-Facts-Backend-Main
+    environment: Backend-production-env
+  development:
+    environments: Backend-development-env
+
 environment-defaults:
   Face-The-Facts-Backend-Main:
     branch: null
