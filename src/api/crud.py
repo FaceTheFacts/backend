@@ -759,42 +759,60 @@ def get_parties(db: Session):
     return parties
 
 
-def get_party_donations_details(db: Session):
-    # get all party donations sorted by party id, then by date, in ascending order
+def get_end_of_current_quarter():
+    today = datetime.datetime.now()
+    quarter = (today.month - 1) // 3 + 1
+    return datetime.date(today.year, quarter * 3, 1) + relativedelta(months=1, days=-1)
+
+
+def get_party_donations_details(db: Session, party_id: Optional[int]):
+    # Get all party donations sorted by party id, then by date, in ascending order
     party_donations = (
         db.query(models.PartyDonation)
+        .filter(models.PartyDonation.party_id == party_id)
+        .order_by(models.PartyDonation.date.asc())
+        .all()
+        if party_id
+        else db.query(models.PartyDonation)
         .order_by(models.PartyDonation.party_id.asc(), models.PartyDonation.date.asc())
         .all()
     )
 
-    response_data = {}
-    last_day_of_the_month = get_last_day_of_the_month()
-    four_years_ago_from_end_of_month = last_day_of_the_month - relativedelta(years=4)
+    # Initialize the response structure
+    response_data = (
+        {}
+        if party_id is None
+        else {
+            "donations_older_than_8_years": [],
+            "donations_4_to_8_years_old": [],
+            "donations_less_than_4_years_old": [],
+        }
+    )
 
-    eight_years_ago_from_end_of_month = last_day_of_the_month - relativedelta(years=8)
+    end_of_current_quarter = get_end_of_current_quarter()
+    four_years_ago = end_of_current_quarter - relativedelta(years=4)
+    eight_years_ago = end_of_current_quarter - relativedelta(years=8)
 
-    # for every donation, add it to the response object as a dictionary using the party id as the key, and separate the donations into three groups: the last 4 years, the last 8 years, and all time
     for donation in party_donations:
-        # if a is not yet in the response object, add it, along with party info and date ranges
-        if str(donation.party_id) not in response_data:
-            response_data[str(donation.party_id)] = {
-                "donations_older_than_8_years": [],
-                "donations_4_to_8_years_old": [],
-                "donations_less_than_4_years_old": [],
-            }
-
-        # add donation to the appropriate date range for its party
-        if donation.date < eight_years_ago_from_end_of_month:
-            response_data[str(donation.party_id)][
-                "donations_older_than_8_years"
-            ].append(donation)
-        elif donation.date < four_years_ago_from_end_of_month:
-            response_data[str(donation.party_id)]["donations_4_to_8_years_old"].append(
-                donation
-            )
+        # Adjust the structure based on whether party_id is provided
+        if party_id:
+            donation_target = response_data
         else:
-            response_data[str(donation.party_id)][
-                "donations_less_than_4_years_old"
-            ].append(donation)
+            party_key = str(donation.party_id)
+            if party_key not in response_data:
+                response_data[party_key] = {
+                    "donations_older_than_8_years": [],
+                    "donations_4_to_8_years_old": [],
+                    "donations_less_than_4_years_old": [],
+                }
+            donation_target = response_data[party_key]
+
+        # add donation to the appropriate quarter range
+        if donation.date <= eight_years_ago:
+            donation_target["donations_older_than_8_years"].append(donation)
+        elif donation.date <= four_years_ago:
+            donation_target["donations_4_to_8_years_old"].append(donation)
+        else:
+            donation_target["donations_less_than_4_years_old"].append(donation)
 
     return response_data
