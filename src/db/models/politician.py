@@ -28,6 +28,7 @@ class Politician(Base):
     statistic_questions_answered = Column(String)
     qid_wikidata = Column(String)
     field_title = Column(String)
+    image_copyright = Column(String)
     party = relationship("Party")
 
     # One to Many

@@ -1,3 +1,5 @@
+"""DEPRECATED: This scraper is deprecated. Check out the Partydonation Scraper repository."""
+
 import scrapy
 from scrapy import Item, Field
 from scrapy.crawler import CrawlerProcess

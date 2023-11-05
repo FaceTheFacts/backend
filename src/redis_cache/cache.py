@@ -14,8 +14,7 @@ from fastapi_pagination import Page
 from fastapi_redis_cache import FastApiRedisCache
 from fastapi_redis_cache.enums import RedisEvent
 from fastapi_redis_cache.util import deserialize_json
-
-from src.db.models.politician import Politician
+from src.db.connection import Base
 
 
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
@@ -73,6 +72,12 @@ class BetterJsonEncoder(json.JSONEncoder):
             return {"val": str(obj), "_spec_type": str(Decimal)}
         elif isinstance(obj, Page):
             return jsonable_encoder(obj)
+        elif isinstance(obj, Base):
+            return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+        elif isinstance(obj, set):
+            return list(obj)
+        elif hasattr(obj, "__dict__"):
+            return obj.__dict__
         else:
             return super().default(obj)
 

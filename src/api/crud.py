@@ -4,6 +4,7 @@ import math
 import datetime
 from dateutil.relativedelta import relativedelta
 
+
 # third-party
 from sqlalchemy.orm import Session, joinedload
 
@@ -16,6 +17,7 @@ from src.api.utils.politician import (
     transform_topics_dict_to_minimal_array,
     did_vote_pass,
 )
+from src.api.utils.date_utils import get_last_day_of_the_month
 from src.api.utils.topic_ids_converter import convert_into_topic_id
 from src.api.utils.party_sort import party_sort
 from src.api.utils.speeches import fetch_speech_data, process_speech_data
@@ -541,22 +543,24 @@ def get_politician_by_constituency(
     )
     if candidacy_data:
         constituency_id = candidacy_data.electoral_data.constituency_id
-        politicians = (
-            db.query(models.Politician)
-            .join(models.CandidacyMandate)
-            .join(models.ElectoralData)
-            .filter(models.ElectoralData.constituency_id == constituency_id)
-            .all()
-        )
-        constituency = (
-            db.query(models.Constituency)
-            .filter(models.Constituency.id == constituency_id)
-            .first()
-        )
-        constituency_politicians["constituency_number"] = constituency.number
-        constituency_politicians["constituency_name"] = constituency.name
-        constituency_politicians["politicians"] = party_sort(politicians)
-        return constituency_politicians
+
+        if constituency_id not in [9607, 4721, 5309, 423]:
+            politicians = (
+                db.query(models.Politician)
+                .join(models.CandidacyMandate)
+                .join(models.ElectoralData)
+                .filter(models.ElectoralData.constituency_id == constituency_id)
+                .all()
+            )
+            constituency = (
+                db.query(models.Constituency)
+                .filter(models.Constituency.id == constituency_id)
+                .first()
+            )
+            constituency_politicians["constituency_number"] = constituency.number
+            constituency_politicians["constituency_name"] = constituency.name
+            constituency_politicians["politicians"] = party_sort(politicians)
+            return constituency_politicians
     return None
 
 
@@ -753,3 +757,62 @@ def get_parties(db: Session):
     parties = db.query(models.Party).order_by(models.Party.id.asc()).all()
 
     return parties
+
+
+def get_end_of_current_quarter():
+    today = datetime.datetime.now()
+    quarter = (today.month - 1) // 3 + 1
+    return datetime.date(today.year, quarter * 3, 1) + relativedelta(months=1, days=-1)
+
+
+def get_party_donations_details(db: Session, party_id: Optional[int]):
+    # Get all party donations sorted by party id, then by date, in ascending order
+    party_donations = (
+        db.query(models.PartyDonation)
+        .filter(models.PartyDonation.party_id == party_id)
+        .order_by(models.PartyDonation.date.asc())
+        .all()
+        if party_id
+        else db.query(models.PartyDonation)
+        .order_by(models.PartyDonation.party_id.asc(), models.PartyDonation.date.asc())
+        .all()
+    )
+
+    # Initialize the response structure
+    response_data = (
+        {}
+        if party_id is None
+        else {
+            "donations_older_than_8_years": [],
+            "donations_4_to_8_years_old": [],
+            "donations_less_than_4_years_old": [],
+        }
+    )
+
+    end_of_current_quarter = get_end_of_current_quarter()
+    four_years_ago = end_of_current_quarter - relativedelta(years=4)
+    eight_years_ago = end_of_current_quarter - relativedelta(years=8)
+
+    for donation in party_donations:
+        # Adjust the structure based on whether party_id is provided
+        if party_id:
+            donation_target = response_data
+        else:
+            party_key = str(donation.party_id)
+            if party_key not in response_data:
+                response_data[party_key] = {
+                    "donations_older_than_8_years": [],
+                    "donations_4_to_8_years_old": [],
+                    "donations_less_than_4_years_old": [],
+                }
+            donation_target = response_data[party_key]
+
+        # add donation to the appropriate quarter range
+        if donation.date <= eight_years_ago:
+            donation_target["donations_older_than_8_years"].append(donation)
+        elif donation.date <= four_years_ago:
+            donation_target["donations_4_to_8_years_old"].append(donation)
+        else:
+            donation_target["donations_less_than_4_years_old"].append(donation)
+
+    return response_data

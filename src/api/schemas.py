@@ -118,6 +118,7 @@ class Sidejob(FTFBaseModel):
     interval: Optional[str]
     created: date
     sidejob_organization: Optional[SidejobOrganization]
+    income: Optional[float]
 
 
 # -----------------------
@@ -472,6 +473,12 @@ class Politician(FTFBaseModel):
         }
 
 
+class PoliticianWithSource(Politician):
+    image_copyright: Optional[str] = Field(
+        ..., description="The copyright information for the politician's image"
+    )
+
+
 class PoliticianHeader(FTFBaseModel):
     id: int = Field(..., description="The unique ID of the politician")
     label: str = Field(..., description="The name of the politician")
@@ -495,6 +502,30 @@ class PoliticianHeader(FTFBaseModel):
                         "border_color": None,
                     },
                 },
+            }
+        }
+
+
+class PoliticianHeaderWithSource(PoliticianHeader):
+    image_copyright: Optional[str] = Field(..., description="The source of the image")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "id": 79137,
+                "label": "Angela Merkel",
+                "party": {
+                    "id": 2,
+                    "label": "CDU",
+                    "party_style": {
+                        "id": 2,
+                        "display_name": "CDU",
+                        "foreground_color": "#FFFFFF",
+                        "background_color": "#636363",
+                        "border_color": None,
+                    },
+                },
+                "image_copyright": "DBT/Inga Haar",
             }
         }
 
@@ -696,6 +727,12 @@ class HomepagePartyDonation(FTFBaseModel):
     donations_over_32_quarters: List[float]
     donations_total: float
     largest_quarter: float
+
+
+class PartyDonationDetail(FTFBaseModel):
+    donations_older_than_8_years: List[PartyDonation]
+    donations_4_to_8_years_old: List[PartyDonation]
+    donations_less_than_4_years_old: List[PartyDonation]
 
 
 class PluginPoll(FTFBaseModel):
