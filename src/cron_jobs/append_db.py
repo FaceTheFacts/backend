@@ -1,8 +1,13 @@
 # std
+import re
+import json
 from typing import List, Optional
+from src.cron_jobs.utils import extract_and_clean_donor
 
 
 # local
+from src.cron_jobs.utils.partydonation_organisation import clean_donor
+from src.cron_jobs.utils.match_topic import match_topic
 from src.cron_jobs.utils.parser import gen_positions
 from src.cron_jobs.crud_db import populate_poll_results_per_fraction
 from src.cron_jobs.utils.vote_result import generate_appended_vote_results
@@ -19,7 +24,6 @@ from src.cron_jobs.utils.fetch import (
 )
 from src.db.connection import engine, Base, Session
 import src.db.models as models
-from src.api.schemas import PartyDonation
 from src.cron_jobs.utils.partydonations import clean_donations
 from src.cron_jobs.utils.file import read_json, write_json
 
@@ -140,7 +144,7 @@ def append_electoral_data() -> List:
         print("Nothing to fetch for electoral data")
 
 
-def append_candidacies(candidacies: Optional[List]) -> List:
+def append_candidacies(candidacies: Optional[List] = None) -> List:
     append_parliament_periods()
     append_constituencies()
     append_electoral_lists()
@@ -183,7 +187,7 @@ def append_candidacies(candidacies: Optional[List]) -> List:
         insert_and_update(models.CandidacyMandate, candidacies_mandates)
 
 
-def append_committees(committies: Optional[List]) -> List:
+def append_committees(committies: Optional[List] = None) -> List:
     if not committies:
         missing_committees = fetch_missing_entity("committees", models.Committee)
     else:
@@ -272,31 +276,36 @@ def append_committee_memberships() -> List:
 def append_sidejobs() -> List:
     missing_sidejobs = fetch_missing_entity("sidejobs", models.Sidejob)
     if missing_sidejobs:
-        sidejobs = [
-            {
-                "id": api_sidejob["id"],
-                "entity_type": api_sidejob["entity_type"],
-                "label": api_sidejob["label"],
-                "api_url": api_sidejob["api_url"],
-                "job_title_extra": api_sidejob["job_title_extra"],
-                "additional_information": api_sidejob["additional_information"],
-                "category": api_sidejob["category"],
-                "income_level": api_sidejob["income_level"],
-                "interval": api_sidejob["interval"],
-                "data_change_date": api_sidejob["data_change_date"],
-                "created": api_sidejob["created"],
-                "sidejob_organization_id": api_sidejob["sidejob_organization"]["id"]
-                if api_sidejob["sidejob_organization"]
-                else None,
-                "field_city_id": api_sidejob["field_city"]["id"]
-                if api_sidejob["field_city"]
-                else None,
-                "field_country_id": api_sidejob["field_country"]["id"]
-                if api_sidejob["field_country"]
-                else None,
-            }
-            for api_sidejob in missing_sidejobs
-        ]
+        sidejobs = []
+        for api_sidejob in missing_sidejobs:
+            income = None
+            if api_sidejob["additional_information"]:
+                income = extract_and_sum_amounts(api_sidejob["additional_information"])
+            sidejobs.append(
+                {
+                    "id": api_sidejob["id"],
+                    "entity_type": api_sidejob["entity_type"],
+                    "label": api_sidejob["label"],
+                    "api_url": api_sidejob["api_url"],
+                    "job_title_extra": api_sidejob["job_title_extra"],
+                    "additional_information": api_sidejob["additional_information"],
+                    "category": api_sidejob["category"],
+                    "income_level": api_sidejob["income_level"],
+                    "income": income if income else None,
+                    "interval": api_sidejob["interval"],
+                    "data_change_date": api_sidejob["data_change_date"],
+                    "created": api_sidejob["created"],
+                    "sidejob_organization_id": api_sidejob["sidejob_organization"]["id"]
+                    if api_sidejob["sidejob_organization"]
+                    else None,
+                    "field_city_id": api_sidejob["field_city"]["id"]
+                    if api_sidejob["field_city"]
+                    else None,
+                    "field_country_id": api_sidejob["field_country"]["id"]
+                    if api_sidejob["field_country"]
+                    else None,
+                }
+            )
         sidejobs_have_mandates = [
             {
                 "sidejob_id": api_sidejob["id"],
@@ -442,13 +451,55 @@ def append_fractions() -> List:
         return fractions
 
 
+def append_position_statements(file) -> List:
+    match = re.search(r"-(\d+)\.json$", file)
+    if match:
+        parliamentPeriodId = int(match.group(1))
+        print(parliamentPeriodId)
+    else:
+        raise ValueError("Could not extract parliamentPeriodId from filename")
+    data = read_json(file)
+    position_statements = []
+    for item in data:
+        matched_topic_id = match_topic(item["text"], item["topic"])
+        entry = {
+            "id": int(f"{parliamentPeriodId}{item['number']}"),
+            "statement": item["text"],
+            "topic_id": matched_topic_id if matched_topic_id else None,
+        }
+        position_statements.append(entry)
+    insert_and_update(models.PositionStatement, position_statements)
+
+
 def append_positions() -> List:
-    # Lookup positions related parliament_period and add it to PERIOD_POSITIONS_TABLE inside parser.py
-    # Generate positions.json inside Scrapy repo src/politicians-positions/berlin.ts
-    parliamend_period_id = 136
-    missing_positions = gen_positions(parliamend_period_id)
-    if missing_positions:
-        insert_and_update(models.Position, missing_positions)
+    # append_position_statements("assumptions-Hessen-148.json")
+    filename = "positions-Hessen-148.json"
+    match = re.search(r"-(\d+)\.json$", filename)
+    if not match:
+        raise ValueError("Could not extract parliamentPeriodId from filename")
+
+    parliament_period = int(match.group(1))
+    data = read_json(filename)
+    positions = []
+
+    for politician_id, positions_list in data.items():
+        for position_data in positions_list:
+            for statement_number, details in position_data.items():
+                position = details.get("position", "")
+                reason = details.get("reason", None)
+                position_statment_id = str(parliament_period) + statement_number
+                id = int(f"{parliament_period}{politician_id}{statement_number}")
+
+                position_data_entry = {
+                    "id": id,
+                    "position": position,
+                    "reason": reason,
+                    "politician_id": int(politician_id),
+                    "parliament_period_id": parliament_period,
+                    "position_statement_id": int(position_statment_id),
+                }
+                positions.append(position_data_entry)
+    insert_and_update(models.Position, positions)
 
 
 def append_parties() -> List:
@@ -571,32 +622,20 @@ def append_zip_codes() -> List:
 
 
 def append_partydonation(json_data: str) -> None:
-    party_donations = read_json(json_data)
-
-    parties = load_entity_from_db(models.Party)
-    donor_orgs = load_entity_from_db(models.PartyDonationOrganization)
-    clean_donation = clean_donations(party_donations, parties, donor_orgs)
-
-    donations_to_append = []
-    for donation in clean_donation:
-        donation_to_append = {
-            "id": donation["id"],
-            "party_id": donation["party_id"],
-            "amount": donation["amount"],
-            "date": donation["date"],
-            "party_donation_organization_id": donation[
-                "party_donation_organization_id"
-            ],
-        }
-
-        donations_to_append.append(donation_to_append)
+    donations_to_append = extract_and_clean_donor.clean_donation_and_organisations(
+        json_data
+    )
 
     # Insert the cleaned donations into the database
-    insert_and_update(PartyDonation, donations_to_append)
+    insert_and_update(models.PartyDonation, donations_to_append)
     print("Successfully retrieved party donations")
 
 
 def append_partydonation_organization() -> None:
+    api_party_donation_organizations = load_entity("partydonation")
+    clean_api_party_donation_organizations = clean_donor(
+        api_party_donation_organizations
+    )
     party_donation_organizations = fetch_missing_entity(
         "party_donation_organizations", models.PartyDonationOrganization
     )
@@ -623,11 +662,10 @@ def append_cities() -> None:
 
 
 def append_sidejob_organizations() -> List:
+    append_countries()
+    append_cities()
     missing_sidejob_organizations = fetch_missing_entity(
         "sidejob-organizations", models.SidejobOrganization
-    )
-    write_json(
-        "src/cron_jobs/data/sidejob_organizations.json", missing_sidejob_organizations
     )
     if missing_sidejob_organizations:
         sidejob_organizations = [
@@ -645,9 +683,6 @@ def append_sidejob_organizations() -> List:
             }
             for api_sidejob_organization in missing_sidejob_organizations
         ]
-        write_json(
-            "src/cron_jobs/data/sidejob_organizations_1.json", sidejob_organizations
-        )
         insert_and_update(models.SidejobOrganization, sidejob_organizations)
         print("Successfully retrieved sidejob organizations")
         organization_topics = []
@@ -686,6 +721,83 @@ def append_countries() -> None:
         print("No new countries to append")
 
 
+def gen_images_json():
+    session = Session()
+    results = (
+        session.query(models.Politician.id, models.Politician.abgeordnetenwatch_url)
+        .order_by(models.Politician.id.desc())
+        .all()
+    )
+
+    # Map the results to a list of dictionaries
+    entities = [{"id": r[0], "abgeordnetenwatch_url": r[1]} for r in results]
+
+    write_json("politicians_images.json", entities)
+
+
+def extract_and_sum_amounts(s: str) -> float:
+    # Regex pattern to match amounts
+    pattern = r"(\d{1,3}(?:\.\d{3})*,\d{2})\s*EUR"
+    matches = re.findall(pattern, s)
+
+    # Convert each match to a float and sum them up
+    total = sum(float(match.replace(".", "").replace(",", ".")) for match in matches)
+
+    # round to two decimal places if it has decimal places
+    if total % 1 == 0:
+        total = round(total, 2)
+        return total
+    return total
+
+
+def update_sidejobs_income():
+    # Get all sidejobs from the database sorted by id ascending:
+    session = Session()
+    sidejobs = session.query(models.Sidejob).order_by(models.Sidejob.id.asc()).all()
+    sidejobs = [sidejob.__dict__ for sidejob in sidejobs]
+    # Check if the sidejob has additional information
+    sidejobs_with_additional_information = [
+        sidejob for sidejob in sidejobs if sidejob["additional_information"]
+    ]
+    # Extract the amount from the additional information
+    for sidejob in sidejobs_with_additional_information:
+        amount = extract_and_sum_amounts(sidejob["additional_information"])
+        # check if amount is not 0
+        if amount:
+            sidejob["income"] = amount
+            # Update the sidejob in the database
+            session.query(models.Sidejob).filter(
+                models.Sidejob.id == sidejob["id"]
+            ).update({"income": amount})
+            session.commit()
+            print(f"Updated sidejob with id {sidejob['id']} with income {amount}")
+        else:
+            print(f"Could not extract amount from sidejob with id {sidejob['id']}")
+    print("Finished updating sidejobs")
+
+
+def update_politician_images():
+    with open("urls_cc.json", "r") as file:
+        data = json.load(file)
+
+    session = Session()
+
+    for politician_id, image_data in data.items():
+        copyright = image_data["copyright"]
+        if copyright is None:
+            continue
+        # Update the politician in the database
+        session.query(models.Politician).filter(
+            models.Politician.id == int(politician_id)
+        ).update({"image_copyright": copyright})
+        session.commit()
+
+        print(
+            f"Updated politician with id {politician_id} with image source {copyright}"
+        )
+
+    print("Finished updating politician images")
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    append_sidejob_organizations()

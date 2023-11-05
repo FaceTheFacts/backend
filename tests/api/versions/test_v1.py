@@ -1,10 +1,13 @@
 from fastapi.testclient import TestClient
+import pytest
+
 from src.api.main import app
 
 client = TestClient(app)
 NOT_FOUND_MESSAGE = "not found in the response"
 
 
+@pytest.mark.e2e
 def test_read_politician():
     def random_test():
         response = client.get("/v1/politician/178104")
@@ -139,6 +142,7 @@ def test_read_politician():
     test_topic_ids_of_latest_committee()
 
 
+@pytest.mark.e2e
 def test_read_politician_constituencies():
     def all_elements_have_values():
         response = client.get("/v1/politician/138540/constituencies")
@@ -496,6 +500,7 @@ def test_read_politician_constituencies():
     null_constituencies_exist()
 
 
+@pytest.mark.e2e
 def test_read_politician_positions():
     def selected_values_test():
         response = client.get("/v1/politician/177592/positions")
@@ -525,6 +530,7 @@ def test_read_politician_positions():
     selected_values_test()
 
 
+@pytest.mark.e2e
 def test_read_politician_sidejobs():
     def whole_values_test():
         response = client.get("/v1/politician/119742/sidejobs?page=1&size=50")
@@ -592,6 +598,7 @@ def test_read_politician_sidejobs():
     sidejob_not_found_test()
 
 
+@pytest.mark.e2e
 def test_read_politician_image_scanner():
     def label_and_id_test():
         response = client.get("/v1/image-scanner?id=79334")
@@ -629,6 +636,7 @@ def test_read_politician_image_scanner():
     label_and_id_test()
 
 
+@pytest.mark.e2e
 def test_read_politician_search():
     def selected_values_test():
         response = client.get("/v1/search?text=55278")
@@ -659,6 +667,7 @@ def test_read_politician_search():
     test_response_size()
 
 
+@pytest.mark.e2e
 def test_read_politician_zipcode_search():
     response = client.get("/v1/search-zipcode?text=55278")
     assert response.status_code == 200
@@ -681,12 +690,14 @@ def test_read_politician_zipcode_search():
         assert check_response, f"{item} {NOT_FOUND_MESSAGE}"
 
 
+@pytest.mark.e2e
 def test_read_politician_partial_name_search():
     response = client.get("/v1/search-name?text=Christian")
     assert len(response.json()) >= 1
     assert len(response.json()) <= 20
 
 
+@pytest.mark.e2e
 def test_read_politician_votes():
     def no_filters_random_test():
         response = client.get("/v1/politician/79137/votes")
@@ -739,6 +750,7 @@ def test_read_politician_votes():
     response_size_by_filters_test()
 
 
+@pytest.mark.e2e
 def test_read_poll_details():
     def random_test():
         response = client.get("/v1/poll/4217/details")
@@ -828,6 +840,7 @@ def test_read_poll_details():
     test_same_poll_id_in_response()
 
 
+@pytest.mark.e2e
 def test_read_politician_speech():
     def selected_values_test():
         response = client.get("/v1/politician/119742/speeches?page=2")
@@ -852,6 +865,7 @@ def test_read_politician_speech():
     # selected_invalid_values_test()
 
 
+@pytest.mark.e2e
 def test_read_bundestag_sidejobs():
     def values_test():
         response_items = client.get("/v1/bundestag/sidejobs")
@@ -865,6 +879,7 @@ def test_read_bundestag_sidejobs():
     values_test()
 
 
+@pytest.mark.e2e
 def test_read_bundestag_sidejobs_pagination():
     def values_test():
         response = client.get("v1/bundestag/allsidejobs?page=1&size=50")
@@ -922,6 +937,7 @@ def test_read_bundestag_sidejobs_pagination():
     selected_invalid_values_test()
 
 
+@pytest.mark.e2e
 def test_read_homepage_party_donations():
     response = client.get("/v1/homepagepartydonations")
     response_json = response.json()

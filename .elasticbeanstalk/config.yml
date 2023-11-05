@@ -1,6 +1,9 @@
 branch-defaults:
   main:
-    environment: Face-The-Facts-Backend-Main
+    environment: Backend-production-env
+  development:
+    environments: Backend-development-env
+
 environment-defaults:
   Face-The-Facts-Backend-Main:
     branch: null
@@ -8,7 +11,7 @@ environment-defaults:
 global:
   application_name: Face-The-Facts Backend
   default_ec2_keyname: aws-eb
-  default_platform: Python 3.8 running on 64bit Amazon Linux 2
+  default_platform: Python 3.11 running on 64bit Amazon Linux 2
   default_region: eu-central-1
   include_git_submodules: true
   instance_profile: null

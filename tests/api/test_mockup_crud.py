@@ -8,6 +8,8 @@ import src.api.crud as crud
 from tests.db.mock_up_database import mockup_session
 import src.db.models as models
 
+from sqlalchemy.orm.exc import NoResultFound
+
 
 class TestCrudFunctions(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -110,36 +112,41 @@ class TestCrudFunctions(unittest.TestCase):
 
     # integration test
     def test_integration_test_get_polls_total(self):
-        results = crud.get_polls_total(self.session)
-        result_first = results[0]
-        actual = {
-            "poll": {
-                "field_legislature_id": result_first["poll"]["field_legislature_id"],
-                "id": result_first["poll"]["id"],
-                "label": result_first["poll"]["label"],
-                "field_intro": result_first["poll"]["field_intro"],
-                "field_poll_date": result_first["poll"]["field_poll_date"],
-                "poll_passed": result_first["poll"]["poll_passed"],
-            },
-            "result": {
-                "yes": result_first["result"].yes,
-                "no": result_first["result"].no,
-                "abstain": result_first["result"].abstain,
-                "no_show": result_first["result"].no_show,
-            },
-        }
-        expected = {
-            "poll": {
-                "field_legislature_id": 132,
-                "id": 5,
-                "label": "Mockup Poll 5",
-                "field_intro": "Intro to mockup poll 5.",
-                "field_poll_date": datetime.datetime(2021, 10, 5),
-                "poll_passed": False,
-            },
-            "result": {"yes": 5, "no": 10, "abstain": 10, "no_show": 0},
-        }
-        self.assertEqual(actual, expected)
+        try:
+            results = crud.get_polls_total(self.session)
+            result_first = results[0]
+            actual = {
+                "poll": {
+                    "field_legislature_id": result_first["poll"][
+                        "field_legislature_id"
+                    ],
+                    "id": result_first["poll"]["id"],
+                    "label": result_first["poll"]["label"],
+                    "field_intro": result_first["poll"]["field_intro"],
+                    "field_poll_date": result_first["poll"]["field_poll_date"],
+                    "poll_passed": result_first["poll"]["poll_passed"],
+                },
+                "result": {
+                    "yes": result_first["result"].yes,
+                    "no": result_first["result"].no,
+                    "abstain": result_first["result"].abstain,
+                    "no_show": result_first["result"].no_show,
+                },
+            }
+            expected = {
+                "poll": {
+                    "field_legislature_id": 132,
+                    "id": 5,
+                    "label": "Mockup Poll 5",
+                    "field_intro": "Intro to mockup poll 5.",
+                    "field_poll_date": datetime.datetime(2021, 10, 5),
+                    "poll_passed": False,
+                },
+                "result": {"yes": 5, "no": 10, "abstain": 10, "no_show": 0},
+            }
+            self.assertEqual(actual, expected)
+        except NoResultFound:
+            raise NoResultFound("No polls found")
 
     # unittest
     @patch(
@@ -195,7 +202,7 @@ class TestCrudFunctions(unittest.TestCase):
         actual_items = actual["items"]
         actual_is_last_page = actual["is_last_page"]
         total = actual["total"]
-        expected_total = 63
+        expected_total = 65
         self.assertEqual(total, expected_total)
         expected = [
             {

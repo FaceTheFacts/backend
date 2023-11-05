@@ -1,30 +1,45 @@
 # Function to clean donors data
-from src.cron_jobs.utils.partydonation_organisation import get_donor_org_id
 import src.db.models as models
-from src.cron_jobs.utils.fetch import fetch_last_id_from_model
-from src.cron_jobs.utils.file import write_json
-from fuzzywuzzy import fuzz, process
+from src.cron_jobs.utils.fetch import fetch_last_id_from_model, load_entity_from_db
+from fuzzywuzzy import process
 
 
-def clean_donations(donations, parties, donor_orgs):
-    clean_donations = []
-    id = fetch_last_id_from_model(models.PartyDonation)
+def clean_donations(scraped_donations, parties, clean_donors):
+    clean_donation_list = []
+    last_id = fetch_last_id_from_model(models.PartyDonation)
+    donations_from_db = load_entity_from_db(models.PartyDonation)
+    exisisting_donations = [donation.__dict__ for donation in donations_from_db]
 
-    for donation in donations:
+    for index, donation in enumerate(scraped_donations):
         if not donation["amount"]:
             continue
+        cleaned_donor = clean_donors[index]
+
+        # Check if the donation has a donor
+        donor_org_id = cleaned_donor["id"] if cleaned_donor else None
+
         clean_donation = {
-            "id": id,
             "party_id": get_party_id(donation["party"], parties),
-            "amount": clean_amount(
-                donation["amount"]
-            ),  ##JSON imperial float (e.g. 15000.25)
+            "amount": clean_amount(donation["amount"]),
             "date": reformat_date(donation["date"]),
-            "donor_organization_id": get_donor_org_id(donation, donor_orgs),
+            "party_donation_organization_id": donor_org_id,
         }
-        clean_donations.append(clean_donation)
-        id += 1
-    return clean_donations
+        clean_donation_list.append(clean_donation)
+
+    # Sort clean_donation list by date
+    clean_donation_list = sorted(clean_donation_list, key=lambda k: k["date"])
+    # Remove duplicates
+    clean_donation_list = [
+        donation
+        for index, donation in enumerate(clean_donation_list)
+        if not donation_exists(donation, exisisting_donations)
+    ]
+    # Add id to each donation
+    for donation in clean_donation_list:
+        last_id += 1
+        donation["id"] = last_id
+
+    return clean_donation_list
 
 
 def clean_amount(original_amount):
@@ -70,6 +85,22 @@ def get_party_id(donation_party, parties):
 
 def reformat_date(original_date):
     split_date = original_date.split(".")
-    new_date = split_date[2] + "-" + split_date[1] + "-" + split_date[0]
+    if len(split_date) == 3 and not split_date[2]:
+        year = "2022"
+    else:
+        year = split_date[2]
+    new_date = year + "-" + split_date[1] + "-" + split_date[0]
 
     return new_date
+
+
+def donation_exists(donation, existing_donations):
+    for existing_donation in existing_donations:
+        if (
+            existing_donation["party_id"] == donation["party_id"]
+            and str(existing_donation["date"]) == str(donation["date"])
+            and existing_donation["party_donation_organization_id"]
+            == donation["party_donation_organization_id"]
+        ):
+            return True
+    return False

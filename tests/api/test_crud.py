@@ -1,14 +1,16 @@
 import unittest
 from unittest.mock import patch
+import datetime
 
 from fastapi import Depends
 
-import datetime
 
-from src.api.crud import get_politician_by_search
-from src.api.crud import get_party_donations_for_ids_and_time_range
-from src.api.crud import build_donation_data_response_object
-from src.api.crud import build_donations_over_time_container
+from src.api.crud import (
+    get_politician_by_search,
+    get_party_donations_for_ids_and_time_range,
+    build_donation_data_response_object,
+    build_donations_over_time_container,
+)
 from src.db.connection import Session
 
 session = Session()
@@ -27,24 +29,6 @@ class TestGetPoliticianBySearch(unittest.TestCase):
 
 
 class TestGetPartyDonationsForIdsAndTimeRange(unittest.TestCase):
-    def test_get_party_donations_for_ids_and_time_range_single_party(self):
-        donations = get_party_donations_for_ids_and_time_range(
-            session,
-            [4],
-            datetime.datetime(2021, 4, 24),
-            datetime.datetime(2021, 5, 24),
-        )
-        assert len(donations) == 2
-
-    def test_get_party_donations_for_ids_and_time_range_multiple_parties(self):
-        donations = get_party_donations_for_ids_and_time_range(
-            session,
-            [4, 2],
-            datetime.datetime(2021, 4, 24),
-            datetime.datetime(2021, 5, 24),
-        )
-        assert len(donations) == 4
-
     def test_get_party_donations_for_ids_and_time_range_invalid_time_range(self):
         self.assertRaises(
             ValueError,

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, Date
+from sqlalchemy import Column, String, Integer, ForeignKey, Date, Float
 from sqlalchemy.orm import relationship
 
 from src.db.connection import Base
@@ -20,7 +20,7 @@ class Sidejob(Base):
     sidejob_organization_id = Column(Integer, ForeignKey("sidejob_organization.id"))
     field_city_id = Column(Integer, ForeignKey("city.id"))
     field_country_id = Column(Integer, ForeignKey("country.id"))
-
+    income = Column(Float)
     # Many to One
     sidejob_organization = relationship(
         "SidejobOrganization", back_populates="sidejobs"
