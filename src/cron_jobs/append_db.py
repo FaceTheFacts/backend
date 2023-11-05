@@ -2,6 +2,7 @@
 import re
 import json
 from typing import List, Optional
+from src.cron_jobs.utils import extract_and_clean_donor
 
 
 # local
@@ -621,25 +622,9 @@ def append_zip_codes() -> List:
 
 
 def append_partydonation(json_data: str) -> None:
-    party_donations = read_json(json_data)
-
-    parties = load_entity_from_db(models.Party)
-    donor_orgs = load_entity_from_db(models.PartyDonationOrganization)
-    clean_donation = clean_donations(party_donations, parties, donor_orgs)
-
-    donations_to_append = []
-    for donation in clean_donation:
-        donation_to_append = {
-            "id": donation["id"],
-            "party_id": donation["party_id"],
-            "amount": donation["amount"],
-            "date": donation["date"],
-            "party_donation_organization_id": donation[
-                "party_donation_organization_id"
-            ],
-        }
-
-        donations_to_append.append(donation_to_append)
+    donations_to_append = extract_and_clean_donor.clean_donation_and_organisations(
+        json_data
+    )
 
     # Insert the cleaned donations into the database
     insert_and_update(models.PartyDonation, donations_to_append)
@@ -816,4 +801,3 @@ def update_politician_images():
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    update_politician_images()
