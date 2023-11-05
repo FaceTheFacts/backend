@@ -8,26 +8,43 @@ from src.cron_jobs.utils.partydonation_organisation import (
 )
 from src.cron_jobs.utils.file import read_json
 
-scraped_donations = read_json("src/cron_jobs/data/partydonation.json")
-scraped_donations = scraped_donations[::-1]
-donation_organization = load_entity_from_db(models.PartyDonationOrganization)
-existing_donations = load_entity_from_db(models.PartyDonation)
-donation_organization = [org.__dict__ for org in donation_organization]
-clean_donors = []
-for donation in scraped_donations:
-    if donation["donor"] != []:
-        try:
-            cleaned_donor = clean_donor(donation)
-            donor_id = get_donor_org_id(donation, donation_organization)
-            if not donor_id:
-                donor_id = create_new_donor(donation)
-                donation_organization.append(
-                    {"id": donor_id, "donor_name": clean_donor(donation)["donor_name"]}
-                )
-            cleaned_donor["id"] = donor_id
-            clean_donors.append(cleaned_donor)
-        except:
-            print(donation["donor"])
 
-parties = load_entity_from_db(models.Party)
-cleaned_donations = clean_donations(scraped_donations, parties, donation_organization)
+def clean_donation_and_organisations(scraped_donations_path: str):
+    scraped_donations = read_json(scraped_donations_path)
+    scraped_donations = scraped_donations[::-1]
+    existing_donation_organization = load_entity_from_db(
+        models.PartyDonationOrganization
+    )
+    donation_organization = [org.__dict__ for org in existing_donation_organization]
+    clean_donors = []
+
+    for donation in scraped_donations:
+        if donation["donor"]:
+            try:
+                cleaned_donor = clean_donor(donation)
+                donor_id = get_donor_org_id(cleaned_donor, donation_organization)
+                if not donor_id:
+                    donor_id = create_new_donor(donation)
+                    donation_organization.append(
+                        {
+                            "id": donor_id,
+                            "donor_name": clean_donor(donation)["donor_name"],
+                        }
+                    )
+                if cleaned_donor["donor_city"] == "København":
+                    cleaned_donor["donor_city"] = "Kopenhagen"
+                cleaned_donor["id"] = donor_id
+                clean_donors.append(cleaned_donor)
+            except Exception as e:
+                print(f"Error processing donor: {donation['donor']}. Error: {e}")
+        else:
+            # Add None or a placeholder for donations without donors
+            clean_donors.append(None)
+
+    # Load party information
+    parties = load_entity_from_db(models.Party)
+
+    # Process the donations with cleaned donor information
+    cleaned_donations = clean_donations(scraped_donations, parties, clean_donors)
+
+    return cleaned_donations
