@@ -41,7 +41,6 @@ def get_db():
     summary="Get detailed information about a specific politician",
     description="Returns detailed information about a politician based on the provided ID, including their party, occupations, side jobs, CVs, and voting records",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 def read_politician(
     id: int = Path(
         ..., description="The ID of the politician to retrieve", example=79137
@@ -103,7 +102,6 @@ def read_politicians(
     summary="Get the constituency and politicians associated with a specific politician",
     description="Returns the constituency and a list of politicians representing the same constituency as the politician with the provided ID",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
     constituency_politicians = crud.get_politician_by_constituency(db, id)
     if not constituency_politicians:
@@ -118,7 +116,6 @@ def read_politician_constituencies(id: int, db: Session = Depends(get_db)):
     summary="Get the poisitions associated with a specific politician",
     description="Returns a list of positions associated with the politician with the provided ID",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 def read_politician_positions(id: int, db: Session = Depends(get_db)):
     positions = crud.get_entity_by_id(db, models.Politician, id)
     check_entity_not_found(positions, "Position")
@@ -132,7 +129,6 @@ def read_politician_positions(id: int, db: Session = Depends(get_db)):
     summary="Get the sidejobs associated with a specific politician",
     description="Returns a list of sidejobs associated with the politician with the provided ID",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 def read_politician_sidejobs(id: int, db: Session = Depends(get_db)):
     sidejobs = crud.get_sidejobs_by_politician_id(db, id, "v1")
     check_entity_not_found(sidejobs, "Sidejobs")
@@ -178,7 +174,6 @@ def read_politician_image_scanner(id: int, db: Session = Depends(get_db)):
     summary="Get the Polls and Votes associated with a specific politician",
     description="Returns a list of Polls and Votes associated with the politician with the provided ID",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 def read_politician_votes(
     id: int,
     db: Session = Depends(get_db),
@@ -198,7 +193,6 @@ def read_politician_votes(
     summary="Get more detailed information about the Poll asssociated with a specific ID",
     description="Returns detailed information about a Poll associated with the provided ID",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 def read_poll_details(id: int, db: Session = Depends(get_db)):
     poll_results = crud.get_poll_results_by_poll_id(db, id)
     poll_links = crud.get_poll_links_by_poll_id(db, id)
@@ -213,7 +207,6 @@ def read_poll_details(id: int, db: Session = Depends(get_db)):
     summary="Get the votes associated with the specific ID",
     description="Returns the yes, no, abstain and no show votes as a List of politicians associate with the specific ID",
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 def read_poll_votes(id: int, db: Session = Depends(get_db)):
     vote_results = crud.get_votes_by_poll_id(db, id)
     check_entity_not_found(vote_results, "Poll Results")
@@ -221,7 +214,6 @@ def read_poll_votes(id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/polls/{id}", response_model=List[schemas.VoteAndPoll])
-@custom_cache(expire=ONE_DAY_IN_SECONDS, ignore_args=["db"])
 def read_polls(
     id: int, db: Session = Depends(get_db), filters: List[int] = Query(None)
 ):
@@ -255,7 +247,6 @@ async def read_bundestag_speech(page: int = 1, db: Session = Depends(get_db)):
 
 
 @router.get("/bundestag/sidejobs", response_model=List[schemas.SidejobBundestag])
-@custom_cache(expire=ONE_WEEK_IN_SECONDS)
 def read_politician_sidejobs(db: Session = Depends(get_db)):
     sidejobs = crud.get_latest_sidejobs(db, "v2")
     check_entity_not_found(sidejobs, "Sidejobs")
@@ -263,7 +254,6 @@ def read_politician_sidejobs(db: Session = Depends(get_db)):
 
 
 @router.get("/bundestag/allsidejobs", response_model=Page[schemas.SidejobBundestag])
-@custom_cache(expire=ONE_WEEK_IN_SECONDS)
 def read_politician_sidejobs(db: Session = Depends(get_db)):
     sidejobs = crud.get_all_sidejobs(db, "v2")
     check_entity_not_found(sidejobs, "Sidejobs")
@@ -273,7 +263,6 @@ def read_politician_sidejobs(db: Session = Depends(get_db)):
 @router.get(
     "/bundestag/polls", response_model=List[schemas.BundestagPollDataWithPoliticians]
 )
-@custom_cache(expire=ONE_DAY_IN_SECONDS)
 def read_latest_polls(
     follow_ids: List[int] = Query(None), db: Session = Depends(get_db)
 ):
@@ -286,7 +275,6 @@ def read_latest_polls(
 
 
 @router.get("/bundestag/allpolls", response_model=schemas.BundestagPoll)
-@custom_cache(expire=ONE_WEEK_IN_SECONDS)
 def read_latest_polls(
     filters: List[int] = Query(None),
     db: Session = Depends(get_db),
@@ -331,7 +319,6 @@ add_pagination(router)
 @router.get(
     "/homepagepartydonations", response_model=List[schemas.HomepagePartyDonation]
 )
-@custom_cache(expire=ONE_WEEK_IN_SECONDS, ignore_args=["db"])
 def read_party_donations(db: Session = Depends(get_db)):
     bundestag_party_ids = [1, 2, 3, 4, 5, 8, 9, 145]
     party_donations = crud.get_homepage_party_donations(db, bundestag_party_ids)
@@ -350,7 +337,6 @@ def read_party_donations(db: Session = Depends(get_db)):
     "/bundestag/partydonationsdetails",
     response_model=Dict[str, schemas.PartyDonationDetail],
 )
-@custom_cache(expire=ONE_WEEK_IN_SECONDS, ignore_args=["db"])
 def read_party_donations_details(db: Session = Depends(get_db)):
     party_donations_details = crud.get_party_donations_details(db, None)
     check_entity_not_found(party_donations_details, "Party Donations")
@@ -358,7 +344,6 @@ def read_party_donations_details(db: Session = Depends(get_db)):
 
 
 @router.get("/partydonationsdetails", response_model=schemas.PartyDonationDetail)
-@custom_cache(expire=ONE_WEEK_IN_SECONDS, ignore_args=["db"])
 def read_party_donations_details(db: Session = Depends(get_db), party_id: int = None):
     party_donations_details = crud.get_party_donations_details(db, party_id)
     check_entity_not_found(party_donations_details, "Party Donations")
