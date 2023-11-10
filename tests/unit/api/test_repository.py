@@ -156,3 +156,47 @@ class TestSqlAlchemyPartyDonationRepository:
         assert list(rows) == [(1, 2, 2000.0, "2020-01-02", None)]
         # Cleanup
         delete_party_donation(session)
+
+    def test_repository_can_add_or_update_list_using_insert(self, session):
+        factory = SqlAlchemyFactory(session)
+        repo = factory.create_party_donation_repository()
+        # Act
+        # Insert a party_donation with id=1
+        party_donation1 = models.PartyDonation(
+            id=1, amount=1000.0, date=date(2020, 1, 1), party_id=1
+        )
+        repo.add(party_donation1)
+        session.commit()
+
+        # Create a list of party_donations to add or update
+        party_donations_to_add_update = [
+            {
+                "id": 1,
+                "amount": 2000.0,  # updated
+                "date": date(2020, 1, 2),  # updated
+                "party_id": 2,  # updated
+            },
+            {
+                "id": 2,
+                "amount": 3000.0,
+                "date": date(2020, 1, 3),
+                "party_id": 2,
+            }
+            # Add more party_donations as needed
+        ]
+
+        # Act: Use add_or_update_list method with insert and on_conflict_do_nothing
+        repo.add_or_update_list(party_donations_to_add_update)
+
+        # Retrieve the party_donation with id=1 from the database
+        rows = session.execute(
+            text("SELECT * FROM party_donation WHERE id IN (:id1, :id2)"),
+            {"id1": 1, "id2": 2},
+        )
+        # Assert
+        assert list(rows) == [
+            (1, 2, 2000.0, "2020-01-02", None),  # updated
+            (2, 2, 3000.0, "2020-01-03", None),  # inserted
+        ]
+        # Cleanup
+        delete_party_donation(session)
