@@ -24,6 +24,7 @@ class SqlAlchemyBaseRepository(AbstractRepository):
 
     def add(self, entity):
         self.session.add(entity)
+        self.session.commit()
 
     def get(self, key, value):
         filter_criteria = {key: value}
@@ -32,6 +33,10 @@ class SqlAlchemyBaseRepository(AbstractRepository):
             .filter_by(**filter_criteria)
             .one_or_none()
         )
+
+    def add_or_update(self, entity):
+        self.session.merge(entity)
+        self.session.commit()
 
 
 class SqlAlchemyPartyDonationRepository(SqlAlchemyBaseRepository):
