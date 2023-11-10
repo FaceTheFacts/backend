@@ -1,5 +1,11 @@
+# std
 import abc
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
+
+# third-party
+from sqlalchemy.dialects.postgresql import insert
+
+# local
 import src.db.models as models
 
 
@@ -36,6 +42,15 @@ class SqlAlchemyBaseRepository(AbstractRepository):
 
     def add_or_update(self, entity):
         self.session.merge(entity)
+        self.session.commit()
+
+    def add_or_update_list(self, entities: List[Dict[str, Any]]):
+        stmt = insert(self.model_class).values(entities)
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["id"],
+            set_={col.name: col for col in stmt.excluded if not col.primary_key},
+        )
+        self.session.execute(stmt)
         self.session.commit()
 
 
