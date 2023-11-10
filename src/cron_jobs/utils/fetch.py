@@ -88,40 +88,50 @@ def fetch_entity_count(entity: str) -> int:
 def fetch_missing_entity(entity: str, model: Any):
     if entity not in entity_list:
         raise Exception(f"{entity} is not a valid entity")
-    data_list = []
+
     total_entity = fetch_entity_count(entity)
+
+    # Start a session to interact with the database
     session = Session()
-    database_rows: int = session.query(model).count()
-    diff = total_entity - database_rows
-    # Uncomment line below + Line 86 when you already fetch the data locally
-    # file_path = f"src/cron_jobs/data/{entity}.json"
-    if diff:
-        last_id = session.query(model).order_by(model.id.desc()).first().id
-        print(f"The last id of {entity} is: {last_id}")
-        result = fetch_json(
-            f"https://www.abgeordnetenwatch.de/api/v2/{entity}?id[gt]={last_id}&range_end=0"
-        )
-        total = result["meta"]["result"]["total"]
-        page_count = math.ceil(total / PAGE_SIZE)
-        for page_num in range(page_count):
-            fetched_data = fetch_json(
-                f"https://www.abgeordnetenwatch.de/api/v2/{entity}?id[gt]={last_id}&page={page_num}&pager_limit={PAGE_SIZE}"
+    try:
+        database_rows: int = session.query(model).count()
+        diff = total_entity - database_rows
+
+        if diff:
+            last_id = session.query(model).order_by(model.id.desc()).first().id
+            print(f"The last id of {entity} is: {last_id}")
+            # You may also need to handle potential exceptions for network requests here
+            result = fetch_json(
+                f"https://www.abgeordnetenwatch.de/api/v2/{entity}?id[gt]={last_id}&range_end=0"
             )
-            data = fetched_data["data"]
-            for item in data:
-                data_list.append(item)
-        print(("Fetched {} data entries").format(len(data_list)))
-        # Uncomment line below when you might have to fetch multiple times from the same entity
-        # write_json(file_path, data_list)
-        return data_list
-    else:
-        print(f"Table {entity} already updated")
+            total = result["meta"]["result"]["total"]
+            page_count = math.ceil(total / PAGE_SIZE)
+            data_list = []
+            for page_num in range(page_count):
+                fetched_data = fetch_json(
+                    f"https://www.abgeordnetenwatch.de/api/v2/{entity}?id[gt]={last_id}&page={page_num}&pager_limit={PAGE_SIZE}"
+                )
+                data = fetched_data["data"]
+                for item in data:
+                    data_list.append(item)
+            print(("Fetched {} data entries").format(len(data_list)))
+            # Uncomment line below when you might have to fetch multiple times from the same entity
+            # write_json(file_path, data_list)
+            return data_list
+        else:
+            print(f"Table {entity} already updated")
+    finally:
+        # Ensure the session is closed after the operation
+        session.close()
 
 
 def fetch_last_id_from_model(model: Any) -> int:
     session = Session()
-    last_id = session.query(model).order_by(model.id.desc()).first().id
-    return last_id
+    try:
+        last_id = session.query(model).order_by(model.id.desc()).first().id
+        return last_id
+    finally:
+        session.close()
 
 
 def fetch_missing_sub_entity(sub_entity: str, model: Any):
@@ -129,25 +139,31 @@ def fetch_missing_sub_entity(sub_entity: str, model: Any):
     session = Session()
     # Uncomment line below + Line 86 when you already fetch the data locally
     # file_path = f"src/cron_jobs/data/{entity}.json"
-    last_id = session.query(model).order_by(model.id.desc()).first().id
-    print(f"The last id of {sub_entity} is: {last_id}")
-    result = fetch_json(
-        f"https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?{sub_entity}[gt]={last_id}&range_end=0"
-    )
-    total = result["meta"]["result"]["total"]
-    if total:
-        page_count = math.ceil(total / PAGE_SIZE)
-        for page_num in range(page_count):
-            fetched_data = fetch_json(
-                f"https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?{sub_entity}[gt]={last_id}&page={page_num}&pager_limit={PAGE_SIZE}"
-            )
-            data = fetched_data["data"]
-            for item in data:
-                data_list.append(item)
-        print(("Fetched {} data entries").format(len(data_list)))
-        return data_list
-    else:
-        print(f"Table {sub_entity} already updated")
+    try:
+        last_id = session.query(model).order_by(model.id.desc()).first().id
+        print(f"The last id of {sub_entity} is: {last_id}")
+        result = fetch_json(
+            f"https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?{sub_entity}[gt]={last_id}&range_end=0"
+        )
+        total = result["meta"]["result"]["total"]
+        if total:
+            page_count = math.ceil(total / PAGE_SIZE)
+            for page_num in range(page_count):
+                fetched_data = fetch_json(
+                    f"https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?{sub_entity}[gt]={last_id}&page={page_num}&pager_limit={PAGE_SIZE}"
+                )
+                data = fetched_data["data"]
+                for item in data:
+                    data_list.append(item)
+            print(("Fetched {} data entries").format(len(data_list)))
+            return data_list
+        else:
+            print(f"Table {sub_entity} already updated")
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
 
 
 def load_entity(entity: str) -> List[Any]:
@@ -164,14 +180,26 @@ def load_entity(entity: str) -> List[Any]:
 
 def load_entity_from_db(model: Any) -> List[Any]:
     session = Session()
-    ids = session.query(model).order_by(model.id.desc()).all()
-    return ids
+    try:
+        ids = session.query(model).order_by(model.id.desc()).all()
+        return ids
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
 
 
 def load_entity_ids_from_db(model: Any) -> List[Any]:
     session = Session()
-    ids = session.query(model.id).order_by(model.id.desc()).all()
-    return [id[0] for id in ids]
+    try:
+        ids = session.query(model.id).order_by(model.id.desc()).all()
+        return [id[0] for id in ids]
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
 
 
 def fetch_entity_data_by_ids(entity: str, ids: List) -> List[Any]:
@@ -196,14 +224,20 @@ def check_for_missing_votes_data(model: Any) -> List[Any]:
     file_path = f"src/cron_jobs/data/votes.json"
     data: List[Any] = read_json(file_path)
     session = Session()
-    ids = session.query(model).order_by(model.id.desc()).all()
-    poll_ids = set([vote.id for vote in ids])
-    missing_votes = []
-    for vote in data:
-        if vote["poll"]["id"] not in poll_ids:
-            if vote["poll"]["id"] not in missing_votes:
-                missing_votes.append(vote["poll"]["id"])
-    write_json("src/cron_jobs/data/missing_votes.json", missing_votes)
+    try:
+        ids = session.query(model).order_by(model.id.desc()).all()
+        poll_ids = set([vote.id for vote in ids])
+        missing_votes = []
+        for vote in data:
+            if vote["poll"]["id"] not in poll_ids:
+                if vote["poll"]["id"] not in missing_votes:
+                    missing_votes.append(vote["poll"]["id"])
+        write_json("src/cron_jobs/data/missing_votes.json", missing_votes)
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
 
 
 def fetch_missing_entity_from_json(entity: str) -> List[Any]:

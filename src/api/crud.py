@@ -346,16 +346,7 @@ def get_polls_total(db: Session):
         }
         result_dict = get_vote_result_by_poll_id(db, poll.id)
         item_dict = {"poll": poll_dict, "result": result_dict}
-        item_dict["poll"]["poll_passed"] = bool(
-            result_dict.yes
-            > 0.5
-            * (
-                result_dict.yes
-                + result_dict.no
-                + result_dict.abstain
-                + result_dict.no_show
-            )
-        )
+        item_dict["poll"]["poll_passed"] = did_vote_pass(result_dict.__dict__)
         data_list.append(item_dict)
     return data_list
 
@@ -376,16 +367,7 @@ def get_all_polls_total(db: Session, size: int, topic_ids: List[int] = None):
             poll.id,
         )
         item_dict = {"poll": poll_dict, "result": result_dict}
-        item_dict["poll"]["poll_passed"] = bool(
-            result_dict.yes
-            > 0.5
-            * (
-                result_dict.yes
-                + result_dict.no
-                + result_dict.abstain
-                + result_dict.no_show
-            )
-        )
+        item_dict["poll"]["poll_passed"] = did_vote_pass(result_dict.__dict__)
         data_list.append(item_dict)
     return data_list
 

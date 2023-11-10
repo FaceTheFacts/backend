@@ -1,16 +1,19 @@
 # std
 import re
 import json
+import time
 from typing import List, Optional
-from src.cron_jobs.utils import extract_and_clean_donor
 
 
 # local
 from src.cron_jobs.utils.partydonation_organisation import clean_donor
 from src.cron_jobs.utils.match_topic import match_topic
-from src.cron_jobs.utils.parser import gen_positions
 from src.cron_jobs.crud_db import populate_poll_results_per_fraction
-from src.cron_jobs.utils.vote_result import generate_appended_vote_results
+from src.cron_jobs.utils import extract_and_clean_donor
+from src.cron_jobs.utils.vote_result import (
+    generate_appended_vote_results,
+    get_total_votes_of_type,
+)
 from src.cron_jobs.utils.insert_and_update import insert_and_update, insert_only
 from src.cron_jobs.utils.fetch import (
     fetch_entity_data_by_ids,
@@ -18,13 +21,11 @@ from src.cron_jobs.utils.fetch import (
     fetch_missing_entity,
     fetch_missing_sub_entity,
     load_entity,
-    load_entity_from_db,
     load_entity_ids_from_db,
     match_constituency_to_parliament_periods,
 )
 from src.db.connection import engine, Base, Session
 import src.db.models as models
-from src.cron_jobs.utils.partydonations import clean_donations
 from src.cron_jobs.utils.file import read_json, write_json
 
 
@@ -387,8 +388,7 @@ def append_polls() -> List:
 def append_votes() -> List:
     missing_votes = fetch_missing_entity("votes", models.Vote)
     if missing_votes:
-        api_polls = load_entity("polls")
-        poll_ids = set([api_poll["id"] for api_poll in api_polls])
+        poll_ids = load_entity_ids_from_db(models.Poll)
         votes = []
         for missing_vote in missing_votes:
             poll_id = missing_vote["poll"]["id"] if missing_vote["poll"] else None
@@ -420,15 +420,106 @@ def append_votes() -> List:
 def append_vote_results() -> List:
     # First Update Poll-Results-Per-Fraction
     session = Session()
-    last_row = (
-        session.query(models.VoteResult).order_by(models.VoteResult.id.desc()).first()
-    )
-    last_id = last_row.id
-    last_poll_id = last_row.poll_id
-    populate_poll_results_per_fraction()
-    vote_results = generate_appended_vote_results(session, last_id, last_poll_id)
-    insert_and_update(models.VoteResult, vote_results)
-    print("Successfully retrieved vote results")
+    try:
+        last_row = (
+            session.query(models.VoteResult)
+            .order_by(models.VoteResult.id.desc())
+            .first()
+        )
+        last_id = last_row.id
+        last_poll_id = last_row.poll_id
+        vote_results = generate_appended_vote_results(session, last_id, last_poll_id)
+        insert_and_update(models.VoteResult, vote_results)
+        print("Successfully retrieved vote results")
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+
+def append_poll_results_per_fraction():
+    print("Starting Process to append poll_result_per_fraction table")
+    begin_time = time.time()
+    session = Session()
+    try:
+        # Retrieve existing poll_id and fraction_id combinations from PollResultPerFraction
+        existing_poll_results = session.query(
+            models.PollResultPerFraction.poll_id,
+            models.PollResultPerFraction.fraction_id,
+        ).all()
+        existing_poll_results_ids = {
+            (result.poll_id, result.fraction_id) for result in existing_poll_results
+        }
+
+        # Retrieve all poll IDs
+        all_polls = session.query(models.Poll.id).all()
+        new_poll_ids = {
+            poll.id for poll in all_polls if poll.id not in existing_poll_results_ids
+        }
+
+        new_poll_results_per_fraction = []
+        for poll_id in new_poll_ids:
+            fractions = (
+                session.query(models.Vote.fraction_id)
+                .filter(models.Vote.poll_id == poll_id)
+                .distinct()
+                .all()
+            )
+            for fraction in fractions:
+                fraction_id = fraction[0]
+
+                # This check is now correct, as existing_poll_results_ids is properly defined
+                if (poll_id, fraction_id) not in existing_poll_results_ids:
+                    print(
+                        f"Poll_id {poll_id} with fraction_id {fraction_id} is NOT in here. Creating entry."
+                    )
+
+                    # Calculating total votes for each type
+                    total_yes = get_total_votes_of_type(
+                        "yes", poll_id, fraction_id, session
+                    )
+                    total_no = get_total_votes_of_type(
+                        "no", poll_id, fraction_id, session
+                    )
+                    total_abstain = get_total_votes_of_type(
+                        "abstain", poll_id, fraction_id, session
+                    )
+                    total_no_show = get_total_votes_of_type(
+                        "no_show", poll_id, fraction_id, session
+                    )
+
+                    poll_result_id = int(str(poll_id) + str(fraction_id))
+                    poll_result = {
+                        "id": poll_result_id,
+                        "entity_type": "poll_result",
+                        "poll_id": poll_id,
+                        "fraction_id": fraction_id,
+                        "total_yes": total_yes,
+                        "total_no": total_no,
+                        "total_abstain": total_abstain,
+                        "total_no_show": total_no_show,
+                    }
+                    new_poll_results_per_fraction.append(poll_result)
+
+        # If there are new entries, insert them into the database
+        if new_poll_results_per_fraction:
+            print(
+                f"Inserting {len(new_poll_results_per_fraction)} new items into poll_results_per_fraction table"
+            )
+            insert_and_update(
+                models.PollResultPerFraction, new_poll_results_per_fraction
+            )
+        else:
+            print("No new items to insert.")
+
+        end_time = time.time()
+        print(f"Total runtime for appending new data is {end_time - begin_time}")
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
 
 
 def append_fractions() -> List:
@@ -736,18 +827,24 @@ def gen_images_json():
 
 
 def extract_and_sum_amounts(s: str) -> float:
-    # Regex pattern to match amounts
-    pattern = r"(\d{1,3}(?:\.\d{3})*,\d{2})\s*EUR"
-    matches = re.findall(pattern, s)
+    try:
+        # Regex pattern to match amounts
+        pattern = r"(\d{1,3}(?:\.\d{3})*,\d{2})\s*EUR"
+        matches = re.findall(pattern, s)
 
-    # Convert each match to a float and sum them up
-    total = sum(float(match.replace(".", "").replace(",", ".")) for match in matches)
+        # Convert each match to a float and sum them up
+        total = sum(
+            float(match.replace(".", "").replace(",", ".")) for match in matches
+        )
 
-    # round to two decimal places if it has decimal places
-    if total % 1 == 0:
-        total = round(total, 2)
+        # round to two decimal places if it has decimal places
+        if total % 1 == 0:
+            total = round(total, 2)
+            return total
         return total
-    return total
+    except Exception as e:
+        print(e)
+        return None
 
 
 def update_sidejobs_income():
@@ -797,6 +894,23 @@ def update_politician_images():
         )
 
     print("Finished updating politician images")
+
+
+def update_polls_and_votes():
+    append_parliament_periods()
+    append_fractions()
+    append_committees()
+    append_polls()
+    append_politicians()
+    append_candidacies()
+    append_votes()
+    append_poll_results_per_fraction()
+    append_vote_results()
+
+
+def update_sidejobs():
+    append_sidejob_organizations()
+    append_sidejobs()
 
 
 if __name__ == "__main__":
