@@ -133,3 +133,26 @@ class TestSqlAlchemyPartyDonationRepository:
         assert retrieved_list[-1].date == date(2020, 1, 1)
         # Cleanup
         delete_party_donation(session)
+
+    def test_repository_can_add_or_update_a_party_donation_using_merge(self, session):
+        factory = SqlAlchemyFactory(session)
+        repo = factory.create_party_donation_repository()
+        # Act
+        # Insert a party_donation with id=1
+        party_donation = models.PartyDonation(
+            id=1, amount=1000.0, date=date(2020, 1, 1), party_id=1
+        )
+        repo.add(party_donation)
+        # Create a new party_donation with the same id but different values
+        updated_party_donation = models.PartyDonation(
+            id=1, amount=2000.0, date=date(2020, 1, 2), party_id=2
+        )
+        repo.add_or_update(updated_party_donation)
+        # Retrieve the party_donation with id=1 from the database
+        rows = session.execute(
+            text("SELECT * FROM party_donation WHERE id = :id"), {"id": 1}
+        )
+        # Assert
+        assert list(rows) == [(1, 2, 2000.0, "2020-01-02", None)]
+        # Cleanup
+        delete_party_donation(session)
