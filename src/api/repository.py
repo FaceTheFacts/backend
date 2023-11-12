@@ -90,6 +90,13 @@ class SqlAlchemyPartyRepository(SqlAlchemyBaseRepository):
         )
 
 
+class SqlAlchemyPartyStyleRepository(SqlAlchemyBaseRepository):
+    """Repository class for PartyStyle"""
+
+    def __init__(self, session):
+        super().__init__(session, models.PartyStyle)
+
+
 class SqlAlchemyFactory:
     """Factory class to create repositories"""
 
@@ -101,3 +108,6 @@ class SqlAlchemyFactory:
 
     def create_party_repository(self) -> SqlAlchemyPartyRepository:
         return SqlAlchemyPartyRepository(self.session)
+
+    def create_party_style_repository(self) -> SqlAlchemyPartyStyleRepository:
+        return SqlAlchemyPartyStyleRepository(self.session)
