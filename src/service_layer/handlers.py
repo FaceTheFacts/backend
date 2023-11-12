@@ -1,3 +1,6 @@
+# std
+import logging
+
 # local
 from src.domain import events
 from src.api import repository

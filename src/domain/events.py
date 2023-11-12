@@ -7,16 +7,12 @@ class Event:
     pass
 
 
-@dataclass
-class CronJobExecuted(Event):
-    job: str
-
-
 # step2
 @dataclass
 class MissingEntityFetched(Event):
     entity: str
     data: List[Dict[str, Any]]
+
 
 # step3
 @dataclass

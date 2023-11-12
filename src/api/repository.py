@@ -53,6 +53,17 @@ class SqlAlchemyBaseRepository(AbstractRepository):
         self.session.execute(stmt)
         self.session.commit()
 
+    def count(self):
+        return self.session.query(self.model_class).count()
+
+    def get_last_id(self):
+        return (
+            self.session.query(self.model_class.id)
+            .order_by(self.model_class.id.desc())
+            .first()
+            .id
+        )
+
 
 class SqlAlchemyPartyDonationRepository(SqlAlchemyBaseRepository):
     """Repository class for PartyDonation"""
