@@ -4,7 +4,6 @@ import logging
 # local
 from src.domain import events
 from src.api import repository
-from src.db.connection import Session
 
 
 # Step 2
@@ -42,9 +41,9 @@ def prepare_update_data(
 
 # Step 3
 def update_table(
-    event: events.UpdatedEntityPrepared, session: Session()  # type: ignore
+    event: events.UpdatedEntityPrepared
 ):
-    factory = repository.SqlAlchemyFactory(session)
+    factory = repository.SqlAlchemyFactory(event.session)
     if event.entities == ["party_style", "party"]:
         party_style_repo = factory.create_party_style_repository()
         party_repo = factory.create_party_repository()

@@ -19,3 +19,4 @@ class MissingEntityFetched(Event):
 class UpdatedEntityPrepared(Event):
     entities: List[str]
     data: List[List[Dict[str, Any]]]
+    session: Any
