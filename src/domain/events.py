@@ -12,31 +12,11 @@ class CronJobExecuted(Event):
     job: str
 
 
+# step2
 @dataclass
 class MissingEntityFetched(Event):
-    entities: List[str]
-    # entity: str  # maybe I should make it entity list
-    # for example
-    # entity = ["party", "party_style"]
-    data: List[Dict[str, Any]]  # maybe I should make it data list
-    # for example
-    """ data = [[
-        {
-        "id": 1,
-        "name": "Republican",
-        "acronym": "REP",
-        }
-        # party_style
-    ],[
-        {
-        "id": 1,
-        "name": "Republican",
-        "acronym": "REP",
-        }
-        # party
-    
-    ]] """
-
+    entity: str
+    data: List[Dict[str, Any]]
 
 # step3
 @dataclass
