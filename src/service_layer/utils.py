@@ -24,7 +24,7 @@ class FetchMissingEntity:
         self.total_abgeordnetenwatch_entity = self.count_abgeordnetenwatch_entity()
         self.total_database_entity = self.count_database_entity()
         self.is_missing_entity = self.check_is_missing_entity()
-        self.last_id = self.get_last_id()
+        self.last_id = self.get_last_id() if self.total_database_entity > 0 else 0
         self.page_count = self.count_pages()
 
     def count_abgeordnetenwatch_entity(self) -> int:
