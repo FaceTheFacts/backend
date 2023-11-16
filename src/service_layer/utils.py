@@ -5,8 +5,13 @@ import math
 from typing import List
 
 # local
+from src.logging_config import configure_logging
 from src.api.repository import SqlAlchemyBaseRepository
 import src.db.models as models
+
+
+configure_logging()
+logger = logging.getLogger(__name__)
 
 
 class FetchMissingEntity:
@@ -36,7 +41,7 @@ class FetchMissingEntity:
             total = results["meta"]["result"]["total"]
             return total
         except requests.exceptions.ConnectionError as e:
-            logging.error("Internet connection error: %s", e)
+            logger.error("Internet connection error: %s", e)
             return 0
 
     def count_database_entity(self) -> int:
@@ -44,12 +49,12 @@ class FetchMissingEntity:
 
     def check_is_missing_entity(self):
         if self.total_abgeordnetenwatch_entity > self.total_database_entity:
-            logging.info(
+            logger.info(
                 f"Missing {self.total_abgeordnetenwatch_entity - self.total_database_entity} {self.entity} entity"
             )
             return True
         else:
-            logging.info(f"No missing {self.entity} entity")
+            logger.info(f"No missing {self.entity} entity")
             return False
 
     def get_last_id(self):
@@ -68,15 +73,15 @@ class FetchMissingEntity:
                 page_count = math.ceil(total / self.page_size)
                 return page_count
             except requests.exceptions.ConnectionError as e:
-                logging.error("Internet connection error: %s", e)
+                logger.error("Internet connection error: %s", e)
                 return 0
         else:
-            logging.info(f"No missing {self.entity} entity")
+            logger.info(f"No missing {self.entity} entity")
             return 0
 
     def fetch_missing_entities(self) -> List[models.Party]:
         if not self.is_missing_entity:
-            logging.info(f"No missing {self.entity} entity")
+            logger.info(f"No missing {self.entity} entity")
             return []
         data_list = []
         for page_num in range(self.page_count):
@@ -89,10 +94,10 @@ class FetchMissingEntity:
                 for item in data:
                     data_list.append(item)
             except requests.exceptions.ConnectionError as e:
-                logging.error("Internet connection error: %s", e)
+                logger.error("Internet connection error: %s", e)
                 return []
         if not data_list:
-            logging.info(f"No missing {self.entity} entity")
+            logger.info(f"No missing {self.entity} entity")
             return data_list
         else:
             return data_list

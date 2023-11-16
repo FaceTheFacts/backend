@@ -5,8 +5,12 @@ from typing import Any, List
 # local
 from src.domain import events, commands
 from src.api import repository
+from src.logging_config import configure_logging
 from src.service_layer import utils
 
+
+configure_logging()
+logger = logging.getLogger(__name__)
 
 # Step 1
 def fetch_missing_entity(command: commands.FetchMissingEntity) -> List[Any]:
@@ -63,19 +67,19 @@ def update_table(command: commands.UpdateTable):
 def send_missing_entity_fetched_notification(
     event: events.MissingEntityFetched,
 ):
-    logging.info(f"Missing entity {event.entity} fetched")
+    logger.info(f"Missing entity {event.entity} fetched")
     print(f"Missing entity {event.entity} fetched")
 
 
 def send_update_data_prepared_notification(
     event: events.UpdatedEntityPrepared,
 ):
-    logging.info(f"Update data prepared for {event.entities}")
+    logger.info(f"Update data prepared for {event.entities}")
     print(f"Update data prepared for {event.entities}")
 
 
 def send_table_updated_notification(
     event: events.TableUpdated,
 ):
-    logging.info(f"Table updated for {event.entities}")
+    logger.info(f"Table updated for {event.entities}")
     print(f"Table updated for {event.entities}")
