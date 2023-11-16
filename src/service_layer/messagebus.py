@@ -41,7 +41,7 @@ def handle_event(
 def handle_command(
         command: commands.Command, queue: list[Message]
 ):
-    logging.debug("handling command %s", command)
+    # logging.debug("handling command %s", command)
     try:
         handler = COMMAND_HANDLERS[type(command)] # type: ignore
         result = handler(command)
