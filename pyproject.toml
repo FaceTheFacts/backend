@@ -4,6 +4,12 @@ version = "0.1.0"
 description = ""
 authors = ["Richard Krümmel <richard.kruemmel@code.berlin>", "Johann Hemmann <johann.hemmann@code.berlin>"]
 
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+
 [tool.poetry.dependencies]
 python = "^3.8"
 click = "^8.0.4"
