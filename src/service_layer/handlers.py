@@ -1,16 +1,27 @@
 # std
 import logging
+from typing import Any, List
 
 # local
-from src.domain import events
+from src.domain import events, commands
 from src.api import repository
+from src.service_layer import utils
+
+
+# Step 1
+def fetch_missing_entity(command: commands.FetchMissingEntity) -> List[Any]:
+    if command.entity == "party":
+        repo = repository.SqlAlchemyFactory(command.session).create_party_repository() 
+        missing_party_data = utils.FetchMissingEntity(
+            "parties", repo
+        ).fetch_missing_entities()
+        return missing_party_data
+    return []
 
 
 # Step 2
-def prepare_update_data(
-    event: events.MissingEntityFetched,
-):
-    if event.entity == "party":
+def prepare_update_data(command: commands.PrepareUpdateData):
+    if command.entity == "party":
         party_styles = [
             {
                 "id": api_party["id"],
@@ -19,7 +30,7 @@ def prepare_update_data(
                 "background_color": "#333333",
                 "border_color": None,
             }
-            for api_party in event.data
+            for api_party in command.data
         ]
         parties = [
             {
@@ -31,7 +42,7 @@ def prepare_update_data(
                 "short_name": api_party["short_name"],
                 "party_style_id": api_party["id"],
             }
-            for api_party in event.data
+            for api_party in command.data
         ]
         # return events.UpdatedEntityPrepared(
         #     entities=["party_style", "party"], data=[party_styles, parties]
@@ -40,12 +51,31 @@ def prepare_update_data(
 
 
 # Step 3
-def update_table(
-    event: events.UpdatedEntityPrepared
-):
-    factory = repository.SqlAlchemyFactory(event.session)
-    if event.entities == ["party_style", "party"]:
+def update_table(command: commands.UpdateTable):
+    factory = repository.SqlAlchemyFactory(command.session)
+    if command.entities == ["party_style", "party"]:
         party_style_repo = factory.create_party_style_repository()
         party_repo = factory.create_party_repository()
-        party_style_repo.add_or_update_list(event.data[0])  # type: ignore
-        party_repo.add_or_update_list(event.data[1])  # type: ignore
+        party_style_repo.add_or_update_list(command.data[0])  # type: ignore
+        party_repo.add_or_update_list(command.data[1])  # type: ignore
+
+
+def send_missing_entity_fetched_notification(
+    event: events.MissingEntityFetched,
+):
+    logging.info(f"Missing entity {event.entity} fetched")
+    print(f"Missing entity {event.entity} fetched")
+
+
+def send_update_data_prepared_notification(
+    event: events.UpdatedEntityPrepared,
+):
+    logging.info(f"Update data prepared for {event.entities}")
+    print(f"Update data prepared for {event.entities}")
+
+
+def send_table_updated_notification(
+    event: events.TableUpdated,
+):
+    logging.info(f"Table updated for {event.entities}")
+    print(f"Table updated for {event.entities}")

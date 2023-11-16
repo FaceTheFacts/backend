@@ -1,26 +1,70 @@
 # std
 import logging
+from typing import Union
 
 # local
-from src.domain import events
+from src.domain import events, commands
 from src.service_layer import handlers
 
+Message = Union[commands.Command, events.Event]
 
-def handle(event: events.Event):  # type: ignore
+
+def handle(message: Message):  # type: ignore
     results = []
-    queue = [event]
+    queue = [message]
     while queue:
         event = queue.pop(0)
-        for handler in HANDLERS[type(event)]:  # type: ignore
-            try:
-                results.append(handler(event))
-            except Exception:
-                logging.exception("Exception handling %s", event)
-                raise
+        if isinstance(event, events.Event):
+            handle_event(event, queue)
+        elif isinstance(event, commands.Command):
+            cmd_result = handle_command(event, queue)
+            results.append(cmd_result)
+        else:
+            raise Exception(f"{event} was not an Event or Command")
     return results
 
+def handle_event(
+        event: events.Event, queue: list[Message]
+):
+    for handler in EVENT_HANDLERS[type(event)]: # type: ignore
+        try:
+            logging.debug("handling event %s with handler %s", event, handler)
+            handler(event)
+            # queue.extend(collect_new_events(event))
+            
+        except Exception:
+            logging.exception(
+                "Exception handling event %s with handler %s", event, handler
+            )
+            continue
 
-HANDLERS = {
-    events.MissingEntityFetched: [handlers.prepare_update_data],
-    events.UpdatedEntityPrepared: [handlers.update_table],
+def handle_command(
+        command: commands.Command, queue: list[Message]
+):
+    logging.debug("handling command %s", command)
+    try:
+        handler = COMMAND_HANDLERS[type(command)] # type: ignore
+        result = handler(command)
+        # queue.extend(collect_new_events(command))
+        return result
+    except Exception:
+        logging.exception("Exception handling command %s", command)
+        raise
+
+EVENT_HANDLERS = {
+    events.MissingEntityFetched: [handlers.send_missing_entity_fetched_notification],
+    events.UpdatedEntityPrepared: [handlers.send_update_data_prepared_notification],
+    events.TableUpdated: [handlers.send_table_updated_notification],
 }
+
+COMMAND_HANDLERS = {
+    commands.FetchMissingEntity: handlers.fetch_missing_entity,
+    commands.PrepareUpdateData: handlers.prepare_update_data,
+    commands.UpdateTable: handlers.update_table,
+}
+
+
+# HANDLERS = {
+#     events.MissingEntityFetched: [handlers.prepare_update_data],
+#     events.UpdatedEntityPrepared: [handlers.update_table],
+# }
