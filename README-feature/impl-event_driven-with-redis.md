@@ -33,27 +33,30 @@ This implementation follows the principles outlined in [Chapter 11](https://www.
 
 3. **Updating Tables:**
    - Consumer 2 (src/entrypoints/redis_eventconsumer_update_data_prepared.py) subscribes to the "updated_entity_prepared" channel.
-   - Upon receiving the prepared data, Consumer 2 executes the final step to update the tables.
+   - Consumer 2 executes the final step to update the tables upon receiving the prepared data.
 
 #### Execution Steps
 
 1. **Initial State (Party Table):**
-
-   - ![Party Table Before](images/party_table_before.png)
+   <img width="1152" alt="before_party_table" src="https://github.com/FaceTheFacts/backend/assets/78789212/fede08e7-71a9-4f64-a9fc-acf45b5e7dab">
 
 2. **Running Consumers:**
 
    - To run the pipeline, start Redis server and execute Consumer 1 and Consumer 2.
-   - ![Running Consumers](images/running_consumers.png)
+   <img width="1344" alt="running_only_consumer" src="https://github.com/FaceTheFacts/backend/assets/78789212/e4855ff9-0886-42fb-b222-f16b3727888a">
+
+
 
 3. **Executing Publisher:**
 
    - Execute the event publisher to kickstart the pipeline.
-   - ![Executing Publisher](images/executing_publisher.png)
+   <img width="1333" alt="running_with_publisher" src="https://github.com/FaceTheFacts/backend/assets/78789212/d4797fe2-8df6-4528-974e-5beaa0a4dd1f">
+
 
 4. **Updated State (Party Table and Party Style):**
-   - ![Updated Party Table](images/updated_party_table.png)
-   - ![Updated Party Style](images/updated_party_style.png)
+   <img width="1126" alt="after_party_table" src="https://github.com/FaceTheFacts/backend/assets/78789212/e68b2ab5-a041-4e29-9ecf-f9fd674b545e">
+   <img width="997" alt="after_party_style_table" src="https://github.com/FaceTheFacts/backend/assets/78789212/9e71daba-57bf-4c4e-9786-60f24e74ff8e">
+
 
 ### Automation and Future Improvements
 
