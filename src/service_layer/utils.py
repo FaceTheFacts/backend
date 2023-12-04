@@ -76,12 +76,10 @@ class FetchMissingEntity:
                 logger.error("Internet connection error: %s", e)
                 return 0
         else:
-            logger.info(f"No missing {self.entity} entity")
             return 0
 
     def fetch_missing_entities(self) -> List[models.Party]:
         if not self.is_missing_entity:
-            logger.info(f"No missing {self.entity} entity")
             return []
         data_list = []
         for page_num in range(self.page_count):
@@ -97,7 +95,6 @@ class FetchMissingEntity:
                 logger.error("Internet connection error: %s", e)
                 return []
         if not data_list:
-            logger.info(f"No missing {self.entity} entity")
             return data_list
         else:
             return data_list

@@ -38,7 +38,7 @@ def initiate_fetch_missing_data(entity: str, session: Any):
             channel="missing_entity_fetched",
             message=json.dumps({"entity": entity, "data": missing_data[0]}),
         )
-
+        logger.info("Total missing data: %s", len(missing_data[0]))
         logger.info("Executed FetchMissingEntity command")
 
     except Exception as e:
@@ -47,17 +47,17 @@ def initiate_fetch_missing_data(entity: str, session: Any):
 
 def main():
     """Run the Redis event publisher."""
+    logger.info("Running the Redis event publisher")
     initiate_fetch_missing_data(entity="party", session=session)
-    time.sleep(1)
 
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
 
-schedule.every().day.at("02:00").do(
-    initiate_fetch_missing_data, entity="party", session=session
-)
+# schedule.every().day.at("02:00").do(
+#     initiate_fetch_missing_data, entity="party", session=session
+# )
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
