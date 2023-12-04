@@ -51,13 +51,13 @@ def main():
     time.sleep(1)
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
 
-# schedule.every().day.at("02:00").do(
-#     execute_command_sequence, entity="party", session=session
-# )
+schedule.every().day.at("02:00").do(
+    initiate_fetch_missing_data, entity="party", session=session
+)
 
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
+while True:
+    schedule.run_pending()
+    time.sleep(1)
