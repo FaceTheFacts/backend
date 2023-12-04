@@ -16,16 +16,16 @@ logger = logging.getLogger(__name__)
 
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = os.getenv("REDIS_PORT", 6379)
-REDIS_DB = os.getenv("REDIS_DB", 0)
 
-redis_client = redis.Redis(host=REDIS_HOST, port=int(REDIS_PORT), db=int(REDIS_DB))
+redis_client = redis.StrictRedis(
+    host=REDIS_HOST, port=int(REDIS_PORT), decode_responses=True
+)
 
 
 def handle_message(message):
     try:
         data = json.loads(message["data"])
         if message["channel"] == "missing_entity_fetched":
-            print("data", data)
             cmd = commands.PrepareUpdateData(entity=data["entity"], data=data["data"])
             prepared_update_data = messagebus.handle(cmd)
             # Publish a message
