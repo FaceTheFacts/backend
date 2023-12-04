@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = os.getenv("REDIS_PORT", 6379)
 
-redis_client = redis.StrictRedis(host=REDIS_HOST, port=int(REDIS_PORT), decode_responses=True)
+redis_client = redis.StrictRedis(
+    host=REDIS_HOST, port=int(REDIS_PORT), decode_responses=True
+)
 session = Session()
 
 
@@ -30,7 +32,7 @@ def handle_message(message, session):
                 entities=data["entities"], data=data["data"], session=session
             )
             messagebus.handle(cmd)
-
+            logger.info("Updated database with with tables: %s", data["entities"])
             logger.info("Executed UpdateTable command")
     except Exception as e:
         logger.exception("Exception executing command: %s", e)

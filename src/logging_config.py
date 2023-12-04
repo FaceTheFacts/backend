@@ -1,11 +1,30 @@
-# std
+# logging_config.py
 import logging
+import logging.config
 
 
 def configure_logging():
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)")
-    handler = logging.StreamHandler()
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    logging_config = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "standard": {
+                "format": "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)",
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+            },
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "standard",
+            },
+        },
+        "loggers": {
+            "": {  # Root logger
+                "handlers": ["console"],
+                "level": "INFO",
+            },
+        },
+    }
+
+    logging.config.dictConfig(logging_config)
