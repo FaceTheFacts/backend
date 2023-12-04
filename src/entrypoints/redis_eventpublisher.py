@@ -22,9 +22,10 @@ session = Session()
 
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT = os.getenv("REDIS_PORT", 6379)
-REDIS_DB = os.getenv("REDIS_DB", 0)
 
-redis_client = redis.Redis(host=REDIS_HOST, port=int(REDIS_PORT), db=int(REDIS_DB))
+redis_client = redis.StrictRedis(
+    host=REDIS_HOST, port=int(REDIS_PORT), decode_responses=True
+)
 
 
 def initiate_fetch_missing_data(entity: str, session: Any):
