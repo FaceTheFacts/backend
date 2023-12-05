@@ -8,6 +8,7 @@ from src.logging_config import configure_logging
 from src.domain import commands
 from src.service_layer import messagebus
 from src.db.connection import Session
+from src.entrypoints.redis_utils import RedisClient
 
 # third-party
 import redis
@@ -15,12 +16,6 @@ import redis
 configure_logging()
 logger = logging.getLogger(__name__)
 
-REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
-REDIS_PORT = os.getenv("REDIS_PORT", 6379)
-
-redis_client = redis.StrictRedis(
-    host=REDIS_HOST, port=int(REDIS_PORT), decode_responses=True
-)
 session = Session()
 
 
@@ -41,7 +36,7 @@ def handle_message(message, session):
 def main():
     """Run the Redis event consumer."""
     logger.info("Running the Redis event consumer")
-    pubsub = redis_client.pubsub(ignore_subscribe_messages=True)
+    pubsub = RedisClient().pubsub(ignore_subscribe_messages=True)
     pubsub.subscribe("updated_entity_prepared")
     for message in pubsub.listen():
         handle_message(message, session=session)

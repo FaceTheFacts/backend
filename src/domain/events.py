@@ -11,9 +11,11 @@ class Event:
 class MissingEntityFetched(Event):
     entity: str
     data: List[Any]
+    redis_client: Any
 
 
 @dataclass
 class UpdatedEntityPrepared(Event):
     entities: List[str]
     data: List[Any]
+    redis_client: Any
