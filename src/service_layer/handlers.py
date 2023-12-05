@@ -88,10 +88,3 @@ def publish_update_data_prepared_event(
             }
         ),
     )
-
-
-def send_table_updated_notification(
-    event: events.TableUpdated,
-):
-    logger.info(f"Table updated for {event.entities}")
-    print(f"Table updated for {event.entities}")

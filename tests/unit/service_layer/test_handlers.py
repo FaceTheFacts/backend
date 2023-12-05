@@ -146,7 +146,6 @@ class TestHandlers:
         messagebus.handle(
             commands.UpdateTable(entities=entities, data=data, session=session)
         )
-        messagebus.handle(events.TableUpdated(entities=entities))
         rows = session.execute(text("SELECT * FROM party WHERE id = :id"), {"id": 1})
         # Assert
         assert list(rows) == [
@@ -182,7 +181,6 @@ class TestHandlers:
                 session=session,
             )
         )
-        messagebus.handle(events.TableUpdated(entities=prepared_update_data[0]["entities"]))  # type: ignore
         rows = session.execute(text("SELECT * FROM party WHERE id = :id"), {"id": 1})
         # Assert
         assert list(rows) == [
