@@ -70,7 +70,7 @@ def update_table(command: commands.UpdateTable):
 def publish_missing_entity_fetched_event(
     event: events.MissingEntityFetched,
 ):
-    redis_eventpublisher.publish(
+    event.redis_client.publish(
         channel="missing_entity_fetched",
         message=json.dumps({"entity": event.entity, "data": event.data}),
     )
@@ -79,7 +79,7 @@ def publish_missing_entity_fetched_event(
 def publish_update_data_prepared_event(
     event: events.UpdatedEntityPrepared,
 ):
-    redis_eventpublisher.publish(
+    event.redis_client.publish(
         channel="updated_entity_prepared",
         message=json.dumps(
             {
