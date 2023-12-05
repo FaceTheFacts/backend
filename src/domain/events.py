@@ -10,6 +10,7 @@ class Event:
 @dataclass
 class MissingEntityFetched(Event):
     entity: str
+    data: List[dict]
 
 
 @dataclass

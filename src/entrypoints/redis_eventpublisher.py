@@ -7,7 +7,7 @@ import schedule
 from typing import Any
 
 # local
-from src.domain import commands
+from src.domain import commands, events
 from src.logging_config import configure_logging
 from src.service_layer import messagebus
 from src.db.connection import Session
@@ -27,6 +27,11 @@ redis_client = redis.StrictRedis(
     host=REDIS_HOST, port=int(REDIS_PORT), decode_responses=True
 )
 
+def publish(channel: str, message: Any):
+    """Publish a message to a Redis channel."""
+    logging.debug("Publishing message to channel %s: %s", channel, message)
+    redis_client.publish(channel=channel, message=message)
+
 
 def initiate_fetch_missing_data(entity: str, session: Any):
     try:
@@ -34,10 +39,8 @@ def initiate_fetch_missing_data(entity: str, session: Any):
         fetch_command = commands.FetchMissingEntity(entity=entity, session=session)
         missing_data = messagebus.handle(fetch_command)
         # publish a message
-        redis_client.publish(
-            channel="missing_entity_fetched",
-            message=json.dumps({"entity": entity, "data": missing_data[0]}),
-        )
+        event = events.MissingEntityFetched(entity=entity, data=missing_data[0])
+        messagebus.handle(event)
         logger.info("Total missing data: %s", len(missing_data[0]))
         logger.info("Executed FetchMissingEntity command")
 
