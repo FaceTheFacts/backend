@@ -52,7 +52,7 @@ def handle_command(
         raise
 
 EVENT_HANDLERS = {
-    events.MissingEntityFetched: [handlers.send_missing_entity_fetched_notification],
+    events.MissingEntityFetched: [handlers.publish_missing_entity_fetched_event],
     events.UpdatedEntityPrepared: [handlers.send_update_data_prepared_notification],
     events.TableUpdated: [handlers.send_table_updated_notification],
 }

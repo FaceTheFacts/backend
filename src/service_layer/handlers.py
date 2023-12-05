@@ -1,10 +1,12 @@
 # std
+import json
 import logging
 from typing import Any, List
 
 # local
 from src.domain import events, commands
 from src.api import repository
+from src.entrypoints import redis_eventpublisher
 from src.logging_config import configure_logging
 from src.service_layer import utils
 
@@ -12,10 +14,11 @@ from src.service_layer import utils
 configure_logging()
 logger = logging.getLogger(__name__)
 
+
 # Step 1
 def fetch_missing_entity(command: commands.FetchMissingEntity) -> List[Any]:
     if command.entity == "party":
-        repo = repository.SqlAlchemyFactory(command.session).create_party_repository() 
+        repo = repository.SqlAlchemyFactory(command.session).create_party_repository()
         missing_party_data = utils.FetchMissingEntity(
             "parties", repo
         ).fetch_missing_entities()
@@ -64,11 +67,13 @@ def update_table(command: commands.UpdateTable):
         party_repo.add_or_update_list(command.data[1])  # type: ignore
 
 
-def send_missing_entity_fetched_notification(
+def publish_missing_entity_fetched_event(
     event: events.MissingEntityFetched,
 ):
-    logger.info(f"Missing entity {event.entity} fetched")
-    print(f"Missing entity {event.entity} fetched")
+    redis_eventpublisher.publish(
+        channel="missing_entity_fetched",
+        message=json.dumps({"entity": event.entity, "data": event.data}),
+    )
 
 
 def send_update_data_prepared_notification(
