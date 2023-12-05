@@ -5,7 +5,7 @@ import os
 
 # local
 from src.logging_config import configure_logging
-from src.domain import commands
+from src.domain import commands, events
 from src.service_layer import messagebus
 
 # third-party
@@ -29,15 +29,11 @@ def handle_message(message):
             cmd = commands.PrepareUpdateData(entity=data["entity"], data=data["data"])
             prepared_update_data = messagebus.handle(cmd)
             # Publish a message
-            redis_client.publish(
-                channel="updated_entity_prepared",
-                message=json.dumps(
-                    {
-                        "entities": prepared_update_data[0]["entities"],
-                        "data": prepared_update_data[0]["data"],
-                    }
-                ),
+            event = events.UpdatedEntityPrepared(
+                entities=prepared_update_data[0]["entities"],
+                data=prepared_update_data[0]["data"],
             )
+            messagebus.handle(event)
             logger.info("Executed PrepareUpdateData command")
     except Exception as e:
         logger.exception("Exception executing command: %s", e)

@@ -15,7 +15,6 @@ class TestHandlers:
         missing_party_data = messagebus.handle(
             commands.FetchMissingEntity(entity="party", session=session)
         )
-        messagebus.handle(events.MissingEntityFetched(entity="party"))
         # Assert
         assert missing_party_data != []
 
@@ -28,7 +27,6 @@ class TestHandlers:
         missing_party_data = messagebus.handle(
             commands.FetchMissingEntity(entity="party", session=session)
         )
-        messagebus.handle(events.MissingEntityFetched(entity="party"))
         # Assert
         assert missing_party_data != []
 
@@ -58,7 +56,6 @@ class TestHandlers:
         results = messagebus.handle(
             commands.PrepareUpdateData(entity="party", data=data)
         )
-        messagebus.handle(events.UpdatedEntityPrepared(entities=results[0]["entities"]))  # type: ignore
         # Assert
         assert results[0] == {
             "entities": ["party_style", "party"],
@@ -174,12 +171,10 @@ class TestHandlers:
         missing_party_data = messagebus.handle(
             commands.FetchMissingEntity(entity="party", session=session)
         )
-        messagebus.handle(events.MissingEntityFetched(entity="party"))
 
         prepared_update_data = messagebus.handle(
             commands.PrepareUpdateData(entity="party", data=missing_party_data[0])
         )
-        messagebus.handle(events.UpdatedEntityPrepared(entities=prepared_update_data[0]["entities"]))  # type: ignore
         messagebus.handle(
             commands.UpdateTable(
                 entities=prepared_update_data[0]["entities"],
