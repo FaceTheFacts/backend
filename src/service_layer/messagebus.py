@@ -53,7 +53,6 @@ def handle_command(command: commands.Command, queue: list[Message]):
 EVENT_HANDLERS = {
     events.MissingEntityFetched: [handlers.publish_missing_entity_fetched_event],
     events.UpdatedEntityPrepared: [handlers.publish_update_data_prepared_event],
-    events.TableUpdated: [handlers.send_table_updated_notification],
 }
 
 COMMAND_HANDLERS = {
@@ -61,9 +60,3 @@ COMMAND_HANDLERS = {
     commands.PrepareUpdateData: handlers.prepare_update_data,
     commands.UpdateTable: handlers.update_table,
 }
-
-
-# HANDLERS = {
-#     events.MissingEntityFetched: [handlers.prepare_update_data],
-#     events.UpdatedEntityPrepared: [handlers.update_table],
-# }

@@ -17,8 +17,3 @@ class MissingEntityFetched(Event):
 class UpdatedEntityPrepared(Event):
     entities: List[str]
     data: List[Any]
-
-
-@dataclass
-class TableUpdated(Event):
-    entities: List[str]
