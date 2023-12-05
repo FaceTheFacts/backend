@@ -23,27 +23,25 @@ def handle(message: Message):  # type: ignore
             raise Exception(f"{event} was not an Event or Command")
     return results
 
-def handle_event(
-        event: events.Event, queue: list[Message]
-):
-    for handler in EVENT_HANDLERS[type(event)]: # type: ignore
+
+def handle_event(event: events.Event, queue: list[Message]):
+    for handler in EVENT_HANDLERS[type(event)]:  # type: ignore
         try:
             logging.debug("handling event %s with handler %s", event, handler)
             handler(event)
             # queue.extend(collect_new_events(event))
-            
+
         except Exception:
             logging.exception(
                 "Exception handling event %s with handler %s", event, handler
             )
             continue
 
-def handle_command(
-        command: commands.Command, queue: list[Message]
-):
+
+def handle_command(command: commands.Command, queue: list[Message]):
     # logging.debug("handling command %s", command)
     try:
-        handler = COMMAND_HANDLERS[type(command)] # type: ignore
+        handler = COMMAND_HANDLERS[type(command)]  # type: ignore
         result = handler(command)
         # queue.extend(collect_new_events(command))
         return result
@@ -51,9 +49,10 @@ def handle_command(
         logging.exception("Exception handling command %s", command)
         raise
 
+
 EVENT_HANDLERS = {
     events.MissingEntityFetched: [handlers.publish_missing_entity_fetched_event],
-    events.UpdatedEntityPrepared: [handlers.send_update_data_prepared_notification],
+    events.UpdatedEntityPrepared: [handlers.publish_update_data_prepared_event],
     events.TableUpdated: [handlers.send_table_updated_notification],
 }
 

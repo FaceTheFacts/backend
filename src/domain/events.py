@@ -1,6 +1,6 @@
 # std
 from dataclasses import dataclass
-from typing import List
+from typing import List, Any
 
 
 class Event:
@@ -10,12 +10,13 @@ class Event:
 @dataclass
 class MissingEntityFetched(Event):
     entity: str
-    data: List[dict]
+    data: List[Any]
 
 
 @dataclass
 class UpdatedEntityPrepared(Event):
     entities: List[str]
+    data: List[Any]
 
 
 @dataclass

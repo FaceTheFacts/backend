@@ -76,11 +76,18 @@ def publish_missing_entity_fetched_event(
     )
 
 
-def send_update_data_prepared_notification(
+def publish_update_data_prepared_event(
     event: events.UpdatedEntityPrepared,
 ):
-    logger.info(f"Update data prepared for {event.entities}")
-    print(f"Update data prepared for {event.entities}")
+    redis_eventpublisher.publish(
+        channel="updated_entity_prepared",
+        message=json.dumps(
+            {
+                "entities": event.entities,
+                "data": event.data,
+            }
+        ),
+    )
 
 
 def send_table_updated_notification(
