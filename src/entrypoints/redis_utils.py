@@ -35,5 +35,5 @@ class RedisClient:
 
     def publish(self, channel: str, message: Any):
         """Publish a message to a Redis channel."""
-        logging.debug("Publishing message to channel %s: %s", channel, message)
+        logging.debug("Publishing message to channel %s", channel)
         self.redis_client.publish(channel=channel, message=message)

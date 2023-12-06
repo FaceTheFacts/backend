@@ -27,14 +27,12 @@ def handle(message: Message):  # type: ignore
 def handle_event(event: events.Event, queue: list[Message]):
     for handler in EVENT_HANDLERS[type(event)]:  # type: ignore
         try:
-            logging.debug("handling event %s with handler %s", event, handler)
+            logging.debug("handling event with handler %s", handler)
             handler(event)
             # queue.extend(collect_new_events(event))
 
         except Exception:
-            logging.exception(
-                "Exception handling event %s with handler %s", event, handler
-            )
+            logging.exception("Exception handling event with handler %s", handler)
             continue
 
 
