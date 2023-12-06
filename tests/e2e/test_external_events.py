@@ -1,5 +1,6 @@
 # std
 import json
+import time
 from sqlalchemy import text
 
 # third-party
@@ -15,48 +16,62 @@ from src.entrypoints import (
 from src.db.models.party import Party
 
 
+def wait_for_messages(pubsub, timeout):
+    start_time = time.time()
+    messages = []
+    while time.time() - start_time < timeout:
+        message = pubsub.get_message(timeout=1)
+        if message:
+            messages.append(message)
+
+    return messages
+
+
 class TestPipeline:
     def test_fetch_missing_entity_from_third_party_api(self, session):
         redis_client = redis_utils.RedisClient(host="localhost", port=6379)
         pubsub = redis_client.pubsub()
         # Arrange
         pubsub.subscribe("missing_entity_fetched")  # Subscribe to channel 1
-        pubsub.subscribe("updated_entity_prepared")  # Subscribe to channel 2
 
         # Act
         entity = "party"
         redis_eventpublisher.initiate_fetch_missing_data(
             entity=entity, session=session, redis_client=redis_client
         )
+        messages = wait_for_messages(pubsub, timeout=3)
+        data = json.loads(messages[-1]["data"])
+        assert data["entity"] == entity
+        assert len(data["data"]) != 0
 
-        messages = []
-        for attempt in Retrying(stop=stop_after_delay(3), reraise=True):
-            with attempt:
-                message = pubsub.get_message(timeout=1)
-                if message:
-                    messages.append(message)
-                    print(message)
-                data = json.loads(messages[-1]["data"])
-                assert data["entity"] == entity
+        # messages = []
+        # for attempt in Retrying(stop=stop_after_delay(3), reraise=True):
+        #     with attempt:
+        #         message = pubsub.get_message(timeout=1)
+        #         if message:
+        #             messages.append(message)
+        #             print(message)
+        #         data = json.loads(messages[-1]["data"])
+        #         assert data["entity"] == entity
 
-                # if message:
-                #     messages.append(message)
-                #     data = json.loads(messages[-1]["data"])
-                #     assert data == ""
-                # assert data["entities"] == ["party_style", "party"]
-                # assert data["data"] == 2
+        # if message:
+        #     messages.append(message)
+        #     data = json.loads(messages[-1]["data"])
+        #     assert data == ""
+        # assert data["entities"] == ["party_style", "party"]
+        # assert data["data"] == 2
 
-            #         redis_eventconsumer_missing_entity_fetched.handle_message(
-            #             message=message_from_channel_one
-            #         )
-            #         message_from_channel_two = pubsub.get_message(timeout=1)
-            #         assert message_from_channel_two ==[]
-            #         messages.append(message_from_channel_two)
-            #         if message_from_channel_two:
-            #             redis_eventconsumer_update_data_prepared.handle_message(
-            #                 message=message_from_channel_two, session=session
-            #             )
-            # return messages
+        #         redis_eventconsumer_missing_entity_fetched.handle_message(
+        #             message=message_from_channel_one
+        #         )
+        #         message_from_channel_two = pubsub.get_message(timeout=1)
+        #         assert message_from_channel_two ==[]
+        #         messages.append(message_from_channel_two)
+        #         if message_from_channel_two:
+        #             redis_eventconsumer_update_data_prepared.handle_message(
+        #                 message=message_from_channel_two, session=session
+        #             )
+        # return messages
         # Assert
         # assert messages == []
         # data = json.loads(messages[-1]["data"])
