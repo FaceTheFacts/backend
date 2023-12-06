@@ -13,9 +13,6 @@ from src.logging_config import configure_logging
 from src.service_layer import messagebus
 from src.db.connection import Session
 
-# third-party
-import redis
-
 configure_logging()
 logger = logging.getLogger(__name__)
 

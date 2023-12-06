@@ -4,7 +4,11 @@ from typing import Union
 
 # local
 from src.domain import events, commands
+from src.logging_config import configure_logging
 from src.service_layer import handlers
+
+configure_logging()
+logger = logging.getLogger(__name__)
 
 Message = Union[commands.Command, events.Event]
 
@@ -27,24 +31,24 @@ def handle(message: Message):  # type: ignore
 def handle_event(event: events.Event, queue: list[Message]):
     for handler in EVENT_HANDLERS[type(event)]:  # type: ignore
         try:
-            logging.debug("handling event with handler %s", handler)
+            logger.info("handling event with handler %s", handler)
             handler(event)
             # queue.extend(collect_new_events(event))
 
         except Exception:
-            logging.exception("Exception handling event with handler %s", handler)
+            logger.exception("Exception handling event with handler %s", handler)
             continue
 
 
 def handle_command(command: commands.Command, queue: list[Message]):
-    # logging.debug("handling command %s", command)
+    # logger.info("handling command %s", command)
     try:
         handler = COMMAND_HANDLERS[type(command)]  # type: ignore
         result = handler(command)
         # queue.extend(collect_new_events(command))
         return result
     except Exception:
-        logging.exception("Exception handling command %s", command)
+        logger.exception("Exception handling command %s", command)
         raise
 
 
