@@ -41,8 +41,44 @@ class TestPipeline:
         )
         messages = wait_for_messages(pubsub, timeout=3)
         data = json.loads(messages[-1]["data"])
+
+        # Assert
         assert data["entity"] == entity
         assert len(data["data"]) != 0
+
+    def test_subscribe_updated_entity_prepared(self, session):
+        redis_client = redis_utils.RedisClient(host="localhost", port=6379)
+
+        # Create separate pubsub instances for each channel
+        pubsub_missing_entity = redis_client.pubsub()
+        pubsub_updated_entity = redis_client.pubsub()
+
+        # Arrange
+        pubsub_missing_entity.subscribe("missing_entity_fetched")
+        pubsub_updated_entity.subscribe("updated_entity_prepared")
+
+        # Act
+        entity = "party"
+
+        # Publish messages to the "missing_entity_fetched" channel
+        redis_eventpublisher.initiate_fetch_missing_data(
+            entity=entity, session=session, redis_client=redis_client
+        )
+
+        # Wait for messages on the "missing_entity_fetched" channel
+        messages_missing_entity = wait_for_messages(pubsub_missing_entity, timeout=3)
+
+        # Handle messages on the "missing_entity_fetched" channel
+        for message in messages_missing_entity:
+            redis_eventconsumer_missing_entity_fetched.handle_message(message=message)
+
+        # Wait for messages on the "updated_entity_prepared" channel
+        messages_updated_entity = wait_for_messages(pubsub_updated_entity, timeout=3)
+
+        data = json.loads(messages_updated_entity[-1]["data"])
+        # Assert
+        assert data["entities"] == ["party_style", "party"]
+        assert len(data["data"]) == 2
 
         # messages = []
         # for attempt in Retrying(stop=stop_after_delay(3), reraise=True):
