@@ -13,7 +13,7 @@ from src.entrypoints import (
 )
 from src.db.models.party import Party
 from src.db.models.party_style import PartyStyle
-from tests.e2e.test_external_events import wait_for_messages
+from tests.unit.entrypoints.test_external_events import wait_for_messages
 
 client = TestClient(app)
 
