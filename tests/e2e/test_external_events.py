@@ -13,6 +13,8 @@ from src.entrypoints import (
     redis_eventconsumer_missing_entity_fetched,
     redis_eventconsumer_update_data_prepared,
 )
+from src.db.models.party import Party
+from src.db.models.party_style import PartyStyle
 
 
 def wait_for_messages(pubsub, timeout):
@@ -41,9 +43,10 @@ class TestPipeline:
         self.pubsub_updated_entity.subscribe("updated_entity_prepared")
 
     def cleanup(self):
-        """Cleanup the Redis event pipeline."""
-        self.session.execute(text("DELETE FROM party_style"))
-        self.session.execute(text("DELETE FROM party"))
+        """Cleanup the DB."""
+        self.session.query(Party).delete()
+        self.session.query(PartyStyle).delete()
+        self.session.commit()
 
     def test_fetch_missing_entity_from_third_party_api(self, session):
         """Test fetching missing entity from third-party API. (step 1)"""
