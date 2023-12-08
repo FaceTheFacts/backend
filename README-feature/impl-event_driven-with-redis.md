@@ -43,21 +43,19 @@ This implementation follows the principles outlined in [Chapter 11](https://www.
 2. **Running Consumers:**
 
    - To run the pipeline, start Redis server and execute Consumer 1 and Consumer 2.
-   <img width="1344" alt="running_only_consumer" src="https://github.com/FaceTheFacts/backend/assets/78789212/e4855ff9-0886-42fb-b222-f16b3727888a">
-
-
+     <img width="1344" alt="running_only_consumer" src="https://github.com/FaceTheFacts/backend/assets/78789212/e4855ff9-0886-42fb-b222-f16b3727888a">
 
 3. **Executing Publisher:**
 
    - Execute the event publisher to kickstart the pipeline.
-   <img width="1333" alt="running_with_publisher" src="https://github.com/FaceTheFacts/backend/assets/78789212/d4797fe2-8df6-4528-974e-5beaa0a4dd1f">
-
+     <img width="1333" alt="running_with_publisher" src="https://github.com/FaceTheFacts/backend/assets/78789212/d4797fe2-8df6-4528-974e-5beaa0a4dd1f">
 
 4. **Updated State (Party Table and Party Style):**
    <img width="1126" alt="after_party_table" src="https://github.com/FaceTheFacts/backend/assets/78789212/e68b2ab5-a041-4e29-9ecf-f9fd674b545e">
    <img width="997" alt="after_party_style_table" src="https://github.com/FaceTheFacts/backend/assets/78789212/9e71daba-57bf-4c4e-9786-60f24e74ff8e">
 
+### Automation
 
-### Automation and Future Improvements
+The event-driven pipeline is now fully automated using the `schedule` library. The scheduled tasks, including fetching missing entity data, preparing updated entity data, and publishing entity data, have been successfully implemented and integrated into the system.
 
-The current implementation requires manual execution of the event publisher. To achieve full automation, consider using a scheduling library to automate the periodic execution of the publisher, ensuring consistent updates to the decoupled database and API.
+- e.g., Run the tasks at 12:38.
