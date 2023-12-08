@@ -21,7 +21,9 @@ class TestUtils:
         assert isinstance(result, list)
         assert len(result[0]) != 0
 
-    def test_fetch_missing_parties_with_no_update(self, postgres_session, setup_postgres_party_related_tables):
+    def test_fetch_missing_parties_with_no_update(
+        self, postgres_session, setup_postgres_party_related_tables
+    ):
         """Test command handler for fetching missing parties from API"""
         # Arrange
         current_last_party_in_abgeordnetenwatch = {
