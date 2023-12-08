@@ -94,7 +94,4 @@ class FetchMissingEntity:
             except requests.exceptions.ConnectionError as e:
                 logger.error("Internet connection error: %s", e)
                 return []
-        if not data_list:
-            return data_list
-        else:
-            return data_list
+        return data_list
