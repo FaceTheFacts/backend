@@ -59,3 +59,5 @@ This implementation follows the principles outlined in [Chapter 11](https://www.
 The event-driven pipeline is now fully automated using the `schedule` library. The scheduled tasks, including fetching missing entity data, preparing updated entity data, and publishing entity data, have been successfully implemented and integrated into the system.
 
 - e.g., Run the tasks at 12:38.
+<img width="500" alt="scheduled_tasks" src="https://github.com/FaceTheFacts/backend/assets/78789212/3372bfbb-2177-4da4-b317-ab484f7f6fc8">
+
