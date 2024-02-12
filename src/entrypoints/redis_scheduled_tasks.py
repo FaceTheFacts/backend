@@ -76,6 +76,13 @@ def publish_entity():
     redis_eventpublisher.initiate_fetch_missing_data(
         entity="party", session=session, redis_client=redis_client
     )
+    redis_eventpublisher.initiate_fetch_missing_data(
+        entity="parliament", session=session, redis_client=redis_client
+    )
+
+    redis_eventpublisher.initiate_fetch_missing_data(
+        entity="parliament-period", session=session, redis_client=redis_client
+    )
 
 
 def run_tasks():
@@ -100,7 +107,7 @@ def run_tasks():
 
 
 if __name__ == "__main__":
-    schedule.every().day.at("12:26").do(run_tasks)
+    schedule.every().day.at("16:51").do(run_tasks)
     while True:
         schedule.run_pending()
         time.sleep(1)

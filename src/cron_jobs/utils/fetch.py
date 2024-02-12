@@ -165,7 +165,7 @@ def fetch_missing_sub_entity(sub_entity: str, model: Any):
     finally:
         session.close()
 
-
+# Convert JSON to List
 def load_entity(entity: str) -> List[Any]:
     file_path = f"src/cron_jobs/data/{entity}.json"
     has_file = has_valid_file(file_path)
