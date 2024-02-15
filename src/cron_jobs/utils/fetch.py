@@ -1,4 +1,6 @@
 # std
+import json
+import logging
 from typing import Any, TypedDict, Dict, List
 import requests
 import time
@@ -32,6 +34,8 @@ entity_list = [
     "cities",
     "countries",
 ]
+
+logger = logging.getLogger(__name__)
 
 
 class ApiResponse(TypedDict):
@@ -165,6 +169,7 @@ def fetch_missing_sub_entity(sub_entity: str, model: Any):
     finally:
         session.close()
 
+
 # Convert JSON to List
 def load_entity(entity: str) -> List[Any]:
     file_path = f"src/cron_jobs/data/{entity}.json"
@@ -264,3 +269,17 @@ def match_constituency_to_parliament_periods(constituency: str) -> int:
     for item in constituency_map:
         if item in constituency:
             return constituency_map[item]
+
+
+def load_json(file_path: str):
+    try:
+        with open(file_path, encoding="utf-8") as f:
+            data: List[Any] = json.load(f)
+            if data:
+                return data
+            else:
+                logger.warning("No data found in the JSON file")
+    except FileNotFoundError:
+        logger.error(f"File '{file_path}' not found")
+    except json.JSONDecodeError:
+        logger.error(f"Failed to decode JSON data from file '{file_path}'")
