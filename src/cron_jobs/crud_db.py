@@ -180,18 +180,19 @@ def populate_politicians() -> None:
 
 
 def populate_parliaments() -> None:
-    api_parliaments = load_entity("parliaments")
-    parliaments = [
-        {
-            "id": api_parliament["id"],
-            "entity_type": api_parliament["entity_type"],
-            "label": api_parliament["label"],
-            "api_url": api_parliament["api_url"],
-            "abgeordnetenwatch_url": api_parliament["abgeordnetenwatch_url"],
-            "label_external_long": api_parliament["label_external_long"],
-        }
-        for api_parliament in api_parliaments
-    ]
+    api_parliaments = load_json("parliaments")
+    if api_parliaments:
+        parliaments = [
+            {
+                "id": api_parliament["id"],
+                "entity_type": api_parliament["entity_type"],
+                "label": api_parliament["label"],
+                "api_url": api_parliament["api_url"],
+                "abgeordnetenwatch_url": api_parliament["abgeordnetenwatch_url"],
+                "label_external_long": api_parliament["label_external_long"],
+            }
+            for api_parliament in api_parliaments
+        ]
     insert_and_update(Parliament, parliaments)
 
 
@@ -219,28 +220,29 @@ def update_parliament_current_project_ids() -> None:
 
 
 def populate_parliament_periods() -> None:
-    api_parliament_periods = load_entity("parliament-periods")
-    parliament_periods = [
-        {
-            "id": api_parliament_period["id"],
-            "entity_type": api_parliament_period["entity_type"],
-            "label": api_parliament_period["label"],
-            "api_url": api_parliament_period["api_url"],
-            "abgeordnetenwatch_url": api_parliament_period["abgeordnetenwatch_url"],
-            "type": api_parliament_period["type"],
-            "election_date": api_parliament_period["election_date"],
-            "start_date_period": api_parliament_period["start_date_period"],
-            "end_date_period": api_parliament_period["end_date_period"],
-            "parliament_id": api_parliament_period["parliament"]["id"]
-            if api_parliament_period["parliament"]
-            else None,
-            "previous_period_id": api_parliament_period["previous_period"]["id"]
-            if api_parliament_period["previous_period"]
-            else None,
-        }
-        for api_parliament_period in api_parliament_periods
-    ]
-    parliament_periods = sorted(parliament_periods, key=lambda p: p["id"])
+    api_parliament_periods = load_json("parliament-periods")
+    if api_parliament_periods:
+        parliament_periods = [
+            {
+                "id": api_parliament_period["id"],
+                "entity_type": api_parliament_period["entity_type"],
+                "label": api_parliament_period["label"],
+                "api_url": api_parliament_period["api_url"],
+                "abgeordnetenwatch_url": api_parliament_period["abgeordnetenwatch_url"],
+                "type": api_parliament_period["type"],
+                "election_date": api_parliament_period["election_date"],
+                "start_date_period": api_parliament_period["start_date_period"],
+                "end_date_period": api_parliament_period["end_date_period"],
+                "parliament_id": api_parliament_period["parliament"]["id"]
+                if api_parliament_period["parliament"]
+                else None,
+                "previous_period_id": api_parliament_period["previous_period"]["id"]
+                if api_parliament_period["previous_period"]
+                else None,
+            }
+            for api_parliament_period in api_parliament_periods
+        ]
+        parliament_periods = sorted(parliament_periods, key=lambda p: p["id"])
     insert_and_update(ParliamentPeriod, parliament_periods)
     update_parliament_current_project_ids()
 
