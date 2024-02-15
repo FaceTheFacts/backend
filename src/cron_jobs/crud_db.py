@@ -1,4 +1,5 @@
 # std
+import os
 import time
 import unicodedata
 
@@ -9,6 +10,7 @@ from src.cron_jobs.utils.fetch import (
     fetch_json,
     load_entity,
     load_entity_from_db,
+    load_json,
 )
 from src.db.connection import engine, Session, Base
 from src.db.models.country import Country
@@ -118,19 +120,22 @@ def populate_party_styles() -> None:
 
 
 def populate_parties() -> None:
-    api_parties = load_entity("parties")
-    parties = [
-        {
-            "id": api_party["id"],
-            "entity_type": api_party["entity_type"],
-            "label": api_party["label"],
-            "api_url": api_party["api_url"],
-            "full_name": api_party["full_name"],
-            "short_name": api_party["short_name"],
-            "party_style_id": api_party["id"],
-        }
-        for api_party in api_parties
-    ]
+    api_parties = load_json(
+        file_path=os.path.join("src", "entrypoints", "example.json"),
+    )
+    if api_parties:
+        parties = [
+            {
+                "id": api_party["id"],
+                "entity_type": api_party["entity_type"],
+                "label": api_party["label"],
+                "api_url": api_party["api_url"],
+                "full_name": api_party["full_name"],
+                "short_name": api_party["short_name"],
+                "party_style_id": api_party["id"],
+            }
+            for api_party in api_parties
+        ]
     insert_and_update(Party, parties)
 
 
