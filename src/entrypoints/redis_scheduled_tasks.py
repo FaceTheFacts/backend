@@ -79,12 +79,17 @@ def publish_entity():
         file_path=os.path.join("src", "entrypoints", "example.json"),
         redis_client=redis_client,
     )
-    redis_eventpublisher.initiate_fetch_missing_data(
-        entity="parliament", session=session, redis_client=redis_client
+
+    redis_eventpublisher.initiate_load_json(
+        entity="parliament",
+        file_path=os.path.join("src", "entrypoints", "example.json"),
+        redis_client=redis_client,
     )
 
-    redis_eventpublisher.initiate_fetch_missing_data(
-        entity="parliament-period", session=session, redis_client=redis_client
+    redis_eventpublisher.initiate_load_json(
+        entity="parliament-period",
+        file_path=os.path.join("src", "entrypoints", "example.json"),
+        redis_client=redis_client,
     )
 
 
