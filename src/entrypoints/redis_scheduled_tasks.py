@@ -1,5 +1,6 @@
 # std
 import logging
+import os
 import time
 import threading
 
@@ -73,8 +74,10 @@ def subscribe_updated_entity_prepared():
 def publish_entity():
     """Run the Redis event publisher."""
     logger.info("Running the Redis event publisher")
-    redis_eventpublisher.initiate_fetch_missing_data(
-        entity="party", session=session, redis_client=redis_client
+    redis_eventpublisher.initiate_load_json(
+        entity="party",
+        file_path=os.path.join("src", "entrypoints", "example.json"),
+        redis_client=redis_client,
     )
     redis_eventpublisher.initiate_fetch_missing_data(
         entity="parliament", session=session, redis_client=redis_client

@@ -35,6 +35,23 @@ def initiate_fetch_missing_data(entity: str, session: Any, redis_client=RedisCli
     except Exception as e:
         logger.exception("Exception executing command: %s", e)
 
+def initiate_load_json(file_path: str, entity: str, redis_client=RedisClient()):
+    try:
+        with open(file_path, encoding="utf-8") as f:
+            data = json.load(f)
+            if data:
+                event = events.MissingEntityFetched(
+                    entity=entity, data=data, redis_client=redis_client
+                )
+                messagebus.handle(event)
+                logger.info("JSON data loaded successfully")
+            else:
+                logger.warning("No data found in the JSON file")
+    except FileNotFoundError:
+        logger.error(f"File '{file_path}' not found")
+    except json.JSONDecodeError:
+        logger.error(f"Failed to decode JSON data from file '{file_path}'")
+
 
 def main():
     """Run the Redis event publisher."""
