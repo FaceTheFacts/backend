@@ -108,6 +108,20 @@ class SqlAlchemyPartyStyleRepository(SqlAlchemyBaseRepository):
         super().__init__(session, models.PartyStyle)
 
 
+class SqlAlchemyVoteRepository(SqlAlchemyBaseRepository):
+    """Repository class for Vote"""
+
+    def __init__(self, session):
+        super().__init__(session, models.Vote)
+
+
+class SqlAlchemyPoliticianRepository(SqlAlchemyBaseRepository):
+    """Repository class for Politician"""
+
+    def __init__(self, session):
+        super().__init__(session, models.Politician)
+
+
 class SqlAlchemyFactory:
     """Factory class to create repositories"""
 
@@ -122,3 +136,9 @@ class SqlAlchemyFactory:
 
     def create_party_style_repository(self) -> SqlAlchemyPartyStyleRepository:
         return SqlAlchemyPartyStyleRepository(self.session)
+
+    def create_vote_repository(self) -> SqlAlchemyVoteRepository:
+        return SqlAlchemyVoteRepository(self.session)
+
+    def create_politician_repository(self) -> SqlAlchemyPoliticianRepository:
+        return SqlAlchemyPoliticianRepository(self.session)

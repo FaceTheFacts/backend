@@ -95,3 +95,74 @@ class FetchMissingEntity:
                 logger.error("Internet connection error: %s", e)
                 return []
         return data_list
+
+
+def prepare_vote_data(missing_votes):
+    return [
+        {
+            "id": ap.get("id"),
+            "entity_type": ap.get("entity_type"),
+            "label": ap.get("label"),
+            "api_url": ap.get("api_url"),
+            "mandate_id": ap["mandate"]["id"] if ap.get("mandate") else None,
+            "fraction_id": ap["fraction"]["id"] if ap.get("fraction") else None,
+            "poll_id": ap["poll"]["id"] if ap.get("poll") else None,
+            "vote": ap.get("vote"),
+            "reason_no_show": ap.get("reason_no_show"),
+            "reason_no_show_other": ap.get("reason_no_show_other"),
+        }
+        for ap in missing_votes
+    ]
+
+
+def prepare_party_data(api_parties):
+    party_styles = [
+        {
+            "id": ap.get("id"),
+            "display_name": ap.get("label"),
+            "foreground_color": "#FFFFFF",
+            "background_color": "#333333",
+            "border_color": None,
+        }
+        for ap in api_parties
+    ]
+    parties = [
+        {
+            "id": ap["id"],
+            "entity_type": ap.get("entity_type"),
+            "label": ap.get("label"),
+            "api_url": ap.get("api_url"),
+            "full_name": ap.get("full_name"),
+            "short_name": ap.get("short_name"),
+            "party_style_id": ap["id"],
+        }
+        for ap in api_parties
+    ]
+    return party_styles, parties
+
+
+def prepare_politician_data(api_politicians):
+    return [
+        {
+            "id": ap["id"],
+            "entity_type": ap.get("entity_type"),
+            "label": ap.get("label"),
+            "api_url": ap.get("api_url"),
+            "first_name": ap.get("first_name"),
+            "last_name": ap.get("last_name"),
+            "sex": ap.get("sex"),
+            "year_of_birth": ap.get("year_of_birth"),
+            "party_id": ap["party"]["id"] if ap.get("party") else None,
+            "party_past": ap.get("party_past"),
+            "deceased": None,
+            "deceased_date": None,
+            "education": ap.get("education"),
+            "residence": ap.get("residence"),
+            "occupation": ap.get("occupation"),
+            "statistic_questions": ap.get("statistic_questions"),
+            "statistic_questions_answered": ap.get("statistic_questions_answered"),
+            "qid_wikidata": ap.get("qid_wikidata"),
+            "field_title": ap.get("field_title"),
+        }
+        for ap in api_politicians
+    ]
