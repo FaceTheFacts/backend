@@ -4,9 +4,9 @@ import time
 
 
 def scheduled_task():
-    schedule.every().monday.at("03:40").do(control_append_db.append_votes)
-    schedule.every().monday.at("04:00").do(control_append_db.append_parties)
-    schedule.every().monday.at("04:10").do(control_append_db.append_politicians)
+    schedule.every().day.at("09:05").do(control_append_db.append_votes_json)
+    schedule.every().day.at("09:06").do(control_append_db.append_parties)
+    schedule.every().day.at("09:07").do(control_append_db.append_politicians_json)
 
     print("Cronjob executed!")
     while True:

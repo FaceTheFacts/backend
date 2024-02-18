@@ -1,3 +1,4 @@
+import json
 from typing import Any, TypedDict, Dict, List
 import requests
 from src.db.connection import Session
@@ -127,3 +128,13 @@ def insert_and_update(model: Any, data: List[Any]) -> None:
         raise e
     finally:
         session.close()
+
+
+def load_json_data(entity: str, dir: str):
+    try:
+        with open(f"{dir}/{entity}.json") as f:
+            data = json.load(f)
+        return data
+    except FileNotFoundError as e:
+        print("File not found: %s", e)
+        return []
