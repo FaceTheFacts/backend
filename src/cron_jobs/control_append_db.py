@@ -1,14 +1,19 @@
+import os
 from src.cron_jobs.utils.control_utils import (
+    export_as_json,
     fetch_missing_entity,
     load_entity_ids_from_db,
     insert_and_update,
 )
 from src.db import models
 
+BASE_EXPORT_DIR = os.path.join("src", "cron_jobs", "utils")
+
 
 def append_votes():
     missing_votes = fetch_missing_entity("votes", models.Vote)
     if missing_votes:
+        export_as_json(missing_votes, "votes", BASE_EXPORT_DIR)
         poll_ids = load_entity_ids_from_db(models.Poll)
         votes = []
         for missing_vote in missing_votes:
@@ -41,6 +46,7 @@ def append_votes():
 def append_parties():
     missing_parties = fetch_missing_entity("parties", models.Party)
     if missing_parties:
+        export_as_json(missing_parties, "parties", BASE_EXPORT_DIR)
         parties = [
             {
                 "id": api_party["id"],
@@ -72,6 +78,7 @@ def append_parties():
 def append_politicians():
     missing_politicians = fetch_missing_entity("politicians", models.Politician)
     if missing_politicians:
+        export_as_json(missing_politicians, "politicians", BASE_EXPORT_DIR)
         politicians = [
             {
                 "id": api_politician["id"],

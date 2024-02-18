@@ -1,3 +1,4 @@
+import json
 from typing import Any, TypedDict, Dict, List
 import requests
 from src.db.connection import Session
@@ -127,3 +128,7 @@ def insert_and_update(model: Any, data: List[Any]) -> None:
         raise e
     finally:
         session.close()
+
+
+def export_as_json(data: List[Any], entity: str, dir: str):
+    return json.dump(data, open(f"{dir}/{entity}.json", "w"))
