@@ -31,3 +31,16 @@ def initiate_fetch_missing_data(entity: str, session: Any, redis_client=RedisCli
 
     except Exception as e:
         logger.exception("Exception executing command: %s", e)
+
+
+def load_json_data(entity: str, dir: str):
+    try:
+        load_command = commands.LoadJsonData(entity=entity, dir=dir)
+        data = messagebus.handle(load_command)
+        event = events.MissingEntityFetched(
+            entity=entity, data=data, redis_client=RedisClient()
+        )
+        messagebus.handle(event)
+        logger.info("Executed LoadJsonData command")
+    except Exception as e:
+        logger.exception("Exception executing command: %s", e)

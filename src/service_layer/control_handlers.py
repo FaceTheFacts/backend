@@ -39,6 +39,10 @@ def fetch_missing_entity(command: commands.FetchMissingEntity) -> List[Any]:
     return []
 
 
+def load_json_data(command: commands.LoadJsonData):
+    return utils.load_json_data(command.dir, command.entity)
+
+
 # Step 2
 def prepare_update_data(command: commands.PrepareUpdateData):
     if command.entity == "vote":

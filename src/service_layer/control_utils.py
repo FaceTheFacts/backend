@@ -1,4 +1,5 @@
 # std
+import json
 import logging
 import requests
 import math
@@ -166,3 +167,13 @@ def prepare_politician_data(api_politicians):
         }
         for ap in api_politicians
     ]
+
+
+def load_json_data(dir: str, entity: str):
+    try:
+        with open(f"{dir}/{entity}.json") as f:
+            data = json.load(f)
+        return data
+    except FileNotFoundError as e:
+        logger.error("File not found: %s", e)
+        return []

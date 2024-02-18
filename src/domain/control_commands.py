@@ -24,3 +24,9 @@ class UpdateTable(Command):
     entities: List[str]
     data: List[Any]
     session: Any
+
+
+@dataclass
+class LoadJsonData(Command):
+    dir: str
+    entity: str
