@@ -2,7 +2,8 @@
 import logging
 import requests
 import math
-from typing import List
+from typing import List, Any
+import json
 
 # local
 from src.logging_config import configure_logging
@@ -166,3 +167,7 @@ def prepare_politician_data(api_politicians):
         }
         for ap in api_politicians
     ]
+
+
+def export_as_json(data: List[Any], entity: str, dir: str):
+    return json.dump(data, open(f"{dir}/{entity}.json", "w"))

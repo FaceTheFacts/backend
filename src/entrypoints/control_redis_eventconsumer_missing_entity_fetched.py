@@ -12,10 +12,13 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 
-def handle_message(message):
+def handle_message(message, dir):
     try:
         data = json.loads(message["data"])
         if message["channel"] == "missing_entity_fetched":
+            cmd = commands.ExportData(entity=data["entity"], data=data["data"], dir=dir)
+            messagebus.handle(cmd)
+
             cmd = commands.PrepareUpdateData(entity=data["entity"], data=data["data"])
             prepared_update_data = messagebus.handle(cmd)
             # Publish a message

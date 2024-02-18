@@ -62,4 +62,5 @@ COMMAND_HANDLERS = {
     commands.FetchMissingEntity: handlers.fetch_missing_entity,
     commands.PrepareUpdateData: handlers.prepare_update_data,
     commands.UpdateTable: handlers.update_table,
+    commands.ExportData: handlers.export_data,
 }

@@ -53,6 +53,10 @@ def prepare_update_data(command: commands.PrepareUpdateData):
         }
 
 
+def export_data(command: commands.ExportData):
+    utils.export_as_json(command.data, command.entity, command.dir)
+
+
 # Step 3
 def update_table(command: commands.UpdateTable):
     factory = repository.SqlAlchemyFactory(command.session)

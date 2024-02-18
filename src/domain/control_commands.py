@@ -24,3 +24,10 @@ class UpdateTable(Command):
     entities: List[str]
     data: List[Any]
     session: Any
+
+
+@dataclass
+class ExportData(Command):
+    entity: str
+    data: List[Any]
+    dir: str

@@ -1,5 +1,6 @@
 # std
 import logging
+import os
 import time
 import threading
 
@@ -40,7 +41,9 @@ def subscribe_missing_entity_fetched():
     while time.time() - start_time <= duration:
         message = pubsub.get_message(timeout=1)
         if message:
-            control_redis_eventconsumer_missing_entity_fetched.handle_message(message)
+            control_redis_eventconsumer_missing_entity_fetched.handle_message(
+                message, dir=os.path.join("src", "entrypoints")
+            )
 
     logger.info(
         "subscribe_missing_entity_fetched: Duration of {} seconds has passed".format(
@@ -77,7 +80,13 @@ def publish_entity():
     """Run the Redis event publisher."""
     logger.info("Running the Redis event publisher")
     control_redis_eventpublisher.initiate_fetch_missing_data(
+        entity="vote", session=session, redis_client=redis_client
+    )
+    control_redis_eventpublisher.initiate_fetch_missing_data(
         entity="party", session=session, redis_client=redis_client
+    )
+    control_redis_eventpublisher.initiate_fetch_missing_data(
+        entity="politician", session=session, redis_client=redis_client
     )
 
 
@@ -103,7 +112,7 @@ def run_tasks():
 
 
 if __name__ == "__main__":
-    schedule.every().day.at("12:26").do(run_tasks)
+    schedule.every().day.at("11:32").do(run_tasks)
     while True:
         schedule.run_pending()
         time.sleep(1)
