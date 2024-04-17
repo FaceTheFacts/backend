@@ -118,6 +118,26 @@ class SqlAlchemyParliamentPeriodRepository(SqlAlchemyBaseRepository):
         super().__init__(session, models.ParliamentPeriod)
 
 
+class SqlAlchemyTopicRepository(SqlAlchemyBaseRepository):
+    def __init__(self, session):
+        super().__init__(session, models.Topic)
+
+
+class SqlAlchemyCommitteeRepository(SqlAlchemyBaseRepository):
+    def __init__(self, session):
+        super().__init__(session, models.Committee)
+
+
+class SqlAlchemyCommitteeHasTopicRepository(SqlAlchemyBaseRepository):
+    def __init__(self, session):
+        super().__init__(session, models.Committee)
+
+
+class SqlAlchemyPollRepository(SqlAlchemyBaseRepository):
+    def __init__(self, session):
+        super().__init__(session, models.Poll)
+
+
 class SqlAlchemyFactory:
     """Factory class to create repositories"""
 
@@ -140,3 +160,23 @@ class SqlAlchemyFactory:
         self,
     ) -> SqlAlchemyParliamentPeriodRepository:
         return SqlAlchemyParliamentPeriodRepository(self.session)
+
+    def create_topic_repository(
+        self,
+    ) -> SqlAlchemyTopicRepository:
+        return SqlAlchemyTopicRepository(self.session)
+
+    def create_committee_repository(
+        self,
+    ) -> SqlAlchemyCommitteeRepository:
+        return SqlAlchemyCommitteeRepository(self.session)
+
+    def create_committee_has_topic_repository(
+        self,
+    ) -> SqlAlchemyCommitteeHasTopicRepository:
+        return SqlAlchemyCommitteeHasTopicRepository(self.session)
+
+    def create_poll_repository(
+        self,
+    ) -> SqlAlchemyPollRepository:
+        return SqlAlchemyPollRepository(self.session)
