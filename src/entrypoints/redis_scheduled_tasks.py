@@ -74,7 +74,14 @@ def subscribe_updated_entity_prepared():
 def publish_entity():
     """Run the Redis event publisher."""
     logger.info("Running the Redis event publisher")
-    entity_list = ["party", "parliament", "parliament-period"]
+    entity_list = [
+        "party",
+        "parliament",
+        "parliament-period",
+        "topic",
+        "committee",
+        "polls",
+    ]
 
     for entity in entity_list:
         redis_eventpublisher.initiate_fetch_missing_data(
