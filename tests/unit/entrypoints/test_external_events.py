@@ -59,7 +59,7 @@ class TestPipeline:
 
         messages = wait_for_messages(self.pubsub_missing_entity, timeout=3)
 
-        data = json.loads(messages[-1]["data"] if messages[-1] else "{}")
+        data = json.loads(messages[-1]["data"] if messages else "{}")
         # Assert
         assert data["entity"] == entity
         assert len(data["data"]) != 0
@@ -84,7 +84,7 @@ class TestPipeline:
             self.pubsub_updated_entity, timeout=3
         )
         data = json.loads(
-            messages_updated_entity[-1]["data"] if messages_updated_entity[-1] else "{}"
+            messages_updated_entity[-1]["data"] if messages_updated_entity else "{}"
         )
         # Assert
         assert data["entities"] == ["party_style", "party"]
