@@ -74,22 +74,11 @@ def subscribe_updated_entity_prepared():
 def publish_entity():
     """Run the Redis event publisher."""
     logger.info("Running the Redis event publisher")
-    redis_eventpublisher.initiate_load_json(
-        entity="party",
-        file_path=os.path.join("src", "entrypoints", "example.json"),
-        redis_client=redis_client,
-    )
+    entity_list = ["party", "parliament", "parliament-period"]
 
-    redis_eventpublisher.initiate_load_json(
-        entity="parliament",
-        file_path=os.path.join("src", "entrypoints", "example.json"),
-        redis_client=redis_client,
-    )
-
-    redis_eventpublisher.initiate_load_json(
-        entity="parliament-period",
-        file_path=os.path.join("src", "entrypoints", "example.json"),
-        redis_client=redis_client,
+    for entity in entity_list:
+        redis_eventpublisher.initiate_fetch_missing_data(
+        entity=entity, session=session, redis_client=redis_client
     )
 
 
@@ -115,7 +104,7 @@ def run_tasks():
 
 
 if __name__ == "__main__":
-    schedule.every().day.at("16:51").do(run_tasks)
+    schedule.every().day.at("14:16").do(run_tasks)
     while True:
         schedule.run_pending()
         time.sleep(1)

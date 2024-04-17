@@ -95,3 +95,62 @@ class FetchMissingEntity:
                 logger.error("Internet connection error: %s", e)
                 return []
         return data_list
+
+
+def prepare_party_data(api_parties):
+    party_styles = [
+        {
+            "id": ap.get("id"),
+            "display_name": ap.get("label"),
+            "foreground_color": "#FFFFFF",
+            "background_color": "#333333",
+            "border_color": None,
+        }
+        for ap in api_parties
+    ]
+    parties = [
+        {
+            "id": ap["id"],
+            "entity_type": ap.get("entity_type"),
+            "label": ap.get("label"),
+            "api_url": ap.get("api_url"),
+            "full_name": ap.get("full_name"),
+            "short_name": ap.get("short_name"),
+            "party_style_id": ap["id"],
+        }
+        for ap in api_parties
+    ]
+    return party_styles, parties
+
+def prepare_parliament_data(api_parliaments):
+    parliaments = [
+        {
+            "id": api_parliament["id"],
+            "entity_type": api_parliament["entity_type"],
+            "label": api_parliament["label"],
+            "api_url": api_parliament["api_url"],
+            "abgeordnetenwatch_url": api_parliament["abgeordnetenwatch_url"],
+            "label_external_long": api_parliament["label_external_long"],
+        }
+        for api_parliament in api_parliaments
+    ]
+    return parliaments
+
+def prepare_parliament_period_data(api_parliament_periods):
+    parliament_periods = [
+        {
+            "id": api_parliament_period["id"],
+            "entity_type": api_parliament_period["entity_type"],
+            "label": api_parliament_period["label"],
+            "api_url": api_parliament_period["api_url"],
+            "abgeordnetenwatch_url": api_parliament_period["abgeordnetenwatch_url"],
+            "type": api_parliament_period["type"],
+            "election_date": api_parliament_period["election_date"],
+            "start_date_period": api_parliament_period["start_date_period"],
+            "end_date_period": api_parliament_period["end_date_period"],
+            "parliament_id": api_parliament_period["parliament"]["id"],
+            "previous_period_id": api_parliament_period["previous_period"]["id"] if api_parliament_period["previous_period"] else None,
+        }
+        for api_parliament_period in api_parliament_periods
+    ]
+    return parliament_periods
