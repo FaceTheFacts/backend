@@ -151,10 +151,80 @@ def prepare_parliament_period_data(api_parliament_periods):
             "start_date_period": api_parliament_period["start_date_period"],
             "end_date_period": api_parliament_period["end_date_period"],
             "parliament_id": api_parliament_period["parliament"]["id"],
-            "previous_period_id": api_parliament_period["previous_period"]["id"]
-            if api_parliament_period["previous_period"]
-            else None,
+            "previous_period_id": (
+                api_parliament_period["previous_period"]["id"]
+                if api_parliament_period["previous_period"]
+                else None
+            ),
         }
         for api_parliament_period in api_parliament_periods
     ]
     return parliament_periods
+
+
+def prepare_topic_data(api_topics):
+    topics = [
+        {
+            "id": api_topic["id"],
+            "entity_type": api_topic["entity_type"],
+            "label": api_topic["label"],
+            "api_url": api_topic["api_url"],
+            "abgeordnetenwatch_url": api_topic["abgeordnetenwatch_url"],
+            "description": api_topic["description"],
+            "parent_id": api_topic["parent"][0]["id"] if api_topic["parent"] else None,
+        }
+        for api_topic in api_topics
+    ]
+    return topics
+
+
+def prepare_committee_data(api_committees):
+    committees = [
+        {
+            "id": api_committee["id"],
+            "entity_type": api_committee["entity_type"],
+            "label": api_committee["label"],
+            "api_url": api_committee["api_url"],
+            "field_legislature_id": api_committee["field_legislature"]["id"],
+        }
+        for api_committee in api_committees
+    ]
+    return committees
+
+
+def prepare_committee_has_topic_data(api_committees):
+    committee_topics = []
+    for api_committee in api_committees:
+        for topic in api_committee["field_topics"]:
+            committee_topics.append(
+                {
+                    "committee_id": api_committee["id"],
+                    "topic_id": topic["id"],
+                }
+            )
+    return committee_topics
+
+
+def prepare_poll_data(api_polls):
+    polls = [
+        {
+            "id": api_poll["id"],
+            "entity_type": api_poll["entity_type"],
+            "label": api_poll["label"],
+            "api_url": api_poll["api_url"],
+            "field_committees_id": (
+                api_poll["field_committees"][0]["id"]
+                if api_poll["field_committees"]
+                else None
+            ),
+            "field_intro": api_poll["field_intro"],
+            "field_legislature_id": (
+                api_poll["field_legislature"]["id"]
+                if api_poll["field_legislature"]
+                else None
+            ),
+            "field_poll_date": api_poll["field_poll_date"],
+        }
+        for api_poll in api_polls
+    ]
+    return polls
