@@ -913,5 +913,12 @@ def update_sidejobs():
     append_sidejobs()
 
 
+def update_partydonations():
+    # Run First Party Donation Scraper
+    # Copy the file to src/cron_jobs/data/partydonation.json
+    append_partydonation("src/cron_jobs/data/partydonation.json")
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
+    update_partydonations()
