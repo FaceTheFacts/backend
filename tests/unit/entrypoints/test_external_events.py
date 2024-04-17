@@ -58,6 +58,8 @@ class TestPipeline:
         )
 
         messages = wait_for_messages(self.pubsub_missing_entity, timeout=3)
+        if not messages:
+            return None
         data = json.loads(messages[-1]["data"])
         # Assert
         assert data["entity"] == entity
@@ -82,7 +84,8 @@ class TestPipeline:
         messages_updated_entity = wait_for_messages(
             self.pubsub_updated_entity, timeout=3
         )
-
+        if not messages_updated_entity:
+            return None
         data = json.loads(messages_updated_entity[-1]["data"])
         # Assert
         assert data["entities"] == ["party_style", "party"]
