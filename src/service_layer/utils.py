@@ -122,6 +122,7 @@ def prepare_party_data(api_parties):
     ]
     return party_styles, parties
 
+
 def prepare_parliament_data(api_parliaments):
     parliaments = [
         {
@@ -136,6 +137,7 @@ def prepare_parliament_data(api_parliaments):
     ]
     return parliaments
 
+
 def prepare_parliament_period_data(api_parliament_periods):
     parliament_periods = [
         {
@@ -149,7 +151,9 @@ def prepare_parliament_period_data(api_parliament_periods):
             "start_date_period": api_parliament_period["start_date_period"],
             "end_date_period": api_parliament_period["end_date_period"],
             "parliament_id": api_parliament_period["parliament"]["id"],
-            "previous_period_id": api_parliament_period["previous_period"]["id"] if api_parliament_period["previous_period"] else None,
+            "previous_period_id": api_parliament_period["previous_period"]["id"]
+            if api_parliament_period["previous_period"]
+            else None,
         }
         for api_parliament_period in api_parliament_periods
     ]

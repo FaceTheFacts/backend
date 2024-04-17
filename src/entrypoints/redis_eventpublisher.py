@@ -35,6 +35,7 @@ def initiate_fetch_missing_data(entity: str, session: Any, redis_client=RedisCli
     except Exception as e:
         logger.exception("Exception executing command: %s", e)
 
+
 def initiate_load_json(file_path: str, entity: str, redis_client=RedisClient()):
     try:
         with open(file_path, encoding="utf-8") as f:
