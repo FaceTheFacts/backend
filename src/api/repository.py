@@ -112,9 +112,11 @@ class SqlAlchemyParliamentRepository(SqlAlchemyBaseRepository):
     def __init__(self, session):
         super().__init__(session, models.Parliament)
 
+
 class SqlAlchemyParliamentPeriodRepository(SqlAlchemyBaseRepository):
     def __init__(self, session):
         super().__init__(session, models.ParliamentPeriod)
+
 
 class SqlAlchemyFactory:
     """Factory class to create repositories"""
@@ -130,9 +132,11 @@ class SqlAlchemyFactory:
 
     def create_party_style_repository(self) -> SqlAlchemyPartyStyleRepository:
         return SqlAlchemyPartyStyleRepository(self.session)
-    
+
     def create_parliament_repository(self) -> SqlAlchemyParliamentRepository:
         return SqlAlchemyParliamentRepository(self.session)
-    
-    def create_parliament_period_repository(self) -> SqlAlchemyParliamentPeriodRepository:
+
+    def create_parliament_period_repository(
+        self,
+    ) -> SqlAlchemyParliamentPeriodRepository:
         return SqlAlchemyParliamentPeriodRepository(self.session)

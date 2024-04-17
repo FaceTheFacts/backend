@@ -78,8 +78,8 @@ def publish_entity():
 
     for entity in entity_list:
         redis_eventpublisher.initiate_fetch_missing_data(
-        entity=entity, session=session, redis_client=redis_client
-    )
+            entity=entity, session=session, redis_client=redis_client
+        )
 
 
 def run_tasks():
