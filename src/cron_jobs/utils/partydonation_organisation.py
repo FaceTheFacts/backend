@@ -224,7 +224,20 @@ def clean_donor(donor):
                 "donor_city": " ".join(donor["donor"][4].split()[1:]),
                 "donor_foreign": True,
             }
+        else:
+            # Case: "donor": ["Verband der Bayerischen ", "Metall- und ","Elektro-Industrie e.V.","Max-Joseph-Straße 5","80333 München "]
+            if "Verband der Bayerischen " in donor["donor"][0]:
+                clean_donor = {
+                    "donor_name": donor["donor"][0]
+                    + donor["donor"][1]
+                    + donor["donor"][2],
+                    "donor_address": donor["donor"][3],
+                    "donor_zip": donor["donor"][4][:5],  # "80333 München "
+                    "donor_city": donor["donor"][4][6:].strip(),  # "80333 München "
+                    "donor_foreign": False,
+                }
         return clean_donor
+
     if clean_donor:
         return clean_donor
     else:
