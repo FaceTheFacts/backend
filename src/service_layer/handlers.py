@@ -39,68 +39,19 @@ def fetch_missing_entity(command: commands.FetchMissingEntity) -> List[Any]:
         return missing_parliament_period_data
     return []
 
-
+    
 # Step 2
 def prepare_update_data(command: commands.PrepareUpdateData):
     if command.entity == "party":
-        party_styles = [
-            {
-                "id": api_party["id"],
-                "display_name": api_party["label"],
-                "foreground_color": "#FFFFFF",
-                "background_color": "#333333",
-                "border_color": None,
-            }
-            for api_party in command.data
-        ]
-        parties = [
-            {
-                "id": api_party["id"],
-                "entity_type": api_party["entity_type"],
-                "label": api_party["label"],
-                "api_url": api_party["api_url"],
-                "full_name": api_party["full_name"],
-                "short_name": api_party["short_name"],
-                "party_style_id": api_party["id"],
-            }
-            for api_party in command.data
-        ]
-        # return events.UpdatedEntityPrepared(
-        #     entities=["party_style", "party"], data=[party_styles, parties]
-        # )
+        party_styles, parties = utils.prepare_party_data(command.data)
         return {"entities": ["party_style", "party"], "data": [party_styles, parties]}
     
     if command.entity == "parliament":
-        parliaments = [
-            {
-                "id": api_parliament["id"],
-                "entity_type": api_parliament["entity_type"],
-                "label": api_parliament["label"],
-                "api_url": api_parliament["api_url"],
-                "abgeordnetenwatch_url": api_parliament["abgeordnetenwatch_url"],
-                "label_external_long": api_parliament["label_external_long"],
-            }
-            for api_parliament in command.data
-        ]
+        parliaments = utils.prepare_parliament_data(command.data)
         return {"entities": ["parliament"], "data": [parliaments]}
-    
+        
     if command.entity == "parliament-period":
-        parliament_periods = [
-            {
-                "id": api_parliament_period["id"],
-                "entity_type": api_parliament_period["entity_type"],
-                "label": api_parliament_period["label"],
-                "api_url": api_parliament_period["api_url"],
-                "abgeordnetenwatch_url": api_parliament_period["abgeordnetenwatch_url"],
-                "type": api_parliament_period["type"],
-                "election_date": api_parliament_period["election_date"],
-                "start_date_period": api_parliament_period["start_date_period"],
-                "end_date_period": api_parliament_period["end_date_period"],
-                "parliament_id": api_parliament_period["parliament"]["id"],
-                "previous_period_id": api_parliament_period["previous_period"]["id"] if api_parliament_period["previous_period"] else None,
-            }
-            for api_parliament_period in command.data
-        ]
+        parliament_periods = utils.prepare_parliament_period_data(command.data)
         return {"entities": ["parliament_period"], "data": [parliament_periods]}
 
 
