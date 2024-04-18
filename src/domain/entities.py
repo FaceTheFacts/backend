@@ -13,4 +13,5 @@ class Entity(Enum):
     PARLIAMENT_PERIOD = "parliament-periods"
     TOPIC = "topics"
     COMMITTEE = "committees"
+    COMMITTEE_HAS_TOPIC = "committee-has-topics"
     POLL = "polls"
