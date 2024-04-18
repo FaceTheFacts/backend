@@ -5,8 +5,9 @@ import math
 from typing import List
 
 # local
+from src.domain.entities import Entity
 from src.logging_config import configure_logging
-from src.api.repository import SqlAlchemyBaseRepository
+from src.api.repository import SqlAlchemyBaseRepository, SqlAlchemyFactory
 import src.db.models as models
 
 
@@ -95,6 +96,21 @@ class FetchMissingEntity:
                 logger.error("Internet connection error: %s", e)
                 return []
         return data_list
+
+
+def get_repository(factory: SqlAlchemyFactory, entity: str):
+    entity_factory_map = {
+        Entity.PARTY.value: factory.create_party_repository,
+        Entity.PARLIAMENT.value: factory.create_parliament_repository,
+        Entity.PARLIAMENT_PERIOD.value: factory.create_parliament_period_repository,
+        Entity.TOPIC.value: factory.create_topic_repository,
+        Entity.COMMITTEE.value: factory.create_committee_repository,
+        Entity.POLL.value: factory.create_poll_repository,
+    }
+    if entity in entity_factory_map:
+        return entity_factory_map[entity]()
+    else:
+        return None
 
 
 def prepare_party_data(api_parties):
