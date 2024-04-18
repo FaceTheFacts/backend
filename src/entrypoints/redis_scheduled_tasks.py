@@ -1,6 +1,5 @@
 # std
 import logging
-import os
 import time
 import threading
 
@@ -16,6 +15,7 @@ from src.entrypoints import (
 )
 from src.db.connection import Session
 from src.logging_config import configure_logging
+from src.domain.entities import Entity
 
 
 # Caution: This task needs multiple threads to run.
@@ -75,17 +75,17 @@ def publish_entity():
     """Run the Redis event publisher."""
     logger.info("Running the Redis event publisher")
     entity_list = [
-        "party",
-        "parliament",
-        "parliament-period",
-        "topic",
-        "committee",
-        "polls",
+        Entity.PARTY,
+        Entity.PARLIAMENT,
+        # Entity.PARLIAMENT_PERIOD,
+        # Entity.TOPIC,
+        # Entity.COMMITTEE,
+        # Entity.POLL,
     ]
 
     for entity in entity_list:
         redis_eventpublisher.initiate_fetch_missing_data(
-            entity=entity, session=session, redis_client=redis_client
+            entity=entity.value, session=session, redis_client=redis_client
         )
 
 
