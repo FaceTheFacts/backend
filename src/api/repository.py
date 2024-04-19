@@ -138,6 +138,11 @@ class SqlAlchemyPollRepository(SqlAlchemyBaseRepository):
         super().__init__(session, models.Poll)
 
 
+class SqlAlchemyVoteRepository(SqlAlchemyBaseRepository):
+    def __init__(self, session):
+        super().__init__(session, models.Vote)
+
+
 class SqlAlchemyFactory:
     """Factory class to create repositories"""
 
@@ -180,3 +185,6 @@ class SqlAlchemyFactory:
         self,
     ) -> SqlAlchemyPollRepository:
         return SqlAlchemyPollRepository(self.session)
+
+    def create_vote_repository(self) -> SqlAlchemyVoteRepository:
+        return SqlAlchemyVoteRepository(self.session)
