@@ -22,6 +22,7 @@ ENTITY_HANDLERS = {
     Entity.TOPIC.value: utils.prepare_topic_data,
     Entity.COMMITTEE.value: utils.prepare_committee_data,
     Entity.POLL.value: utils.prepare_poll_data,
+    Entity.VOTE.value: utils.prepare_vote_data,
 }
 
 DATA_HANDLERS = {
@@ -31,6 +32,7 @@ DATA_HANDLERS = {
     Entity.TOPIC.value: [Entity.TOPIC.value],
     Entity.COMMITTEE.value: [Entity.COMMITTEE.value, Entity.COMMITTEE_HAS_TOPIC.value],
     Entity.POLL.value: [Entity.POLL.value],
+    Entity.VOTE.value: [Entity.VOTE.value],
 }
 
 
@@ -56,7 +58,7 @@ def prepare_update_data(command: commands.PrepareUpdateData):
 
     if entity in ENTITY_HANDLERS:
         entity_data = ENTITY_HANDLERS[entity](data)
-        return {"entities": DATA_HANDLERS[entity], "data": [entity_data]}
+        return {"entities": DATA_HANDLERS[entity], "data": entity_data}
     else:
         return {"entities": [], "data": []}
 
