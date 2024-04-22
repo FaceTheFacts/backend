@@ -15,3 +15,4 @@ class Entity(Enum):
     COMMITTEE = "committees"
     COMMITTEE_HAS_TOPIC = "committee-has-topics"
     POLL = "polls"
+    VOTE = "votes"
