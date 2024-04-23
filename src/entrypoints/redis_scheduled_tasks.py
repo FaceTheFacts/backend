@@ -111,7 +111,7 @@ def run_tasks():
 
 
 if __name__ == "__main__":
-    schedule.every().tuesday.at("12:57").do(run_tasks)
+    schedule.every().wednesday.at("19:00").do(run_tasks)
     while True:
         schedule.run_pending()
         time.sleep(1)
