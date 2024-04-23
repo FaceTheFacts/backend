@@ -25,7 +25,6 @@ ENTITY_HANDLERS = {
         utils.prepare_committee_has_topic_data,
     ],
     Entity.POLL.value: [utils.prepare_poll_data],
-    # Entity.VOTE.value: [utils.prepare_vote_data],
 }
 
 DATA_HANDLERS = {
@@ -35,7 +34,6 @@ DATA_HANDLERS = {
     Entity.TOPIC.value: [Entity.TOPIC.value],
     Entity.COMMITTEE.value: [Entity.COMMITTEE.value, Entity.COMMITTEE_HAS_TOPIC.value],
     Entity.POLL.value: [Entity.POLL.value],
-    # Entity.VOTE.value: [Entity.VOTE.value],
 }
 
 
