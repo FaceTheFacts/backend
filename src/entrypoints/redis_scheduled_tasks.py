@@ -75,12 +75,13 @@ def publish_entity():
     """Run the Redis event publisher."""
     logger.info("Running the Redis event publisher")
     entity_list = [
-        Entity.PARTY,
-        Entity.PARLIAMENT,
-        Entity.PARLIAMENT_PERIOD,
-        Entity.TOPIC,
-        Entity.COMMITTEE,
-        Entity.POLL,
+        # Entity.PARTY,
+        Entity.PARLIAMENT, # works
+        Entity.PARLIAMENT_PERIOD, # works
+        Entity.TOPIC, # works
+        # Entity.COMMITTEE,
+        # Entity.POLL,
+        Entity.VOTE,
     ]
 
     for entity in entity_list:
@@ -111,7 +112,7 @@ def run_tasks():
 
 
 if __name__ == "__main__":
-    schedule.every().wednesday.at("19:00").do(run_tasks)
+    schedule.every().tuesday.at("11:28").do(run_tasks)
     while True:
         schedule.run_pending()
         time.sleep(1)
