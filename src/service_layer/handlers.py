@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 ENTITY_HANDLERS = {
-    Entity.PARTY.value: [utils.prepare_party_data],
+    Entity.PARTY.value: [utils.prepare_party_style_data, utils.prepare_party_data],
     Entity.PARLIAMENT.value: [utils.prepare_parliament_data],
     Entity.PARLIAMENT_PERIOD.value: [utils.prepare_parliament_period_data],
     Entity.TOPIC.value: [utils.prepare_topic_data],
@@ -25,7 +25,7 @@ ENTITY_HANDLERS = {
         utils.prepare_committee_has_topic_data,
     ],
     Entity.POLL.value: [utils.prepare_poll_data],
-    Entity.VOTE.value: [utils.prepare_vote_data],
+    # Entity.VOTE.value: [utils.prepare_vote_data],
 }
 
 DATA_HANDLERS = {
@@ -35,7 +35,7 @@ DATA_HANDLERS = {
     Entity.TOPIC.value: [Entity.TOPIC.value],
     Entity.COMMITTEE.value: [Entity.COMMITTEE.value, Entity.COMMITTEE_HAS_TOPIC.value],
     Entity.POLL.value: [Entity.POLL.value],
-    Entity.VOTE.value: [Entity.VOTE.value],
+    # Entity.VOTE.value: [Entity.VOTE.value],
 }
 
 
@@ -72,19 +72,20 @@ def prepare_update_data(command: commands.PrepareUpdateData):
 # Step 3
 def update_table(command: commands.UpdateTable):
     factory = repository.SqlAlchemyFactory(command.session)
-    logger.info(len(command.data))
-    logger.info(command.data[1])
-    logger.info(command.entities[0])
-    logger.info(command.entities[1])
-    # logger.info("command.data", factory)
-    # logger.info("command.data", command.data)
-    # for entity, data in zip(command.entities, command.data):
-    #     repo = utils.get_repository(factory, entity)
-    #     if repo is not None:
-    #         logger.info("data", data)
-    #         repo.add_or_update_list(data)
-    #     else:
-    #         logger.error(f"Repository for entity {entity} not found.")
+    if len(command.entities) != len(command.data):
+        logger.error(
+            "Number of entities and data does not match. Entities: %s, Data: %s",
+            len(command.entities),
+            len(command.data),
+        )
+        return
+    for entity, data in zip(command.entities, command.data):
+        repo = utils.get_repository(factory, entity)
+
+        if repo is not None and len(data) != 0:
+            repo.add_or_update_list(data)
+        else:
+            logger.error(f"Repository for {entity} not found.")
 
 
 def publish_missing_entity_fetched_event(

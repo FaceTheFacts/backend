@@ -98,14 +98,19 @@ class FetchMissingEntity:
         return data_list
 
 
-def get_repository(factory: SqlAlchemyFactory, entity: str):
+def get_repository(
+    factory: SqlAlchemyFactory, entity: str
+) -> SqlAlchemyBaseRepository | None:
     entity_factory_map = {
         Entity.PARTY.value: factory.create_party_repository,
+        Entity.PARTY_STYLE.value: factory.create_party_style_repository,
         Entity.PARLIAMENT.value: factory.create_parliament_repository,
         Entity.PARLIAMENT_PERIOD.value: factory.create_parliament_period_repository,
         Entity.TOPIC.value: factory.create_topic_repository,
         Entity.COMMITTEE.value: factory.create_committee_repository,
+        Entity.COMMITTEE_HAS_TOPIC.value: factory.create_committee_has_topic_repository,
         Entity.POLL.value: factory.create_poll_repository,
+        # Entity.VOTE.value: factory.create_vote_repository,
     }
     if entity in entity_factory_map:
         return entity_factory_map[entity]()
@@ -113,7 +118,7 @@ def get_repository(factory: SqlAlchemyFactory, entity: str):
         return None
 
 
-def prepare_party_data(api_parties):
+def prepare_party_style_data(api_parties):
     party_styles = [
         {
             "id": ap.get("id"),
@@ -124,6 +129,11 @@ def prepare_party_data(api_parties):
         }
         for ap in api_parties
     ]
+
+    return party_styles
+
+
+def prepare_party_data(api_parties):
     parties = [
         {
             "id": ap["id"],
@@ -136,7 +146,7 @@ def prepare_party_data(api_parties):
         }
         for ap in api_parties
     ]
-    return party_styles, parties
+    return parties
 
 
 def prepare_parliament_data(api_parliaments):
@@ -244,3 +254,21 @@ def prepare_poll_data(api_polls):
         for api_poll in api_polls
     ]
     return polls
+
+
+# def prepare_vote_data(api_votes):
+#     return [
+#         {
+#             "id": ap.get("id"),
+#             "entity_type": ap.get("entity_type"),
+#             "label": ap.get("label"),
+#             "api_url": ap.get("api_url"),
+#             "mandate_id": ap["mandate"]["id"] if ap.get("mandate") else None,
+#             "fraction_id": ap["fraction"]["id"] if ap.get("fraction") else None,
+#             "poll_id": ap["poll"]["id"] if ap.get("poll") else None,
+#             "vote": ap.get("vote"),
+#             "reason_no_show": ap.get("reason_no_show"),
+#             "reason_no_show_other": ap.get("reason_no_show_other"),
+#         }
+#         for ap in api_votes
+#     ]
