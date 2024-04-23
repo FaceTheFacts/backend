@@ -4,6 +4,7 @@ from typing import Optional, List, Dict, Any
 
 # third-party
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy import inspect
 
 # local
 import src.db.models as models
@@ -27,6 +28,7 @@ class SqlAlchemyBaseRepository(AbstractRepository):
     def __init__(self, session, model_class):
         self.session = session
         self.model_class = model_class
+        self.primary_keys = [key.name for key in inspect(self.model_class).primary_key]
 
     def add(self, entity):
         self.session.add(entity)
@@ -46,10 +48,16 @@ class SqlAlchemyBaseRepository(AbstractRepository):
 
     def add_or_update_list(self, entities: List[Dict[str, Any]]):
         stmt = insert(self.model_class).values(entities)
-        stmt = stmt.on_conflict_do_update(
-            index_elements=["id"],
-            set_={col.name: col for col in stmt.excluded if not col.primary_key},
-        )
+        update_dict = {col.name: col for col in stmt.excluded if not col.primary_key}
+
+        if update_dict:
+            stmt = stmt.on_conflict_do_update(
+                index_elements=self.primary_keys,
+                set_=update_dict,
+            )
+        else:
+            stmt = stmt.on_conflict_do_nothing(index_elements=self.primary_keys)
+
         self.session.execute(stmt)
         self.session.commit()
 
