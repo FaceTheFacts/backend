@@ -110,7 +110,6 @@ def get_repository(
         Entity.COMMITTEE.value: factory.create_committee_repository,
         Entity.COMMITTEE_HAS_TOPIC.value: factory.create_committee_has_topic_repository,
         Entity.POLL.value: factory.create_poll_repository,
-        # Entity.VOTE.value: factory.create_vote_repository,
     }
     if entity in entity_factory_map:
         return entity_factory_map[entity]()
@@ -215,19 +214,21 @@ def prepare_committee_data(api_committees):
         }
         for api_committee in api_committees
     ]
+
     return committees
 
 
 def prepare_committee_has_topic_data(api_committees):
     committee_topics = []
     for api_committee in api_committees:
-        for topic in api_committee["field_topics"]:
-            committee_topics.append(
-                {
-                    "committee_id": api_committee["id"],
-                    "topic_id": topic["id"],
-                }
-            )
+        if api_committee["field_topics"] is not None:
+            for topic in api_committee["field_topics"]:
+                committee_topics.append(
+                    {
+                        "committee_id": api_committee["id"],
+                        "topic_id": topic["id"],
+                    }
+                )
     return committee_topics
 
 
@@ -254,21 +255,3 @@ def prepare_poll_data(api_polls):
         for api_poll in api_polls
     ]
     return polls
-
-
-# def prepare_vote_data(api_votes):
-#     return [
-#         {
-#             "id": ap.get("id"),
-#             "entity_type": ap.get("entity_type"),
-#             "label": ap.get("label"),
-#             "api_url": ap.get("api_url"),
-#             "mandate_id": ap["mandate"]["id"] if ap.get("mandate") else None,
-#             "fraction_id": ap["fraction"]["id"] if ap.get("fraction") else None,
-#             "poll_id": ap["poll"]["id"] if ap.get("poll") else None,
-#             "vote": ap.get("vote"),
-#             "reason_no_show": ap.get("reason_no_show"),
-#             "reason_no_show_other": ap.get("reason_no_show_other"),
-#         }
-#         for ap in api_votes
-#     ]
