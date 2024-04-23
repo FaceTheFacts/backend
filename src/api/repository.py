@@ -130,7 +130,7 @@ class SqlAlchemyCommitteeRepository(SqlAlchemyBaseRepository):
 
 class SqlAlchemyCommitteeHasTopicRepository(SqlAlchemyBaseRepository):
     def __init__(self, session):
-        super().__init__(session, models.Committee)
+        super().__init__(session, models.CommitteeHasTopic)
 
 
 class SqlAlchemyPollRepository(SqlAlchemyBaseRepository):
