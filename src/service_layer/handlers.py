@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 ENTITY_HANDLERS = {
     Entity.PARTY.value: [utils.prepare_party_style_data, utils.prepare_party_data],
+    Entity.POLITICIAN.value: [utils.prepare_politician_data],
     Entity.PARLIAMENT.value: [utils.prepare_parliament_data],
     Entity.PARLIAMENT_PERIOD.value: [utils.prepare_parliament_period_data],
     Entity.TOPIC.value: [utils.prepare_topic_data],
@@ -29,6 +30,7 @@ ENTITY_HANDLERS = {
 
 DATA_HANDLERS = {
     Entity.PARTY.value: [Entity.PARTY_STYLE.value, Entity.PARTY.value],
+    Entity.POLITICIAN.value: [Entity.POLITICIAN.value],
     Entity.PARLIAMENT.value: [Entity.PARLIAMENT.value],
     Entity.PARLIAMENT_PERIOD.value: [Entity.PARLIAMENT_PERIOD.value],
     Entity.TOPIC.value: [Entity.TOPIC.value],
