@@ -77,6 +77,7 @@ def publish_entity():
     entity_list = [
         Entity.PARTY,
         Entity.PARLIAMENT,
+        Entity.POLITICIAN,
         Entity.PARLIAMENT_PERIOD,
         Entity.TOPIC,
         Entity.COMMITTEE,
