@@ -98,25 +98,6 @@ class FetchMissingEntity:
         return data_list
 
 
-def get_repository(
-    factory: SqlAlchemyFactory, entity: str
-) -> SqlAlchemyBaseRepository | None:
-    entity_factory_map = {
-        Entity.PARTY.value: factory.create_party_repository,
-        Entity.PARTY_STYLE.value: factory.create_party_style_repository,
-        Entity.PARLIAMENT.value: factory.create_parliament_repository,
-        Entity.PARLIAMENT_PERIOD.value: factory.create_parliament_period_repository,
-        Entity.TOPIC.value: factory.create_topic_repository,
-        Entity.COMMITTEE.value: factory.create_committee_repository,
-        Entity.COMMITTEE_HAS_TOPIC.value: factory.create_committee_has_topic_repository,
-        Entity.POLL.value: factory.create_poll_repository,
-    }
-    if entity in entity_factory_map:
-        return entity_factory_map[entity]()
-    else:
-        return None
-
-
 def prepare_party_style_data(api_parties):
     party_styles = [
         {
