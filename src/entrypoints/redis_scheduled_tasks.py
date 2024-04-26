@@ -33,7 +33,7 @@ def subscribe_missing_entity_fetched():
     pubsub.subscribe("missing_entity_fetched")
 
     start_time = time.time()
-    duration = 120
+    duration = 360
 
     while time.time() - start_time <= duration:
         message = pubsub.get_message(timeout=1)
