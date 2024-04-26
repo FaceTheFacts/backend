@@ -41,10 +41,8 @@ DATA_HANDLERS = {
 
 # Step 1
 def fetch_missing_entity(command: commands.FetchMissingEntity) -> List[Any]:
-    repo = utils.get_repository(
-        repository.SqlAlchemyFactory(command.session), command.entity
-    )
-
+    factory = repository.SqlAlchemyFactory(command.session)
+    repo = factory.get_repository(command.entity)
     if repo is not None:
         missing_entity_data = utils.FetchMissingEntity(
             command.entity, repo
@@ -80,7 +78,7 @@ def update_table(command: commands.UpdateTable):
         )
         return
     for entity, data in zip(command.entities, command.data):
-        repo = utils.get_repository(factory, entity)
+        repo = factory.get_repository(entity)
 
         if repo is not None and len(data) != 0:
             repo.add_or_update_list(data)
