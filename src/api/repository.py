@@ -8,6 +8,7 @@ from sqlalchemy import inspect
 
 # local
 import src.db.models as models
+from src.domain.entities import Entity
 
 
 class AbstractRepository(abc.ABC):
@@ -161,39 +162,67 @@ class SqlAlchemyFactory:
 
     def __init__(self, session):
         self.session = session
+        """Must add new repositories to the map to be able to create them"""
+        self.entity_factory_map = {
+            Entity.PARTY.value: self.create_party_repository,
+            Entity.PARTY_STYLE.value: self.create_party_style_repository,
+            Entity.POLITICIAN.value: self.create_politician_repository,
+            Entity.PARLIAMENT.value: self.create_parliament_repository,
+            Entity.PARLIAMENT_PERIOD.value: self.create_parliament_period_repository,
+            Entity.TOPIC.value: self.create_topic_repository,
+            Entity.COMMITTEE.value: self.create_committee_repository,
+            Entity.COMMITTEE_HAS_TOPIC.value: self.create_committee_has_topic_repository,
+            Entity.POLL.value: self.create_poll_repository,
+        }
+
+    def get_repository(
+        self, entity: Entity | str
+    ) -> Optional[SqlAlchemyBaseRepository]:
+        if entity in self.entity_factory_map:
+            return self.entity_factory_map[entity]()
+        else:
+            return None
 
     def create_party_donation_repository(self) -> SqlAlchemyPartyDonationRepository:
         return SqlAlchemyPartyDonationRepository(self.session)
 
+    # in the map
     def create_party_repository(self) -> SqlAlchemyPartyRepository:
         return SqlAlchemyPartyRepository(self.session)
 
+    # in the map
     def create_party_style_repository(self) -> SqlAlchemyPartyStyleRepository:
         return SqlAlchemyPartyStyleRepository(self.session)
 
+    # in the map
     def create_parliament_repository(self) -> SqlAlchemyParliamentRepository:
         return SqlAlchemyParliamentRepository(self.session)
 
+    # in the map
     def create_parliament_period_repository(
         self,
     ) -> SqlAlchemyParliamentPeriodRepository:
         return SqlAlchemyParliamentPeriodRepository(self.session)
 
+    # in the map
     def create_topic_repository(
         self,
     ) -> SqlAlchemyTopicRepository:
         return SqlAlchemyTopicRepository(self.session)
 
+    # in the map
     def create_committee_repository(
         self,
     ) -> SqlAlchemyCommitteeRepository:
         return SqlAlchemyCommitteeRepository(self.session)
 
+    # in the map
     def create_committee_has_topic_repository(
         self,
     ) -> SqlAlchemyCommitteeHasTopicRepository:
         return SqlAlchemyCommitteeHasTopicRepository(self.session)
 
+    # in the map
     def create_poll_repository(
         self,
     ) -> SqlAlchemyPollRepository:
