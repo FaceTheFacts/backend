@@ -16,7 +16,10 @@ from src.db import models
 from src.db.connection import Session
 from src.api.utils.error import check_entity_not_found
 from src.api.utils.party_sort import party_sort
-from src.api.utils.polls import get_politcian_ids_by_bundestag_polldata_and_follow_ids
+from src.api.utils.polls import (
+    get_politcian_ids_by_bundestag_polldata_and_follow_ids,
+    get_politcian_ids_by_euparl_polldata_and_follow_ids,
+)
 from src.redis_cache.cache import ONE_DAY_IN_SECONDS, ONE_WEEK_IN_SECONDS, custom_cache
 
 router = APIRouter(
@@ -266,7 +269,7 @@ def read_politician_sidejobs(db: Session = Depends(get_db)):
 def read_latest_polls(
     follow_ids: List[int] = Query(None), db: Session = Depends(get_db)
 ):
-    polls = crud.get_polls_total(db)
+    polls = crud.get_polls_total(db, parliament=schemas.Parliament.BUNDESTAG)
     latest_polls = get_politcian_ids_by_bundestag_polldata_and_follow_ids(
         polls, db, follow_ids
     )
@@ -281,9 +284,46 @@ def read_latest_polls(
     page: int = Query(1),
 ):
     size = page * 10
-    filtered_polls = crud.get_all_polls_total(db, size, filters)
+    filtered_polls = crud.get_all_polls_total(
+        db, schemas.Parliament.BUNDESTAG, size, filters
+    )
     polls = {}
     polls["data"] = get_politcian_ids_by_bundestag_polldata_and_follow_ids(
+        filtered_polls, db
+    )
+    if len(polls["data"]) < 10:
+        polls["last_page"] = True
+    else:
+        polls["last_page"] = False
+    check_entity_not_found(polls, "Polls")
+    return polls
+
+
+@router.get("/eu/polls", response_model=List[schemas.BundestagPollDataWithPoliticians])
+def read_latest_polls(
+    follow_ids: List[int] = Query(None), db: Session = Depends(get_db)
+):
+    polls = crud.get_polls_total(db, parliament=schemas.Parliament.EUPARL)
+    print(polls)
+    latest_polls = get_politcian_ids_by_euparl_polldata_and_follow_ids(
+        polls, db, follow_ids
+    )
+    check_entity_not_found(latest_polls, "Polls")
+    return latest_polls
+
+
+@router.get("/eu/allpolls", response_model=schemas.BundestagPoll)
+def read_latest_polls(
+    filters: List[int] = Query(None),
+    db: Session = Depends(get_db),
+    page: int = Query(1),
+):
+    size = page * 10
+    filtered_polls = crud.get_all_polls_total(
+        db, schemas.Parliament.EUPARL, size, filters
+    )
+    polls = {}
+    polls["data"] = get_politcian_ids_by_euparl_polldata_and_follow_ids(
         filtered_polls, db
     )
     if len(polls["data"]) < 10:
