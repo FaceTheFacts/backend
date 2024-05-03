@@ -1,4 +1,5 @@
 # std
+import logging
 from typing import Optional
 import time
 import threading
@@ -78,9 +79,9 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Strict-Transport-Security"] = "max-age=63072000; preload"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
-    response.headers[
-        "Content-Security-Policy"
-    ] = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-bundle.js 'sha256-R2r7jpC1j6BEeer9P/YDRn6ufsaSnnARhKTdfrSKStk='; style-src 'self' https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css; frame-ancestors 'none'"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-bundle.js 'sha256-R2r7jpC1j6BEeer9P/YDRn6ufsaSnnARhKTdfrSKStk='; style-src 'self' https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css; frame-ancestors 'none'"
+    )
 
     # HTML-related (future-proof)
     response.headers["Feature-Policy"] = "'none'"
@@ -102,15 +103,15 @@ async def health_check(redis_pool: aioredis.Redis = Depends(get_redis)):
 
 
 @app.get("/db_health_check")
-async def db_health_check(db: Session = Depends(v2.get_db)):
+def db_health_check(db: Session = Depends(v2.get_db)):
     try:
-        result = await db.execute(select(1))
+        result = db.execute(select(1))
         value = result.scalar_one()
         if value == 1:
             return {"status": "healthy"}
     except Exception as e:
         # Log the exception details
-        print(f"Database health check failed: {e}")
+        logging.log(f"Database health check failed: {e}")
         raise HTTPException(status_code=503, detail="Database is unhealthy")
 
 
