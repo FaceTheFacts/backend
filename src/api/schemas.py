@@ -1,4 +1,5 @@
 # std
+from enum import Enum
 from pydantic import BaseModel, Field
 from datetime import date, datetime
 from typing import Optional, List, Dict
@@ -779,3 +780,8 @@ class PluginPolitician(FTFBaseModel):
     weblinks: Optional[List]
     votes_and_polls: Optional[List[VoteAndPoll]]
     topic_ids_of_latest_committee: Optional[List[int]]
+
+
+class Parliament(Enum):
+    BUNDESTAG = "bundestag"
+    EUPARL = "euparl"
