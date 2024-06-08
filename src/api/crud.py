@@ -584,7 +584,7 @@ def get_politician_by_constituency(
     if candidacy_data:
         constituency_id = candidacy_data.electoral_data.constituency_id
 
-        if constituency_id not in [9607, 4721, 5309, 423]:
+        if constituency_id not in [12635, 9607, 4721, 5309, 423]:
             politicians = (
                 db.query(models.Politician)
                 .join(models.CandidacyMandate)
