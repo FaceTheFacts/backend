@@ -138,24 +138,6 @@ def fetch_last_id_from_model(model: Any) -> int:
         session.close()
 
 
-def fetch_single_missing_entity(entity: str, model: Any, id: int):
-    if entity not in entity_list:
-        raise Exception(f"{entity} is not a valid entity")
-
-    # Start a session to interact with the database
-    session = Session()
-    try:
-        last_id = session.query(model).order_by(model.id.desc()).first().id
-        print(f"The last id of {entity} is: {last_id}")
-        # You may also need to handle potential exceptions for network requests here
-        result = fetch_json(f"https://www.abgeordnetenwatch.de/api/v2/{entity}/{id}")
-        data = result["data"]
-        return [data]
-    finally:
-        # Ensure the session is closed after the operation
-        session.close()
-
-
 def fetch_missing_sub_entity(sub_entity: str, model: Any):
     data_list = []
     session = Session()
