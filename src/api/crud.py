@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session, joinedload
 
 # local
 import src.db.models as models
-from src.api.schemas import ConstituencyPoliticians, Parliament
+from src.api.schemas import ConstituencyPoliticians
 from src.api.utils.sidejob import convert_income_level
 from src.api.utils.politician import (
     add_image_urls_to_politicians,
@@ -259,52 +259,6 @@ def get_latest_bundestag_polls(db: Session):
     )
 
 
-def get_latest_europarl_polls(db: Session):
-    current_legislature_period = 117
-    return (
-        db.query(models.Poll)
-        .filter(
-            models.Poll.field_legislature_id == current_legislature_period,
-        )
-        .order_by(models.Poll.field_poll_date.desc())
-        .limit(10)
-        .all()
-    )
-
-
-def get_all_europarl_polls(db: Session, size: int, topic_ids: List[int] = None):
-    if topic_ids:
-        return (
-            db.query(models.Poll)
-            .filter(
-                (models.Poll.field_legislature_id == 117)
-                | (models.Poll.field_legislature_id == 62)
-            )
-            .filter(
-                (models.Topic.id.in_(topic_ids))
-                | (models.Topic.parent_id.in_(topic_ids))
-            )
-            .filter(
-                (models.PollHasTopic.topic_id == models.Topic.id)
-                & (models.Poll.id == models.PollHasTopic.poll_id)
-            )
-            .order_by(models.Poll.field_poll_date.desc())
-            .slice(size - 10, size)
-            .all()
-        )
-    else:
-        return (
-            db.query(models.Poll)
-            .filter(
-                (models.Poll.field_legislature_id == 117)
-                | (models.Poll.field_legislature_id == 62)
-            )
-            .order_by(models.Poll.field_poll_date.desc())
-            .slice(size - 10, size)
-            .all()
-        )
-
-
 def get_all_bundestag_polls(db: Session, size: int, topic_ids: List[int] = None):
     if topic_ids:
         return (
@@ -379,14 +333,9 @@ def get_vote_result_by_poll_id(db: Session, poll_id: int):
 
 
 # Tested with mockup
-def get_polls_total(db: Session, parliament: Parliament):
-    if parliament == Parliament.BUNDESTAG:
-        polls = get_latest_bundestag_polls(db)
-    elif parliament == Parliament.EUPARL:
-        polls = get_latest_europarl_polls(db)
-    else:
-        raise ValueError("Invalid parliament value")
+def get_polls_total(db: Session):
     data_list = []
+    polls = get_latest_bundestag_polls(db)
     for poll in polls:
         poll_dict = {
             "field_legislature_id": poll.field_legislature_id,
@@ -402,16 +351,9 @@ def get_polls_total(db: Session, parliament: Parliament):
     return data_list
 
 
-def get_all_polls_total(
-    db: Session, parliament: Parliament, size: int, topic_ids: List[int] = None
-):
-    if parliament == Parliament.EUPARL:
-        polls = get_all_europarl_polls(db, size, topic_ids)
-    elif parliament == Parliament.BUNDESTAG:
-        polls = get_all_bundestag_polls(db, size, topic_ids)
-    else:
-        raise ValueError("Invalid parliament value")
+def get_all_polls_total(db: Session, size: int, topic_ids: List[int] = None):
     data_list = []
+    polls = get_all_bundestag_polls(db, size, topic_ids)
     for poll in polls:
         poll_dict = {
             "field_legislature_id": poll.field_legislature_id,
