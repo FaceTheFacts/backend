@@ -117,8 +117,8 @@ def db_health_check(db: Session = Depends(v2.get_db)):
 
 @app.get("/")
 @cache(expire=60)
-def read_root():
-    return {"Hello World"}
+def read_root(name: Optional[str] = "World"):
+    return {"Hello": name}
 
 
 @app.get("/.well-known/ai-plugin.json")
