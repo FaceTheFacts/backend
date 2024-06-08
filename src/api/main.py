@@ -14,7 +14,6 @@ import schedule
 from fastapi_redis_cache import cache
 from redis import asyncio as aioredis
 from sqlalchemy.orm.session import Session
-from sqlalchemy.sql.expression import select
 
 
 # local
@@ -92,26 +91,13 @@ async def add_security_headers(request: Request, call_next):
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-@app.get("/redis_health_check")
+@app.get("/health_check")
 async def health_check(redis_pool: aioredis.Redis = Depends(get_redis)):
     pong = await redis_pool.ping()
     print(f"Ping result: {pong}")
     if pong != True:
         raise HTTPException(status_code=500, detail="Redis server is not responding")
     return {"status": "OK", "detail": "Redis server is responding"}
-
-
-@app.get("/db_health_check")
-async def db_health_check(db: Session = Depends(v2.get_db)):
-    try:
-        result = await db.execute(select(1))
-        value = result.scalar_one()
-        if value == 1:
-            return {"status": "healthy"}
-    except Exception as e:
-        # Log the exception details
-        print(f"Database health check failed: {e}")
-        raise HTTPException(status_code=503, detail="Database is unhealthy")
 
 
 @app.get("/")
