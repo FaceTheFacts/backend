@@ -20,6 +20,7 @@ from src.cron_jobs.utils.fetch import (
     fetch_last_id_from_model,
     fetch_missing_entity,
     fetch_missing_sub_entity,
+    fetch_single_missing_entity,
     load_entity,
     load_entity_ids_from_db,
     match_constituency_to_parliament_periods,
@@ -46,7 +47,11 @@ def append_parliament_periods() -> List:
                 "start_date_period": api_parliament_period["start_date_period"],
                 "end_date_period": api_parliament_period["end_date_period"],
                 "parliament_id": api_parliament_period["parliament"]["id"],
-                "previous_period_id": api_parliament_period["previous_period"]["id"],
+                "previous_period_id": (
+                    api_parliament_period["previous_period"]["id"]
+                    if api_parliament_period["previous_period"]
+                    else None
+                ),
             }
             for api_parliament_period in missing_parliament_periods
         ]
@@ -110,32 +115,36 @@ def append_electoral_data() -> List:
                 "id": api_electoral_data["electoral_data"]["id"],
                 "entity_type": api_electoral_data["electoral_data"]["entity_type"],
                 "label": api_electoral_data["electoral_data"]["label"],
-                "electoral_list_id": api_electoral_data["electoral_data"][
-                    "electoral_list"
-                ]["id"]
-                if api_electoral_data["electoral_data"]["electoral_list"]
-                else None,
-                "list_position": api_electoral_data["electoral_data"]["list_position"]
-                if api_electoral_data["electoral_data"]["list_position"]
-                else None,
-                "constituency_id": api_electoral_data["electoral_data"]["constituency"][
-                    "id"
-                ]
-                if api_electoral_data["electoral_data"]["constituency"]
-                else None,
-                "constituency_result": api_electoral_data["electoral_data"][
-                    "constituency_result"
-                ]
-                if api_electoral_data["electoral_data"]
-                else None,
-                "constituency_result_count": api_electoral_data["electoral_data"][
-                    "constituency_result_count"
-                ]
-                if api_electoral_data["electoral_data"]
-                else None,
-                "mandate_won": api_electoral_data["electoral_data"]["mandate_won"]
-                if api_electoral_data["electoral_data"]
-                else None,
+                "electoral_list_id": (
+                    api_electoral_data["electoral_data"]["electoral_list"]["id"]
+                    if api_electoral_data["electoral_data"]["electoral_list"]
+                    else None
+                ),
+                "list_position": (
+                    api_electoral_data["electoral_data"]["list_position"]
+                    if api_electoral_data["electoral_data"]["list_position"]
+                    else None
+                ),
+                "constituency_id": (
+                    api_electoral_data["electoral_data"]["constituency"]["id"]
+                    if api_electoral_data["electoral_data"]["constituency"]
+                    else None
+                ),
+                "constituency_result": (
+                    api_electoral_data["electoral_data"]["constituency_result"]
+                    if api_electoral_data["electoral_data"]
+                    else None
+                ),
+                "constituency_result_count": (
+                    api_electoral_data["electoral_data"]["constituency_result_count"]
+                    if api_electoral_data["electoral_data"]
+                    else None
+                ),
+                "mandate_won": (
+                    api_electoral_data["electoral_data"]["mandate_won"]
+                    if api_electoral_data["electoral_data"]
+                    else None
+                ),
             }
             for api_electoral_data in missing_electoral_data
         ]
@@ -174,9 +183,11 @@ def append_candidacies(candidacies: Optional[List] = None) -> List:
                     "id"
                 ],
                 "politician_id": api_candidacies_mandates["politician"]["id"],
-                "party_id": api_candidacies_mandates["party"]["id"]
-                if "party" in api_candidacies_mandates
-                else None,
+                "party_id": (
+                    api_candidacies_mandates["party"]["id"]
+                    if "party" in api_candidacies_mandates
+                    else None
+                ),
                 "start_date": api_candidacies_mandates["start_date"],
                 "end_date": api_candidacies_mandates["end_date"],
                 "info": api_candidacies_mandates["info"],
@@ -296,15 +307,21 @@ def append_sidejobs() -> List:
                     "interval": api_sidejob["interval"],
                     "data_change_date": api_sidejob["data_change_date"],
                     "created": api_sidejob["created"],
-                    "sidejob_organization_id": api_sidejob["sidejob_organization"]["id"]
-                    if api_sidejob["sidejob_organization"]
-                    else None,
-                    "field_city_id": api_sidejob["field_city"]["id"]
-                    if api_sidejob["field_city"]
-                    else None,
-                    "field_country_id": api_sidejob["field_country"]["id"]
-                    if api_sidejob["field_country"]
-                    else None,
+                    "sidejob_organization_id": (
+                        api_sidejob["sidejob_organization"]["id"]
+                        if api_sidejob["sidejob_organization"]
+                        else None
+                    ),
+                    "field_city_id": (
+                        api_sidejob["field_city"]["id"]
+                        if api_sidejob["field_city"]
+                        else None
+                    ),
+                    "field_country_id": (
+                        api_sidejob["field_country"]["id"]
+                        if api_sidejob["field_country"]
+                        else None
+                    ),
                 }
             )
         sidejobs_have_mandates = [
@@ -342,13 +359,17 @@ def append_polls() -> List:
                 "entity_type": api_polls["entity_type"],
                 "label": api_polls["label"],
                 "api_url": api_polls["api_url"],
-                "field_committees_id": api_polls["field_committees"][0]["id"]
-                if api_polls["field_committees"]
-                else None,
+                "field_committees_id": (
+                    api_polls["field_committees"][0]["id"]
+                    if api_polls["field_committees"]
+                    else None
+                ),
                 "field_intro": api_polls["field_intro"],
-                "field_legislature_id": api_polls["field_legislature"]["id"]
-                if api_polls["field_legislature"]
-                else None,
+                "field_legislature_id": (
+                    api_polls["field_legislature"]["id"]
+                    if api_polls["field_legislature"]
+                    else None
+                ),
                 "field_poll_date": api_polls["field_poll_date"],
             }
             for api_polls in missing_polls
@@ -398,12 +419,16 @@ def append_votes() -> List:
                     "entity_type": missing_vote["entity_type"],
                     "label": missing_vote["label"],
                     "api_url": missing_vote["api_url"],
-                    "mandate_id": missing_vote["mandate"]["id"]
-                    if missing_vote["mandate"]
-                    else None,
-                    "fraction_id": missing_vote["fraction"]["id"]
-                    if missing_vote["fraction"]
-                    else None,
+                    "mandate_id": (
+                        missing_vote["mandate"]["id"]
+                        if missing_vote["mandate"]
+                        else None
+                    ),
+                    "fraction_id": (
+                        missing_vote["fraction"]["id"]
+                        if missing_vote["fraction"]
+                        else None
+                    ),
                     "poll_id": poll_id,
                     "vote": missing_vote["vote"],
                     "reason_no_show": missing_vote["reason_no_show"],
@@ -646,9 +671,9 @@ def append_politicians() -> List:
                 "birth_name": api_politician["birth_name"],
                 "sex": api_politician["sex"],
                 "year_of_birth": api_politician["year_of_birth"],
-                "party_id": api_politician["party"]["id"]
-                if api_politician["party"]
-                else None,
+                "party_id": (
+                    api_politician["party"]["id"] if api_politician["party"] else None
+                ),
                 "party_past": api_politician["party_past"],
                 "deceased": None,
                 "deceased_date": None,
@@ -765,12 +790,16 @@ def append_sidejob_organizations() -> List:
                 "entity_type": api_sidejob_organization["entity_type"],
                 "label": api_sidejob_organization["label"],
                 "api_url": api_sidejob_organization["api_url"],
-                "field_city_id": api_sidejob_organization["field_city"]["id"]
-                if api_sidejob_organization["field_city"]
-                else None,
-                "field_country_id": api_sidejob_organization["field_country"]["id"]
-                if api_sidejob_organization["field_country"]
-                else None,
+                "field_city_id": (
+                    api_sidejob_organization["field_city"]["id"]
+                    if api_sidejob_organization["field_city"]
+                    else None
+                ),
+                "field_country_id": (
+                    api_sidejob_organization["field_country"]["id"]
+                    if api_sidejob_organization["field_country"]
+                    else None
+                ),
             }
             for api_sidejob_organization in missing_sidejob_organizations
         ]
@@ -873,6 +902,100 @@ def update_sidejobs_income():
     print("Finished updating sidejobs")
 
 
+def update_single_candidate(id: int):
+
+    missing_entity = fetch_single_missing_entity(
+        "candidacies-mandates", models.CandidacyMandate, id
+    )
+
+    if missing_entity:
+        candidacies_mandates = [
+            {
+                "id": api_candidacies_mandates["id"],
+                "entity_type": api_candidacies_mandates["entity_type"],
+                "label": api_candidacies_mandates["label"],
+                "api_url": api_candidacies_mandates["api_url"],
+                "id_external_administration": api_candidacies_mandates[
+                    "id_external_administration"
+                ],
+                "id_external_administration_description": api_candidacies_mandates[
+                    "id_external_administration_description"
+                ],
+                "type": api_candidacies_mandates["type"],
+                "parliament_period_id": api_candidacies_mandates["parliament_period"][
+                    "id"
+                ],
+                "politician_id": api_candidacies_mandates["politician"]["id"],
+                "party_id": (
+                    api_candidacies_mandates["party"]["id"]
+                    if "party" in api_candidacies_mandates
+                    else None
+                ),
+                "start_date": api_candidacies_mandates["start_date"],
+                "end_date": api_candidacies_mandates["end_date"],
+                "info": api_candidacies_mandates["info"],
+                "electoral_data_id": api_candidacies_mandates["electoral_data"]["id"],
+                "fraction_membership_id": None,
+            }
+            for api_candidacies_mandates in missing_entity
+        ]
+        insert_and_update(models.CandidacyMandate, candidacies_mandates)
+
+
+def update_single_polls(id: int):
+    missing_polls = fetch_single_missing_entity("polls", models.Poll, id)
+    if missing_polls:
+        polls = [
+            {
+                "id": api_polls["id"],
+                "entity_type": api_polls["entity_type"],
+                "label": api_polls["label"],
+                "api_url": api_polls["api_url"],
+                "field_committees_id": (
+                    api_polls["field_committees"][0]["id"]
+                    if api_polls["field_committees"]
+                    else None
+                ),
+                "field_intro": api_polls["field_intro"],
+                "field_legislature_id": (
+                    api_polls["field_legislature"]["id"]
+                    if api_polls["field_legislature"]
+                    else None
+                ),
+                "field_poll_date": api_polls["field_poll_date"],
+            }
+            for api_polls in missing_polls
+        ]
+        poll_topics = []
+        poll_links = []
+        last_field_related_link_id = fetch_last_id_from_model(models.FieldRelatedLink)
+        for api_poll in missing_polls:
+            field_topics = api_poll["field_topics"]
+            if field_topics:
+                for topic in field_topics:
+                    poll_topic = {
+                        "poll_id": api_poll["id"],
+                        "topic_id": topic["id"],
+                    }
+                    poll_topics.append(poll_topic)
+            field_links = api_poll["field_related_links"]
+            if field_links:
+                for link in field_links:
+                    last_field_related_link_id += 1
+                    poll_link = {
+                        "id": last_field_related_link_id,
+                        "poll_id": api_poll["id"],
+                        "uri": link["uri"],
+                        "title": link["title"],
+                    }
+                    poll_links.append(poll_link)
+        insert_and_update(models.Poll, polls)
+        insert_only(models.PollHasTopic, poll_topics)
+        insert_only(models.FieldRelatedLink, poll_links)
+        print("Successfully retrieved")
+        return polls
+
+
 def update_politician_images():
     with open("urls_cc.json", "r") as file:
         data = json.load(file)
@@ -921,4 +1044,3 @@ def update_partydonations():
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    update_partydonations()
