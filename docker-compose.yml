@@ -1,7 +1,7 @@
-version: '3.9'
 services:
   api:
     build: .
+    restart: unless-stopped
     ports:
       - "8000:8000"
     env_file:
@@ -12,7 +12,5 @@ services:
       - REDIS_HOST=redis
   redis:
     image: "redis:7.0.11"
-    ports:
-      - "6379:6379"
+    restart: unless-stopped
     command: ["redis-server", "--bind", "0.0.0.0", "--port", "6379"]
-

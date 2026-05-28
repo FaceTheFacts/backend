@@ -1,52 +1,43 @@
-# Use a multi-stage build to separate the downloader and final image
-FROM python:3.9-slim AS downloader
-RUN apt-get update && apt-get install -y \
-    curl \
-    libpq-dev \
-    gcc \
+FROM python:3.9-slim AS builder
+
+ENV POETRY_VERSION=2.3.2 \
+    POETRY_NO_INTERACTION=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Create a non-root user
-RUN groupadd -r user && useradd -r -g user user
+RUN pip install "poetry==${POETRY_VERSION}"
 
-# Create the home directory and necessary directories for the non-root user
-RUN mkdir -p /home/user && chown -R user:user /home/user
-RUN mkdir -p /home/user/.local/share && mkdir -p /home/user/.local/bin && chown -R user:user /home/user/.local
-USER user
+COPY pyproject.toml poetry.lock ./
+RUN poetry config virtualenvs.create false \
+    && poetry install --only main --no-root --no-ansi
 
-# Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python -
-ENV PATH=$PATH:/home/user/.local/bin
+FROM python:3.9-slim AS runtime
 
-# Generate requirements.txt
-COPY --chown=user:user pyproject.toml poetry.lock ./
-USER root
-RUN poetry update
-RUN poetry export -f requirements.txt --output /home/user/requirements.txt --without-hashes
-RUN chmod go-w pyproject.toml poetry.lock
-USER user
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Final image
-FROM python:3.9
-WORKDIR /src
+WORKDIR /app
 
-# Create a non-root user and switch to it
-RUN groupadd -r user && useradd -r -g user user
-RUN mkdir -p /home/user && chown -R user:user /home/user
-USER user
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libpq5 \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --system app \
+    && useradd --system --gid app --home-dir /home/app --create-home app
 
-# Copy dependencies and requirements.txt file
-COPY --from=downloader --chown=user:user /home/user/.local ./.local
-COPY --from=downloader --chown=user:user /home/user/requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir --user -r requirements.txt
+COPY --from=builder /usr/local /usr/local
 
-# Add files
-COPY --chown=user:user src/ src/
-COPY --chown=user:user .well-known .well-known
-COPY --chown=user:user static static
-RUN chmod go-w src/ .well-known static
+COPY --chown=app:app src/ src/
+COPY --chown=app:app .well-known/ .well-known/
+COPY --chown=app:app static/ static/
 
-# Run server
+USER app
+
 EXPOSE 8000
-CMD ["sh", "-c", "poetry run uvicorn src.api.main:app --host 0.0.0.0 --port 8000"]
-
+CMD ["python", "-m", "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
