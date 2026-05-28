@@ -26,6 +26,12 @@ To run this project, you will need to add the following environment variables to
 
 `POLITRACK_SECRET_PASSWORD`
 
+`CORS_ALLOWED_ORIGINS`
+
+Comma-separated browser origins allowed to call the API, for example
+`https://facethefacts.app,https://testflight-api.facethefacts.app`. Native
+mobile clients are not governed by CORS.
+
 ## Installation/ Run locally
 
 This application uses [poetry](https://python-poetry.org/) for dependency management and packaging in Python, [uvicorn](https://www.uvicorn.org/) as a server and [redis](https://redis.io/download/) as cache. For setting up, run these commands as follows.

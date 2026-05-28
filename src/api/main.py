@@ -19,6 +19,7 @@ from sqlalchemy.orm.session import Session
 # local
 from src.api.versions import v2, v1, plugin
 from src.api.utils.openapi import api_description, tags_metadata
+from src.api.security import get_cors_allowed_origins
 import src.cron_jobs.append_db as cron_jobs
 from src.redis_cache.cache import redis_url, CustomFastApiRedisCache, get_redis
 
@@ -62,10 +63,10 @@ app.include_router(v2.router)
 # * docs: https://fastapi.tiangolo.com/tutorial/cors/
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "OPTIONS"],
     allow_headers=["*"],
-    allow_origins=["*"],
+    allow_origins=get_cors_allowed_origins(),
 )
 
 
